@@ -25,11 +25,12 @@ export default function Footer() {
           <div>
             <h4 className="font-['Outfit'] font-medium text-sm mb-4 text-[#F9F6F0]/90">Tratamentos</h4>
             <ul className="space-y-2.5">
-              {['Homeopatia', 'Hormonios Bioidenticos', 'Medicina Chinesa', 'CBD para Pets', 'Acupuntura', 'Saude dos Pelos'].map(item => (
+              {['Homeopatia', 'Hormonios Bioidenticos', 'Medicina Chinesa', 'CBD para Pets', 'Acupuntura', 'Saude dos Pelos', 'Cromoterapia'].map(item => (
                 <li key={item}>
                   <Link to="/produtos" className="text-sm text-[#F9F6F0]/60 hover:text-[#F9F6F0] transition-colors">{item}</Link>
                 </li>
               ))}
+              <li><Link to="/acupuntura-mtc" className="text-sm text-[#F9F6F0]/60 hover:text-[#F9F6F0] transition-colors">Acupuntura & MTC</Link></li>
             </ul>
           </div>
 
