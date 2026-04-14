@@ -4,44 +4,44 @@ import { Leaf, Droplets, Calculator, ChevronRight, BookOpen, Apple, Sparkles, Sh
 import { Slider } from '../components/ui/slider';
 
 const OILS = [
-  { name: 'Oleo de Gergelim', perKg: 0.5, unit: 'ml', desc: 'Rico em vitamina E e antioxidantes. Nutre foliculos e cria barreira protetora.', color: '#C87A5D', benefits: ['Vitamina E', 'Omega 6 e 9', 'Sesamina'] },
-  { name: 'Oleo de Coco', perKg: 0.5, unit: 'ml', desc: 'Hidrata pele e pelos. Acido laurico com acao antibacteriana.', color: '#84978F', benefits: ['Acido Laurico', 'Hidratacao', 'Antifungico'] },
-  { name: 'Oleo de Linhaca', perKg: 0.3, unit: 'ml', desc: 'Fonte vegetal de Omega 3. Combate dermatites e inflamacao.', color: '#2C4C3B', benefits: ['Omega 3 (ALA)', 'Anti-inflamatorio', 'Fibras'] },
-  { name: 'Omega 3 (Peixe)', perKg: 0.2, unit: 'ml', desc: 'EPA e DHA para pelo brilhante. Reduz queda e inflamacao.', color: '#A4B8C4', benefits: ['EPA', 'DHA', 'Pelo Brilhante'] },
+  { name: 'Óleo de Gergelim', perKg: 0.5, unit: 'ml', desc: 'Rico em vitamina E e antioxidantes. Nutre folículos e cria barreira protetora.', color: '#C87A5D', benefits: ['Vitamina E', 'Ômega 6 e 9', 'Sesamina'] },
+  { name: 'Óleo de Coco', perKg: 0.5, unit: 'ml', desc: 'Hidrata pele e pelos. Acido laurico com acao antibacteriana.', color: '#84978F', benefits: ['Acido Laurico', 'Hidratacao', 'Antifúngico'] },
+  { name: 'Óleo de Linhaça', perKg: 0.3, unit: 'ml', desc: 'Fonte vegetal de Ômega 3. Combate dermatites e inflamação.', color: '#2C4C3B', benefits: ['Ômega 3 (ALA)', 'Anti-inflamatório', 'Fibras'] },
+  { name: 'Ômega 3 (Peixe)', perKg: 0.2, unit: 'ml', desc: 'EPA e DHA para pelo brilhante. Reduz queda e inflamação.', color: '#A4B8C4', benefits: ['EPA', 'DHA', 'Pelo Brilhante'] },
 ];
 
 const GUIDE_SECTIONS = [
   {
-    id: 'alimentacao',
+    id: 'alimentação',
     icon: Apple,
-    title: 'Alimentacao para Pelagem',
+    title: 'Alimentação para Pelagem',
     content: [
-      { subtitle: 'Proteinas de Alta Qualidade', text: 'Os pelos sao compostos por 95% de queratina, uma proteina. Frango, peixe, ovos e carne magra fornecem os aminoacidos essenciais (metionina e cisteina) para a formacao de pelos fortes. Animais com dieta pobre em proteinas apresentam pelagem opaca e quebradia.' },
-      { subtitle: 'Acidos Graxos Essenciais', text: 'Omega 3 (salmao, sardinha, linhaca) e Omega 6 (gergelim, girassol) sao fundamentais. O Omega 3 reduz inflamacao na pele, enquanto o Omega 6 mantem a barreira cutanea hidratada. A proporcao ideal e 1:5 a 1:10 (Omega 3:6).' },
-      { subtitle: 'Vitaminas e Minerais', text: 'Vitamina A (cenoura, abobora) para renovacao celular. Vitamina E (gergelim, amendoim) como antioxidante. Biotina/B7 para ciclo de crescimento. Zinco para sintese de queratina. Cobre para pigmentacao dos pelos.' },
-      { subtitle: 'Alimentos a Evitar', text: 'Racoes com excesso de milho, soja e subprodutos. Alimentos processados com corantes e conservantes artificiais. Excesso de carboidratos refinados que causam inflamacao cronica na pele.' },
+      { subtitle: 'Proteínas de Alta Qualidade', text: 'Os pelos sao compostos por 95% de queratina, uma proteína. Frango, peixe, ovos e carne magra fornecem os aminoácidos essenciais (metionina e cisteina) para a formação de pelos fortes. Animais com dieta pobre em proteínas apresentam pelagem opaca e quebradiça.' },
+      { subtitle: 'Ácidos Graxos Essenciais', text: 'Ômega 3 (salmao, sardinha, linhaça) e Ômega 6 (gergelim, girassol) sao fundamentais. O Ômega 3 reduz inflamação na pele, enquanto o Ômega 6 mantem a barreira cutanea hidratada. A proporcao ideal e 1:5 a 1:10 (Ômega 3:6).' },
+      { subtitle: 'Vitaminas e Minerais', text: 'Vitamina A (cenoura, abóbora) para renovação celular. Vitamina E (gergelim, amendoim) como antioxidante. Biotina/B7 para ciclo de crescimento. Zinco para sintese de queratina. Cobre para pigmentação dos pelos.' },
+      { subtitle: 'Alimentos a Evitar', text: 'Rações com excesso de milho, soja e subprodutos. Alimentos processados com corantes e conservantes artificiais. Excesso de carboidratos refinados que causam inflamação crônica na pele.' },
     ]
   },
   {
-    id: 'oleos',
+    id: 'óleos',
     icon: Droplets,
-    title: 'Oleos Naturais',
+    title: 'Óleos Naturais',
     content: [
-      { subtitle: 'Oleo de Gergelim Prensado a Frio', text: 'O grande destaque da Ayurveda. Rico em sesamina e sesamolina (antioxidantes exclusivos), vitamina E e acidos graxos omega 6 e 9. Pode ser adicionado a racao ou aplicado topicamente com massagem suave. Na Ayurveda, e considerado um alimento "sattvico" que promove equilibrio e vitalidade.' },
-      { subtitle: 'Oleo de Coco Extra Virgem', text: 'Contém acido laurico com propriedades antibacterianas e antifungicas naturais. Hidrata profundamente a pele ressecada, reduz coceira e pode ser usado tanto na alimentacao quanto como condicionador topico apos o banho.' },
-      { subtitle: 'Oleo de Linhaca Dourada', text: 'Principal fonte vegetal de omega 3 (ALA). Ideal para animais com alergias a peixe. Combate dermatites, reduz a queda de pelos e promove crescimento saudavel. Use sempre prensado a frio e armazene na geladeira.' },
-      { subtitle: 'Como Aplicar', text: 'Via oral: misture o oleo na racao em temperatura ambiente (nunca aquecer oleos prensados a frio). Via topica: aplique pequena quantidade nas maos e massageie na pelagem, especialmente em areas ressecadas. Deixe agir 15-30min antes do banho.' },
+      { subtitle: 'Óleo de Gergelim Prensado a Frio', text: 'O grande destaque da Ayurveda. Rico em sesamina e sesamolina (antioxidantes exclusivos), vitamina E e acidos graxos ômega 6 e 9. Pode ser adicionado a ração ou aplicado topicamente com massagem suave. Na Ayurveda, é considerado um alimento "sattvico" que promove equilíbrio e vitalidade.' },
+      { subtitle: 'Óleo de Coco Extra Virgem', text: 'Contém acido laurico com propriedades antibacterianas e antifungicas naturais. Hidrata profundamente a pele ressecada, reduz coceira e pode ser usado tanto na alimentação quanto como condicionador topico após o banho.' },
+      { subtitle: 'Óleo de Linhaça Dourada', text: 'Principal fonte vegetal de ômega 3 (ALA). Ideal para animais com alergias a peixe. Combate dermatites, reduz a queda de pelos e promove crescimento saudavel. Use sempre prensado a frio e armazene na geladeira.' },
+      { subtitle: 'Como Aplicar', text: 'Via oral: misture o óleo na ração em temperatura ambiente (nunca aquecer óleos prensados a frio). Via topica: aplique pequena quantidade nas maos e massageie na pelagem, especialmente em areas ressecadas. Deixe agir 15-30min antes do banho.' },
     ]
   },
   {
     id: 'cuidados',
     icon: Heart,
-    title: 'Cuidados Diarios',
+    title: 'Cuidados Diários',
     content: [
-      { subtitle: 'Escovacao Regular', text: 'Escove seu pet 3-5 vezes por semana (diariamente para racas de pelo longo). A escovacao distribui os oleos naturais pela pelagem, remove pelos mortos, estimula a circulacao na pele e previne nos. Use escova adequada para o tipo de pelo.' },
-      { subtitle: 'Banhos na Medida Certa', text: 'Banhos excessivos removem os oleos naturais da pele. Para caes: a cada 15-30 dias. Para gatos: apenas quando necessario. Use shampoos sem sulfatos, com ingredientes naturais como aveia coloidal e aloe vera.' },
-      { subtitle: 'Hidratacao e Protecao', text: 'Apos o banho, aplique condicionador leave-in ou oleo de gergelim diluido. Proteja seu pet do sol excessivo e do ar condicionado (que resseca a pele). No inverno, hidrate mais frequentemente.' },
-      { subtitle: 'Sinais de Alerta', text: 'Queda excessiva fora dos periodos normais de troca. Falhas na pelagem. Pele avermelhada ou com crostas. Coceira intensa. Pelos sem brilho e quebradisos. Nesses casos, consulte um veterinario integrativo.' },
+      { subtitle: 'Escovação Regular', text: 'Escove seu pet 3-5 vezes por semana (diariamente para raças de pelo longo). A escovacao distribui os óleos naturais pela pelagem, remove pelos mortos, estimula a circulação na pele e previne nos. Use escova adequada para o tipo de pelo.' },
+      { subtitle: 'Banhos na Medida Certa', text: 'Banhos excessivos removem os óleos naturais da pele. Para caes: a cada 15-30 dias. Para gatos: apenas quando necessario. Use shampoos sem sulfatos, com ingredientes naturais como aveia coloidal e aloe vera.' },
+      { subtitle: 'Hidratacao e Protecao', text: 'Apos o banho, aplique condicionador leave-in ou óleo de gergelim diluido. Proteja seu pet do sol excessivo e do ar condicionado (que resseca a pele). No inverno, hidrate mais frequentemente.' },
+      { subtitle: 'Sinais de Alerta', text: 'Queda excessiva fora dos periodos normais de troca. Falhas na pelagem. Pele avermelhada ou com crostas. Coceira intensa. Pelos sem brilho e quebradiços. Nesses casos, consulte um veterinário integrativo.' },
     ]
   },
   {
@@ -49,10 +49,10 @@ const GUIDE_SECTIONS = [
     icon: Sparkles,
     title: 'Ayurveda e Pelagem',
     content: [
-      { subtitle: 'Doshas e Tipos de Pelo', text: 'Na Ayurveda, cada animal tem uma constituicao (dosha) que influencia o tipo de pelo. Vata: pelos finos, secos, com tendencia a queda. Pitta: pelos medios, com tendencia a inflamacao e vermelhidao. Kapha: pelos grossos, oleosos, com tendencia a acumulo.' },
-      { subtitle: 'Abhyanga (Massagem com Oleo)', text: 'A pratica ayurvedica de massagem com oleo morno (abhyanga) pode ser adaptada para pets. Use oleo de gergelim morno (nunca quente) e massageie suavemente por 5-10 minutos. Acalma o sistema nervoso, nutre a pele e fortalece os pelos.' },
-      { subtitle: 'Ervas Ayurvedicas', text: 'Ashwagandha: adaptogeno que reduz estresse (causa comum de queda). Amla (groselha indiana): rica em vitamina C, fortalece foliculos. Brahmi: melhora circulacao na pele. Neem: antifungico e antibacteriano natural.' },
-      { subtitle: 'Alimentacao Ayurvedica', text: 'Ghee (manteiga clarificada): fonte de vitaminas A, D, E e K. Curcuma (acafrao): poderoso anti-inflamatorio. Triphala: combinacao de 3 frutas que desintoxica e nutre de dentro para fora. Sempre consulte um veterinario antes de introduzir novos ingredientes.' },
+      { subtitle: 'Doshas e Tipos de Pelo', text: 'Na Ayurveda, cada animal tem uma constituição (dosha) que influencia o tipo de pelo. Vata: pelos finos, secos, com tendencia a queda. Pitta: pelos medios, com tendencia a inflamação e vermelhidao. Kapha: pelos grossos, óleosos, com tendencia a acumulo.' },
+      { subtitle: 'Abhyanga (Massagem com Óleo)', text: 'A prática ayurvedica de massagem com óleo morno (abhyanga) pode ser adaptada para pets. Use óleo de gergelim morno (nunca quente) e massageie suavemente por 5-10 minutos. Acalma o sistema nervoso, nutre a pele e fortalece os pelos.' },
+      { subtitle: 'Ervas Ayurvédicas', text: 'Ashwagandha: adaptógeno que reduz estresse (causa comum de queda). Amla (groselha indiana): rica em vitamina C, fortalece folículos. Brahmi: melhora circulação na pele. Neem: antifúngico e antibacteriano natural.' },
+      { subtitle: 'Alimentação Ayurvédica', text: 'Ghee (manteiga clarificada): fonte de vitaminas A, D, E e K. Curcuma (açafrão): poderoso anti-inflamatório. Triphala: combinacao de 3 frutas que desintoxica e nutre de dentro para fora. Sempre consulte um veterinário antes de introduzir novos ingredientes.' },
     ]
   },
 ];
@@ -60,7 +60,7 @@ const GUIDE_SECTIONS = [
 export default function CoatGuidePage() {
   const [petWeight, setPetWeight] = useState([10]);
   const [petType, setPetType] = useState('cao');
-  const [activeSection, setActiveSection] = useState('alimentacao');
+  const [activeSection, setActiveSection] = useState('alimentação');
 
   const weight = petWeight[0];
   const factor = petType === 'gato' ? 0.7 : 1;
@@ -80,10 +80,10 @@ export default function CoatGuidePage() {
               <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#F9F6F0]/80">Guia Completo</span>
             </div>
             <h1 className="font-['Outfit'] text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-[#F9F6F0] leading-[1.1]">
-              Guia de <span className="text-[#C87A5D]">Pelagem Saudavel</span>
+              Guia de <span className="text-[#C87A5D]">Pelagem Saudável</span>
             </h1>
             <p className="text-lg text-[#F9F6F0]/70 mt-6 max-w-2xl mx-auto">
-              Tudo sobre alimentacao, oleos naturais, cuidados diarios e a sabedoria da Ayurveda para uma pelagem exuberante.
+              Tudo sobre alimentação, óleos naturais, cuidados diarios e a sabedoria da Ayurveda para uma pelagem exuberante.
             </p>
           </div>
         </div>
@@ -139,13 +139,13 @@ export default function CoatGuidePage() {
                 </div>
                 <div>
                   <h2 className="font-['Outfit'] text-2xl sm:text-3xl font-medium text-[#F9F6F0]">Calculadora de Dosagem</h2>
-                  <p className="text-[#F9F6F0]/60 text-sm mt-1">Descubra a quantidade ideal de oleo para seu pet</p>
+                  <p className="text-[#F9F6F0]/60 text-sm mt-1">Descubra a quantidade ideal de óleo para seu pet</p>
                 </div>
               </div>
 
               {/* Pet Type */}
               <div className="flex gap-3 mb-8">
-                {[{ value: 'cao', label: 'Cao' }, { value: 'gato', label: 'Gato' }].map(t => (
+                {[{ value: 'cao', label: 'Cão' }, { value: 'gato', label: 'Gato' }].map(t => (
                   <button key={t.value} onClick={() => setPetType(t.value)} data-testid={`pet-type-${t.value}`}
                     className={`px-6 py-3 rounded-xl text-sm font-medium transition-all ${petType === t.value ? 'bg-[#C87A5D] text-[#F9F6F0]' : 'bg-[#F9F6F0]/10 text-[#F9F6F0]/70 hover:bg-[#F9F6F0]/20'}`}>
                     {t.label}
@@ -170,7 +170,7 @@ export default function CoatGuidePage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {OILS.map((oil, i) => {
                   const dose = Math.max(0.1, Math.round(weight * oil.perKg * factor * 10) / 10);
-                  const measure = dose < 5 ? `${dose} ml (~${Math.round(dose / 5 * 100) / 100} colher de cha)` : `${dose} ml (~${Math.round(dose / 15 * 10) / 10} colher de sopa)`;
+                  const measure = dose < 5 ? `${dose} ml (~${Math.round(dose / 5 * 100) / 100} colher de chá)` : `${dose} ml (~${Math.round(dose / 15 * 10) / 10} colher de sopa)`;
                   return (
                     <div key={i} data-testid={`dosage-result-${i}`} className="bg-[#F9F6F0]/10 backdrop-blur-sm border border-[#F9F6F0]/10 rounded-2xl p-5">
                       <div className="flex items-center gap-2 mb-2">
@@ -178,7 +178,7 @@ export default function CoatGuidePage() {
                         <h4 className="font-medium text-[#F9F6F0] text-sm">{oil.name}</h4>
                       </div>
                       <p className="font-['Outfit'] text-2xl font-bold text-[#C87A5D]">{measure}</p>
-                      <p className="text-xs text-[#F9F6F0]/50 mt-1">por dia, na racao</p>
+                      <p className="text-xs text-[#F9F6F0]/50 mt-1">por dia, na ração</p>
                       <div className="flex flex-wrap gap-1 mt-3">
                         {oil.benefits.map((b, j) => (
                           <span key={j} className="bg-[#F9F6F0]/10 text-[#F9F6F0]/70 text-[10px] px-2 py-0.5 rounded-full">{b}</span>
@@ -192,7 +192,7 @@ export default function CoatGuidePage() {
               <div className="mt-6 p-4 bg-[#F9F6F0]/5 border border-[#F9F6F0]/10 rounded-xl">
                 <p className="text-xs text-[#F9F6F0]/50 flex items-start gap-2">
                   <ShieldCheck className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                  Valores de referencia para orientacao geral. Comece com metade da dose e aumente gradualmente. Consulte sempre um veterinario antes de iniciar qualquer suplementacao.
+                  Valores de referência para orientacao geral. Comece com metade da dose e aumente gradualmente. Consulte sempre um veterinário antes de iniciar qualquer suplementação.
                 </p>
               </div>
             </div>
@@ -204,7 +204,7 @@ export default function CoatGuidePage() {
           <h2 className="font-['Outfit'] text-2xl sm:text-3xl font-medium text-[#1A2E24] mb-4">Pronto para cuidar da pelagem?</h2>
           <p className="text-[#4A6B5A] mb-8 max-w-lg mx-auto">Confira nossos produtos naturais para pelagem ou assine um plano mensal de tratamento.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/produtos?categoria=saude-pelos" data-testid="guide-cta-products" className="bg-[#2C4C3B] text-[#F9F6F0] hover:bg-[#1A2E24] rounded-full px-8 py-3.5 font-medium transition-all inline-flex items-center gap-2 justify-center">
+            <Link to="/produtos?categoria=saúde-pelos" data-testid="guide-cta-products" className="bg-[#2C4C3B] text-[#F9F6F0] hover:bg-[#1A2E24] rounded-full px-8 py-3.5 font-medium transition-all inline-flex items-center gap-2 justify-center">
               Ver Produtos <ArrowRight className="w-4 h-4" />
             </Link>
             <Link to="/assinaturas" data-testid="guide-cta-subscriptions" className="bg-[#C87A5D] text-[#F9F6F0] hover:bg-[#B3674C] rounded-full px-8 py-3.5 font-medium transition-all inline-flex items-center gap-2 justify-center">

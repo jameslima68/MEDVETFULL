@@ -39,7 +39,7 @@ export default function LoyaltyPage() {
   const progress = tierInfo.next ? Math.min(100, ((loyalty?.total_earned || 0) - tierInfo.min) / (tierInfo.nextMin - tierInfo.min) * 100) : 100;
 
   const handleRedeem = async () => {
-    if (redeemAmount < 500) { toast.error('Minimo 500 pontos'); return; }
+    if (redeemAmount < 500) { toast.error('Mínimo 500 pontos'); return; }
     if (redeemAmount > points) { toast.error('Pontos insuficientes'); return; }
     setRedeeming(true);
     try {
@@ -80,9 +80,9 @@ export default function LoyaltyPage() {
                 <div className={`w-16 h-16 ${tierInfo.color} rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg`}>
                   <Award className="w-8 h-8 text-white" />
                 </div>
-                <p className="text-xs font-bold tracking-[0.2em] uppercase text-[#84978F]">Nivel {tier}</p>
+                <p className="text-xs font-bold tracking-[0.2em] uppercase text-[#84978F]">Nível {tier}</p>
                 <p className="font-['Outfit'] text-5xl sm:text-6xl font-bold text-[#F9F6F0] mt-2" data-testid="points-balance">{points.toLocaleString('pt-BR')}</p>
-                <p className="text-[#F9F6F0]/60 text-sm mt-1">pontos disponiveis</p>
+                <p className="text-[#F9F6F0]/60 text-sm mt-1">pontos disponíveis</p>
 
                 {tierInfo.next && (
                   <div className="mt-6 max-w-xs mx-auto">
@@ -104,7 +104,7 @@ export default function LoyaltyPage() {
               {[
                 { icon: TrendingUp, title: 'Ganhe', desc: '10 pontos por cada R$ 1 em compras' },
                 { icon: Gift, title: 'Troque', desc: '500 pontos = R$ 5 de desconto' },
-                { icon: Star, title: 'Suba de Nivel', desc: 'Bronze > Prata > Ouro com beneficios' },
+                { icon: Star, title: 'Suba de Nível', desc: 'Bronze > Prata > Ouro com benefícios' },
               ].map((item, i) => (
                 <div key={i} className="bg-white/60 border border-[#E0DDD5] rounded-2xl p-6 text-center">
                   <div className="w-10 h-10 bg-[#2C4C3B]/10 rounded-xl flex items-center justify-center mx-auto mb-3">
@@ -121,7 +121,7 @@ export default function LoyaltyPage() {
               <h3 className="font-['Outfit'] text-lg font-medium text-[#1A2E24] mb-4 flex items-center gap-2">
                 <Gift className="w-5 h-5 text-[#C87A5D]" /> Resgatar Pontos
               </h3>
-              <p className="text-sm text-[#4A6B5A] mb-4">Troque seus pontos por cupons de desconto. Minimo: 500 pontos (R$ 5,00).</p>
+              <p className="text-sm text-[#4A6B5A] mb-4">Troque seus pontos por cupons de desconto. Mínimo: 500 pontos (R$ 5,00).</p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex-1">
                   <div className="grid grid-cols-4 gap-2">
@@ -153,12 +153,12 @@ export default function LoyaltyPage() {
             {/* History */}
             <div className="bg-white/60 border border-[#E0DDD5] rounded-3xl p-8">
               <h3 className="font-['Outfit'] text-lg font-medium text-[#1A2E24] mb-4 flex items-center gap-2">
-                <History className="w-5 h-5 text-[#84978F]" /> Historico
+                <History className="w-5 h-5 text-[#84978F]" /> Histórico
               </h3>
               {history.length === 0 ? (
                 <div className="text-center py-8">
                   <p className="text-[#84978F] mb-4">Nenhuma atividade ainda.</p>
-                  <Link to="/produtos" className="text-sm text-[#2C4C3B] font-medium hover:underline">Faca sua primeira compra</Link>
+                  <Link to="/produtos" className="text-sm text-[#2C4C3B] font-medium hover:underline">Faça sua primeira compra</Link>
                 </div>
               ) : (
                 <div className="space-y-3">

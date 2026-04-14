@@ -96,7 +96,7 @@ export default function LoginPage() {
           </button>
 
           <p className="text-center text-sm text-[#4A6B5A]">
-            Nao tem conta?{' '}
+            Não tem conta?{' '}
             <Link to="/register" data-testid="register-link" className="text-[#2C4C3B] font-medium hover:underline">Criar conta</Link>
           </p>
         </form>

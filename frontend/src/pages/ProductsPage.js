@@ -58,9 +58,9 @@ export default function ProductsPage() {
     <div data-testid="products-page" className="min-h-screen bg-[#F9F6F0]">
       <div className="bg-[#2C4C3B] py-16 sm:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#84978F]">Catalogo</span>
+          <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#84978F]">Catálogo</span>
           <h1 className="font-['Outfit'] text-4xl sm:text-5xl font-semibold tracking-tight text-[#F9F6F0] mt-3">Nossos Produtos</h1>
-          <p className="text-[#F9F6F0]/70 mt-4 max-w-lg mx-auto">Tratamentos naturais e integradores para a saude do seu animal.</p>
+          <p className="text-[#F9F6F0]/70 mt-4 max-w-lg mx-auto">Tratamentos naturais e integradores para a saúde do seu animal.</p>
         </div>
       </div>
 
@@ -87,13 +87,13 @@ export default function ProductsPage() {
                   className={`flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-medium transition-all ${activePrice ? 'bg-[#2C4C3B] text-[#F9F6F0]' : 'bg-white/50 border border-[#E0DDD5] text-[#4A6B5A] hover:bg-[#2C4C3B]/5'}`}
                 >
                   <SlidersHorizontal className="w-4 h-4" />
-                  {activePrice ? `R$ ${priceRange[0]} - R$ ${priceRange[1]}` : 'Filtrar por preco'}
+                  {activePrice ? `R$ ${priceRange[0]} - R$ ${priceRange[1]}` : 'Filtrar por preço'}
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-80 bg-white border border-[#E0DDD5] rounded-2xl p-6" align="start">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h4 className="font-['Outfit'] font-medium text-[#1A2E24]">Faixa de Preco</h4>
+                    <h4 className="font-['Outfit'] font-medium text-[#1A2E24]">Faixa de Preço</h4>
                     {activePrice && (
                       <button onClick={clearPriceFilter} className="text-xs text-[#C87A5D] hover:underline">Limpar</button>
                     )}
@@ -176,7 +176,7 @@ export default function ProductsPage() {
                   )}
                   {!product.in_stock && (
                     <div className="absolute inset-0 bg-[#1A2E24]/50 flex items-center justify-center">
-                      <span className="bg-white/90 text-[#1A2E24] text-sm font-bold px-4 py-2 rounded-full">Indisponivel</span>
+                      <span className="bg-white/90 text-[#1A2E24] text-sm font-bold px-4 py-2 rounded-full">Indisponível</span>
                     </div>
                   )}
                 </div>

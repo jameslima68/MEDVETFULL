@@ -106,7 +106,7 @@ export default function AdminPage() {
       <Toaster position="top-right" richColors />
       <div className="bg-[#2C4C3B] py-10 sm:py-14">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#84978F]">Administracao</span>
+          <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#84978F]">Administração</span>
           <h1 className="font-['Outfit'] text-3xl sm:text-4xl font-semibold tracking-tight text-[#F9F6F0] mt-2">Painel Admin</h1>
         </div>
       </div>
@@ -135,7 +135,7 @@ export default function AdminPage() {
 
         <Tabs defaultValue="reports" className="space-y-6">
           <TabsList className="bg-white/60 border border-[#E0DDD5] rounded-xl p-1 h-auto flex-wrap">
-            <TabsTrigger value="reports" data-testid="admin-tab-reports" className="rounded-lg px-4 py-2 text-sm data-[state=active]:bg-[#2C4C3B] data-[state=active]:text-[#F9F6F0]">Relatorios</TabsTrigger>
+            <TabsTrigger value="reports" data-testid="admin-tab-reports" className="rounded-lg px-4 py-2 text-sm data-[state=active]:bg-[#2C4C3B] data-[state=active]:text-[#F9F6F0]">Relatórios</TabsTrigger>
             <TabsTrigger value="products" data-testid="admin-tab-products" className="rounded-lg px-4 py-2 text-sm data-[state=active]:bg-[#2C4C3B] data-[state=active]:text-[#F9F6F0]">Produtos</TabsTrigger>
             <TabsTrigger value="coupons" data-testid="admin-tab-coupons" className="rounded-lg px-4 py-2 text-sm data-[state=active]:bg-[#2C4C3B] data-[state=active]:text-[#F9F6F0]">Cupons</TabsTrigger>
             <TabsTrigger value="consultations" data-testid="admin-tab-consultations" className="rounded-lg px-4 py-2 text-sm data-[state=active]:bg-[#2C4C3B] data-[state=active]:text-[#F9F6F0]">Consultas</TabsTrigger>
@@ -234,7 +234,7 @@ export default function AdminPage() {
                   <input placeholder="Nome" value={productForm.name} onChange={e => setProductForm(f => ({...f, name: e.target.value}))} className={inputCls} data-testid="admin-product-name" />
                   <input placeholder="Preco" type="number" step="0.01" value={productForm.price} onChange={e => setProductForm(f => ({...f, price: e.target.value}))} className={inputCls} data-testid="admin-product-price" />
                   <select value={productForm.category} onChange={e => setProductForm(f => ({...f, category: e.target.value}))} className={inputCls}>
-                    <option value="homeopatia">Homeopatia</option><option value="hormonios">Hormonios</option><option value="medicina-chinesa">Medicina Chinesa</option><option value="cbd">CBD</option><option value="acupuntura">Acupuntura</option><option value="saude-pelos">Saude dos Pelos</option><option value="cromoterapia">Cromoterapia</option>
+                    <option value="homeopatia">Homeopatia</option><option value="hormonios">Hormônios</option><option value="medicina-chinesa">Medicina Chinesa</option><option value="cbd">CBD</option><option value="acupuntura">Acupuntura</option><option value="saúde-pelos">Saúde dos Pelos</option><option value="cromoterapia">Cromoterapia</option>
                   </select>
                   <input placeholder="URL da Imagem" value={productForm.image_url} onChange={e => setProductForm(f => ({...f, image_url: e.target.value}))} className={inputCls} />
                   <div className="flex items-center gap-4">
@@ -282,13 +282,13 @@ export default function AdminPage() {
               <div className="bg-white/80 border border-[#E0DDD5] rounded-2xl p-6 mb-6 space-y-4">
                 <h3 className="font-['Outfit'] text-lg font-medium text-[#1A2E24]">Criar Cupom</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <input placeholder="Codigo (ex: MEDVET20)" value={couponForm.code} onChange={e => setCouponForm(f => ({...f, code: e.target.value}))} className={`${inputCls} uppercase`} data-testid="coupon-code-input" />
+                  <input placeholder="Código (ex: MEDVET20)" value={couponForm.code} onChange={e => setCouponForm(f => ({...f, code: e.target.value}))} className={`${inputCls} uppercase`} data-testid="coupon-code-input" />
                   <select value={couponForm.discount_type} onChange={e => setCouponForm(f => ({...f, discount_type: e.target.value}))} className={inputCls}>
                     <option value="percentage">Porcentagem (%)</option><option value="fixed">Valor Fixo (R$)</option>
                   </select>
                   <input placeholder={couponForm.discount_type === 'percentage' ? 'Desconto (%)' : 'Desconto (R$)'} type="number" step="0.01" value={couponForm.discount_value} onChange={e => setCouponForm(f => ({...f, discount_value: e.target.value}))} className={inputCls} data-testid="coupon-value-input" />
                   <input placeholder="Compra minima (R$)" type="number" step="0.01" value={couponForm.min_purchase} onChange={e => setCouponForm(f => ({...f, min_purchase: e.target.value}))} className={inputCls} />
-                  <input placeholder="Usos maximos" type="number" value={couponForm.max_uses} onChange={e => setCouponForm(f => ({...f, max_uses: e.target.value}))} className={inputCls} />
+                  <input placeholder="Usos máximos" type="number" value={couponForm.max_uses} onChange={e => setCouponForm(f => ({...f, max_uses: e.target.value}))} className={inputCls} />
                   <input placeholder="Descricao" value={couponForm.description} onChange={e => setCouponForm(f => ({...f, description: e.target.value}))} className={inputCls} />
                 </div>
                 <div className="flex gap-3">

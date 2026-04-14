@@ -10,7 +10,7 @@ import {
 } from '../components/ui/dropdown-menu';
 
 const NAV_LINKS = [
-  { label: 'Nossa Missao', href: '/missao' },
+  { label: 'Nossa Missão', href: '/missao' },
   { label: 'Produtos', href: '/produtos' },
 ];
 

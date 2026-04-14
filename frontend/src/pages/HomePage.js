@@ -55,13 +55,13 @@ export default function HomePage() {
             <div className="space-y-8 animate-fade-in-up">
               <div className="inline-flex items-center gap-2 bg-[#2C4C3B]/5 rounded-full px-4 py-2">
                 <Leaf className="w-4 h-4 text-[#2C4C3B]" />
-                <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#84978F]">Medicina Veterinaria Integrativa</span>
+                <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#84978F]">Medicina Veterinária Integrativa</span>
               </div>
               <h1 className="font-['Outfit'] text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-[#1A2E24] leading-[1.1]">
                 Cuidado natural e <span className="text-[#84978F]">integrado</span> para seu pet
               </h1>
               <p className="text-base sm:text-lg leading-relaxed text-[#4A6B5A] max-w-lg">
-                Tratamentos personalizados com homeopatia, acupuntura, CBD e medicina chinesa. Consultas online com especialistas veterinarios.
+                Tratamentos personalizados com homeopatia, acupuntura, CBD e medicina chinesa. Consultas online com especialistas veterinários.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
@@ -111,10 +111,10 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
             {[
-              { icon: Shield, label: 'Veterinarios Especialistas', sub: 'Equipe certificada' },
+              { icon: Shield, label: 'Veterinários Especialistas', sub: 'Equipe certificada' },
               { icon: Truck, label: 'Envio Seguro', sub: 'Para todo Brasil' },
               { icon: Clock, label: 'Consultas Online', sub: 'Sem filas de espera' },
-              { icon: Headphones, label: 'Suporte 24/7', sub: 'Estamos aqui por voce' },
+              { icon: Headphones, label: 'Suporte 24/7', sub: 'Estamos aqui por você' },
             ].map((item, i) => (
               <div key={i} className="flex items-center gap-3 sm:gap-4">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#2C4C3B]/10 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -142,23 +142,23 @@ export default function HomePage() {
             <div className="space-y-6">
               <div className="inline-flex items-center gap-2 bg-[#F9F6F0]/10 backdrop-blur-sm rounded-full px-4 py-2">
                 <Heart className="w-4 h-4 text-[#C87A5D]" />
-                <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#F9F6F0]/80">Nossa Missao</span>
+                <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#F9F6F0]/80">Nossa Missão</span>
               </div>
               <h2 className="font-['Outfit'] text-3xl sm:text-4xl font-medium tracking-tight text-[#F9F6F0]">
-                Conhecimento, paixao e <span className="text-[#C87A5D]">cura milenar</span>
+                Conhecimento, paixão e <span className="text-[#C87A5D]">cura milenar</span>
               </h2>
               <p className="text-[#F9F6F0]/70 leading-relaxed">
-                Nascemos da uniao entre paixao pelos animais e sabedoria ancestral. Resgatamos o poder de cura da <strong className="text-[#F9F6F0]">Ayurveda</strong> e da <strong className="text-[#F9F6F0]">Medicina Tradicional Chinesa</strong> — sistemas milenares que enxergam o ser vivo como um todo — para oferecer tratamentos verdadeiramente integradores ao seu pet.
+                Nascemos da união entre paixão pelos animais e sabedoria ancestral. Resgatamos o poder de cura da <strong className="text-[#F9F6F0]">Ayurveda</strong> e da <strong className="text-[#F9F6F0]">Medicina Tradicional Chinesa</strong> — sistemas milenares que enxergam o ser vivo como um todo — para oferecer tratamentos verdadeiramente integradores ao seu pet.
               </p>
               <p className="text-[#F9F6F0]/70 leading-relaxed">
-                Mais do que tratar sintomas, buscamos o equilibrio natural com <strong className="text-[#F9F6F0]">carinho, amor</strong> e ciencia. Cada animal e unico e merece um cuidado que respeite sua essencia.
+                Mais do que tratar sintomas, buscamos o equilíbrio natural com <strong className="text-[#F9F6F0]">carinho, amor</strong> e ciência. Cada animal é único e merece um cuidado que respeite sua essencia.
               </p>
               <Link
                 to="/missao"
                 data-testid="mission-read-more"
                 className="inline-flex items-center gap-2 bg-[#C87A5D] text-[#F9F6F0] hover:bg-[#B3674C] rounded-full px-7 py-3 font-medium transition-all mt-2"
               >
-                Conheca nossa historia <ChevronRight className="w-4 h-4" />
+                Conheca nossa história <ChevronRight className="w-4 h-4" />
               </Link>
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -166,12 +166,12 @@ export default function HomePage() {
                 <div className="bg-[#F9F6F0]/10 backdrop-blur-sm border border-[#F9F6F0]/10 rounded-2xl p-6 hover:-translate-y-1 transition-all">
                   <Leaf className="w-8 h-8 text-[#C87A5D] mb-3" />
                   <h3 className="font-['Outfit'] text-lg font-medium text-[#F9F6F0] mb-2">Ayurveda</h3>
-                  <p className="text-[#F9F6F0]/60 text-sm">5.000 anos de sabedoria adaptados para a saude do seu pet.</p>
+                  <p className="text-[#F9F6F0]/60 text-sm">5.000 anos de sabedoria adaptados para a saúde do seu pet.</p>
                 </div>
                 <div className="bg-[#F9F6F0]/10 backdrop-blur-sm border border-[#F9F6F0]/10 rounded-2xl p-6 hover:-translate-y-1 transition-all">
                   <Target className="w-8 h-8 text-[#C87A5D] mb-3" />
                   <h3 className="font-['Outfit'] text-lg font-medium text-[#F9F6F0] mb-2">Medicina Chinesa</h3>
-                  <p className="text-[#F9F6F0]/60 text-sm">Acupuntura e fitoterapia para restaurar o equilibrio vital.</p>
+                  <p className="text-[#F9F6F0]/60 text-sm">Acupuntura e fitoterapia para restaurar o equilíbrio vital.</p>
                 </div>
               </div>
               <div className="space-y-4 mt-8">
@@ -183,7 +183,7 @@ export default function HomePage() {
                 <div className="bg-[#F9F6F0]/10 backdrop-blur-sm border border-[#F9F6F0]/10 rounded-2xl p-6 hover:-translate-y-1 transition-all">
                   <Heart className="w-8 h-8 text-[#C87A5D] mb-3" />
                   <h3 className="font-['Outfit'] text-lg font-medium text-[#F9F6F0] mb-2">Amor & Cuidado</h3>
-                  <p className="text-[#F9F6F0]/60 text-sm">Tratar com carinho e o primeiro passo para a cura.</p>
+                  <p className="text-[#F9F6F0]/60 text-sm">Tratar com carinho é o primeiro passo para a cura.</p>
                 </div>
               </div>
             </div>
@@ -290,13 +290,13 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#84978F]">Como Funciona</span>
-            <h2 className="font-['Outfit'] text-3xl sm:text-4xl font-medium tracking-tight text-[#1A2E24] mt-3">Simples e pratico</h2>
+            <h2 className="font-['Outfit'] text-3xl sm:text-4xl font-medium tracking-tight text-[#1A2E24] mt-3">Simples e prático</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               { step: '01', title: 'Escolha o Tratamento', desc: 'Navegue pelas categorias e encontre o tratamento ideal para seu pet.' },
-              { step: '02', title: 'Consulte um Especialista', desc: 'Agende uma consulta online com nossos veterinarios especializados.' },
-              { step: '03', title: 'Receba em Casa', desc: 'Seus produtos manipulados sao enviados com seguranca para todo o Brasil.' },
+              { step: '02', title: 'Consulte um Especialista', desc: 'Agende uma consulta online com nossos veterinários especializados.' },
+              { step: '03', title: 'Receba em Casa', desc: 'Seus produtos manipulados são enviados com segurança para todo o Brasil.' },
             ].map((item, i) => (
               <div key={i} className="text-center space-y-4 group">
                 <div className="w-16 h-16 bg-[#2C4C3B] rounded-2xl flex items-center justify-center mx-auto group-hover:-translate-y-1 transition-transform">
@@ -405,7 +405,7 @@ export default function HomePage() {
             Pronto para cuidar melhor do seu pet?
           </h2>
           <p className="text-[#F9F6F0]/70 mb-8 max-w-lg mx-auto">
-            Agende uma consulta com nossos especialistas e descubra o poder da medicina veterinaria integrativa.
+            Agende uma consulta com nossos especialistas e descubra o poder da medicina veterinária integrativa.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link

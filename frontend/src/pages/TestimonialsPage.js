@@ -32,7 +32,7 @@ export default function TestimonialsPage() {
   const handlePhoto = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) { toast.error('Imagem deve ter no maximo 2MB'); return; }
+    if (file.size > 2 * 1024 * 1024) { toast.error('Imagem deve ter no máximo 2MB'); return; }
     const reader = new FileReader();
     reader.onloadend = () => {
       setPhoto(reader.result);
@@ -66,7 +66,7 @@ export default function TestimonialsPage() {
       <div className="bg-[#2C4C3B] py-16 sm:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#84978F]">Depoimentos</span>
-          <h1 className="font-['Outfit'] text-4xl sm:text-5xl font-semibold tracking-tight text-[#F9F6F0] mt-3">Historias de Amor e Cura</h1>
+          <h1 className="font-['Outfit'] text-4xl sm:text-5xl font-semibold tracking-tight text-[#F9F6F0] mt-3">Histórias de Amor e Cura</h1>
           <p className="text-[#F9F6F0]/70 mt-4 max-w-lg mx-auto">Depoimentos reais de tutores que transformaram a vida dos seus pets.</p>
         </div>
       </div>
@@ -79,14 +79,14 @@ export default function TestimonialsPage() {
             data-testid="submit-testimonial-btn"
             className="bg-[#C87A5D] text-[#F9F6F0] hover:bg-[#B3674C] rounded-full px-8 py-3.5 font-medium transition-all inline-flex items-center gap-2"
           >
-            <Send className="w-4 h-4" /> Compartilhe sua historia
+            <Send className="w-4 h-4" /> Compartilhe sua história
           </button>
         </div>
 
         {/* Submit Form */}
         {showForm && !submitted && (
           <div className="bg-white/60 backdrop-blur-sm border border-[#E0DDD5] rounded-3xl p-8 mb-12 max-w-2xl mx-auto" data-testid="testimonial-form">
-            <h3 className="font-['Outfit'] text-xl font-medium text-[#1A2E24] mb-6">Conte sua experiencia</h3>
+            <h3 className="font-['Outfit'] text-xl font-medium text-[#1A2E24] mb-6">Conte sua experiência</h3>
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -95,13 +95,13 @@ export default function TestimonialsPage() {
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-[#1A2E24]">Seu Pet *</label>
-                  <input required value={form.pet} onChange={e => setForm(f => ({...f, pet: e.target.value}))} data-testid="testimonial-pet" className="w-full bg-white/50 border border-[#E0DDD5] focus:border-[#84978F] focus:ring-1 focus:ring-[#84978F] rounded-xl px-4 py-3 text-[#1A2E24] text-sm outline-none" placeholder="Nome e raca (ex: Luna, Golden)" />
+                  <input required value={form.pet} onChange={e => setForm(f => ({...f, pet: e.target.value}))} data-testid="testimonial-pet" className="w-full bg-white/50 border border-[#E0DDD5] focus:border-[#84978F] focus:ring-1 focus:ring-[#84978F] rounded-xl px-4 py-3 text-[#1A2E24] text-sm outline-none" placeholder="Nome e raça (ex: Luna, Golden)" />
                 </div>
               </div>
 
               {/* Rating */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-[#1A2E24]">Avaliacao *</label>
+                <label className="text-sm font-medium text-[#1A2E24]">Avaliação *</label>
                 <div className="flex gap-1">
                   {[1,2,3,4,5].map(s => (
                     <button key={s} type="button" onClick={() => setForm(f => ({...f, rating: s}))} data-testid={`star-${s}`} className="p-1 transition-transform hover:scale-110">
@@ -136,7 +136,7 @@ export default function TestimonialsPage() {
 
               {/* Video URL */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-[#1A2E24]">Video depoimento - YouTube (opcional)</label>
+                <label className="text-sm font-medium text-[#1A2E24]">Vídeo depoimento - YouTube (opcional)</label>
                 <div className="flex items-center gap-2">
                   <Video className="w-4 h-4 text-[#84978F]" />
                   <input value={videoUrl} onChange={e => setVideoUrl(e.target.value)} data-testid="video-url-input" placeholder="https://www.youtube.com/watch?v=..." className="flex-1 bg-white/50 border border-[#E0DDD5] focus:border-[#84978F] focus:ring-1 focus:ring-[#84978F] rounded-xl px-4 py-3 text-[#1A2E24] text-sm outline-none" />
@@ -155,7 +155,7 @@ export default function TestimonialsPage() {
           <div className="bg-white/60 border border-[#E0DDD5] rounded-3xl p-10 mb-12 max-w-md mx-auto text-center">
             <CheckCircle2 className="w-12 h-12 text-[#2C4C3B] mx-auto mb-4" />
             <h3 className="font-['Outfit'] text-xl font-semibold text-[#1A2E24] mb-2">Obrigado!</h3>
-            <p className="text-[#4A6B5A]">Seu depoimento foi enviado e sera publicado apos aprovacao.</p>
+            <p className="text-[#4A6B5A]">Seu depoimento foi enviado e será publicado após aprovação.</p>
           </div>
         )}
 
@@ -170,7 +170,7 @@ export default function TestimonialsPage() {
               <div key={t.id} data-testid={`testimonial-${t.id}`} className="bg-white/60 backdrop-blur-sm border border-[#E0DDD5] rounded-3xl overflow-hidden shadow-[0_8px_32px_rgba(44,76,59,0.04)]">
                 {youtubeId && (
                   <div className="relative aspect-video">
-                    <iframe src={`https://www.youtube.com/embed/${youtubeId}`} title="Video depoimento" className="w-full h-full" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+                    <iframe src={`https://www.youtube.com/embed/${youtubeId}`} title="Vídeo depoimento" className="w-full h-full" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
                   </div>
                 )}
                 <div className="p-8">

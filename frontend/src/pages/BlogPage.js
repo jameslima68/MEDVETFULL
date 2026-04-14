@@ -14,7 +14,7 @@ const CATEGORIES = [
   { id: 'florais', label: 'Florais' },
   { id: 'fisioterapia', label: 'Fisioterapia' },
   { id: 'regenerativa', label: 'Regenerativa' },
-  { id: 'nutricao', label: 'Nutricao' },
+  { id: 'nutrição', label: 'Nutricao' },
 ];
 
 function BlogArticle() {
@@ -30,7 +30,7 @@ function BlogArticle() {
   }, [id]);
 
   if (loading) return <div className="min-h-screen bg-[#F9F6F0] flex items-center justify-center"><div className="w-8 h-8 border-2 border-[#2C4C3B] border-t-transparent rounded-full animate-spin" /></div>;
-  if (!article) return <div className="min-h-screen bg-[#F9F6F0] flex items-center justify-center text-[#4A6B5A]">Artigo nao encontrado.</div>;
+  if (!article) return <div className="min-h-screen bg-[#F9F6F0] flex items-center justify-center text-[#4A6B5A]">Artigo não encontrado.</div>;
 
   return (
     <div data-testid="blog-article-page" className="min-h-screen bg-[#F9F6F0]">
@@ -94,7 +94,7 @@ function BlogList() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#84978F]">Blog</span>
           <h1 className="font-['Outfit'] text-4xl sm:text-5xl font-semibold tracking-tight text-[#F9F6F0] mt-3">Artigos Completos</h1>
-          <p className="text-[#F9F6F0]/70 mt-4 max-w-lg mx-auto">Conteudo aprofundado sobre cada terapia integrativa, escrito por nossos especialistas.</p>
+          <p className="text-[#F9F6F0]/70 mt-4 max-w-lg mx-auto">Conteúdo aprofundado sobre cada terapia integrativa, escrito por nossos especialistas.</p>
         </div>
       </div>
 

@@ -14,15 +14,15 @@ const TIME_SLOTS = [
 ];
 
 const CATEGORIES = [
-  { value: 'homeopatia', label: 'Homeopatia Veterinaria' },
-  { value: 'hormonios', label: 'Hormonios Bioidenticos' },
+  { value: 'homeopatia', label: 'Homeopatia Veterinária' },
+  { value: 'hormonios', label: 'Hormônios Bioidênticos' },
   { value: 'medicina-chinesa', label: 'Medicina Chinesa' },
   { value: 'cbd', label: 'CBD para Pets' },
-  { value: 'acupuntura', label: 'Acupuntura Veterinaria' },
+  { value: 'acupuntura', label: 'Acupuntura Veterinária' },
 ];
 
 const PET_TYPES = [
-  { value: 'cao', label: 'Cao' },
+  { value: 'cao', label: 'Cão' },
   { value: 'gato', label: 'Gato' },
   { value: 'ave', label: 'Ave' },
   { value: 'equino', label: 'Equino' },
@@ -48,7 +48,7 @@ export default function ConsultationPage() {
       return;
     }
     if (!form.time) {
-      toast.error('Selecione um horario');
+      toast.error('Selecione um horário');
       return;
     }
     setLoading(true);
@@ -77,7 +77,7 @@ export default function ConsultationPage() {
           <h2 className="font-['Outfit'] text-2xl font-semibold text-[#1A2E24] mb-3">Consulta Agendada!</h2>
           <p className="text-[#4A6B5A] mb-2">Sua consulta foi agendada para:</p>
           <p className="font-semibold text-[#2C4C3B]">{date && format(date, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })} as {form.time}</p>
-          <p className="text-sm text-[#84978F] mt-4">Voce recebera um e-mail de confirmacao com os detalhes da consulta.</p>
+          <p className="text-sm text-[#84978F] mt-4">Você receberá um e-mail de confirmação com os detalhes da consulta.</p>
           <button
             onClick={() => { setSubmitted(false); setForm({ name: '', email: '', phone: '', pet_name: '', pet_type: '', pet_age: '', category: '', time: '', notes: '' }); setDate(null); }}
             data-testid="new-consultation-btn"
@@ -98,7 +98,7 @@ export default function ConsultationPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#84978F]">Consultas Online</span>
           <h1 className="font-['Outfit'] text-4xl sm:text-5xl font-semibold tracking-tight text-[#F9F6F0] mt-3">Agendar Consulta</h1>
-          <p className="text-[#F9F6F0]/70 mt-4 max-w-lg mx-auto">Atendimento personalizado com veterinarios especializados em medicina integrativa.</p>
+          <p className="text-[#F9F6F0]/70 mt-4 max-w-lg mx-auto">Atendimento personalizado com veterinários especializados em medicina integrativa.</p>
         </div>
       </div>
 
@@ -223,7 +223,7 @@ export default function ConsultationPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-[#1A2E24]">Horario *</label>
+              <label className="text-sm font-medium text-[#1A2E24]">Horário *</label>
               <div className="grid grid-cols-4 gap-2">
                 {TIME_SLOTS.map(t => (
                   <button
@@ -243,7 +243,7 @@ export default function ConsultationPage() {
 
           {/* Notes */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-[#1A2E24]">Observacoes</label>
+            <label className="text-sm font-medium text-[#1A2E24]">Observações</label>
             <textarea
               data-testid="consultation-notes"
               value={form.notes}

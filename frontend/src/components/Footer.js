@@ -25,7 +25,7 @@ export default function Footer() {
           <div>
             <h4 className="font-['Outfit'] font-medium text-sm mb-4 text-[#F9F6F0]/90">Tratamentos</h4>
             <ul className="space-y-2.5">
-              {['Homeopatia', 'Hormonios Bioidenticos', 'Medicina Chinesa', 'CBD para Pets', 'Acupuntura', 'Saude dos Pelos', 'Cromoterapia'].map(item => (
+              {['Homeopatia', 'Hormônios Bioidênticos', 'Medicina Chinesa', 'CBD para Pets', 'Acupuntura', 'Saúde dos Pelos', 'Cromoterapia'].map(item => (
                 <li key={item}>
                   <Link to="/produtos" className="text-sm text-[#F9F6F0]/60 hover:text-[#F9F6F0] transition-colors">{item}</Link>
                 </li>
@@ -38,7 +38,7 @@ export default function Footer() {
           <div>
             <h4 className="font-['Outfit'] font-medium text-sm mb-4 text-[#F9F6F0]/90">Empresa</h4>
             <ul className="space-y-2.5">
-              <li><Link to="/missao" className="text-sm text-[#F9F6F0]/60 hover:text-[#F9F6F0] transition-colors">Nossa Missao</Link></li>
+              <li><Link to="/missao" className="text-sm text-[#F9F6F0]/60 hover:text-[#F9F6F0] transition-colors">Nossa Missão</Link></li>
               <li><Link to="/guia-pelagem" className="text-sm text-[#F9F6F0]/60 hover:text-[#F9F6F0] transition-colors">Guia de Pelagem</Link></li>
               <li><Link to="/assinaturas" className="text-sm text-[#F9F6F0]/60 hover:text-[#F9F6F0] transition-colors">Assinaturas</Link></li>
               <li><Link to="/dicas" className="text-sm text-[#F9F6F0]/60 hover:text-[#F9F6F0] transition-colors">Blog & Dicas</Link></li>
@@ -58,7 +58,7 @@ export default function Footer() {
                 <Mail className="w-4 h-4 flex-shrink-0" /> contato@medvetintegrativa.com
               </li>
               <li className="flex items-start gap-2 text-sm text-[#F9F6F0]/60">
-                <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5" /> Sao Paulo, SP - Brasil
+                <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5" /> São Paulo, SP - Brasil
               </li>
             </ul>
           </div>

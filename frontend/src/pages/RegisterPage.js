@@ -84,7 +84,7 @@ export default function RegisterPage() {
             <div className="relative">
               <input type={showPass ? 'text' : 'password'} required data-testid="register-password" value={password} onChange={e => setPassword(e.target.value)}
                 className="w-full bg-white/50 border border-[#E0DDD5] focus:border-[#84978F] focus:ring-1 focus:ring-[#84978F] rounded-xl px-4 py-3 pr-11 text-[#1A2E24] text-sm outline-none transition-all"
-                placeholder="Minimo 6 caracteres" />
+                placeholder="Mínimo 6 caracteres" />
               <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#84978F]">
                 {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -97,7 +97,7 @@ export default function RegisterPage() {
           </button>
 
           <p className="text-center text-sm text-[#4A6B5A]">
-            Ja tem conta?{' '}
+            Já tem conta?{' '}
             <Link to="/login" data-testid="login-link" className="text-[#2C4C3B] font-medium hover:underline">Entrar</Link>
           </p>
         </form>

@@ -19,13 +19,13 @@ export default function MissionPage() {
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
               <Heart className="w-4 h-4 text-[#C87A5D]" />
-              <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#F9F6F0]/80">Nossa Missao</span>
+              <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#F9F6F0]/80">Nossa Missão</span>
             </div>
             <h1 className="font-['Outfit'] text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-[#F9F6F0] leading-[1.1]">
               Amor, conhecimento e <span className="text-[#C87A5D]">cura natural</span>
             </h1>
             <p className="text-lg sm:text-xl text-[#F9F6F0]/80 mt-6 leading-relaxed">
-              Nascemos da uniao entre paixao pelos animais e a sabedoria de medicinas milenares para transformar a saude veterinaria.
+              Nascemos da união entre paixão pelos animais e a sabedoria de medicinas milenares para transformar a saúde veterinária.
             </p>
           </div>
         </div>
@@ -38,17 +38,17 @@ export default function MissionPage() {
             <div className="space-y-8">
               <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#84978F]">Quem Somos</span>
               <h2 className="font-['Outfit'] text-3xl sm:text-4xl font-medium tracking-tight text-[#1A2E24]">
-                A MEDVET Integrativa nasceu de um proposito profundo
+                A MEDVET Integrativa nasceu de um propósito profundo
               </h2>
               <div className="space-y-5 text-[#4A6B5A] leading-relaxed">
                 <p>
-                  Acreditamos que cada animal merece ser tratado com o mesmo carinho, respeito e dedicacao que dedicamos aos seres que mais amamos. A MEDVET Integrativa nasceu da convergencia entre <strong className="text-[#1A2E24]">conhecimento cientifico</strong>, <strong className="text-[#1A2E24]">paixao genuina pelos pets</strong> e a sabedoria ancestral de medicinas que curam ha milhares de anos.
+                  Acreditamos que cada animal merece ser tratado com o mesmo carinho, respeito e dedicação que dedicamos aos seres que mais amamos. A MEDVET Integrativa nasceu da convergencia entre <strong className="text-[#1A2E24]">conhecimento científico</strong>, <strong className="text-[#1A2E24]">paixão genuina pelos pets</strong> e a sabedoria ancestral de medicinas que curam há milhares de anos.
                 </p>
                 <p>
-                  Nossa missao e resgatar o poder de cura da <strong className="text-[#1A2E24]">Ayurveda</strong> e da <strong className="text-[#1A2E24]">Medicina Tradicional Chinesa</strong> — sistemas milenares que enxergam o ser vivo como um todo integrado — e adapta-los com rigor cientifico para o universo veterinario. Nao tratamos apenas sintomas: buscamos a raiz do desequilibrio, respeitando a natureza unica de cada animal.
+                  Nossa missão e resgatar o poder de cura da <strong className="text-[#1A2E24]">Ayurveda</strong> e da <strong className="text-[#1A2E24]">Medicina Tradicional Chinesa</strong> — sistemas milenares que enxergam o ser vivo como um todo integrado — e adapta-los com rigor científico para o universo veterinário. Não tratamos apenas sintomas: buscamos a raiz do desequilíbrio, respeitando a natureza unica de cada animal.
                 </p>
                 <p>
-                  Mais do que oferecer produtos e tratamentos, queremos ser uma <strong className="text-[#1A2E24]">fonte de conhecimento e acolhimento</strong> para tutores que desejam cuidar de seus companheiros de forma mais consciente, natural e amorosa. Cada consulta, cada formula manipulada, cada dica que compartilhamos carrega o mesmo principio: <strong className="text-[#C87A5D]">tratar com carinho e amor e o primeiro passo para a verdadeira cura.</strong>
+                  Mais do que oferecer produtos e tratamentos, queremos ser uma <strong className="text-[#1A2E24]">fonte de conhecimento e acolhimento</strong> para tutores que desejam cuidar de seus companheiros de forma mais consciente, natural e amorosa. Cada consulta, cada formula manipulada, cada dica que compartilhamos carrega o mesmo principio: <strong className="text-[#C87A5D]">tratar com carinho e amor é o primeiro passo para a verdadeira cura.</strong>
                 </p>
               </div>
             </div>
@@ -80,18 +80,18 @@ export default function MissionPage() {
             {[
               {
                 icon: Heart,
-                title: 'Amor e Compaixao',
-                desc: 'Cada animal que chega ate nos e tratado como se fosse nosso. O amor e a base de tudo que fazemos — da formulacao dos produtos ao atendimento online.'
+                title: 'Amor e Compaixão',
+                desc: 'Cada animal que chega até nós é tratado como se fosse nosso. O amor é a base de tudo que fazemos — da formulação dos produtos ao atendimento online.'
               },
               {
                 icon: Leaf,
                 title: 'Sabedoria Milenar',
-                desc: 'Resgatamos conhecimentos da Ayurveda, Medicina Chinesa e outras tradicoes ancestrais que entendem a saude como equilibrio entre corpo, mente e espirito.'
+                desc: 'Resgatamos conhecimentos da Ayurveda, Medicina Chinesa e outras tradições ancestrais que entendem a saúde como equilíbrio entre corpo, mente e espírito.'
               },
               {
                 icon: Sparkles,
-                title: 'Ciencia e Natureza',
-                desc: 'Unimos o rigor da ciencia moderna com o poder da natureza. Nossos tratamentos sao validados cientificamente e formulados com ingredientes naturais de alta qualidade.'
+                title: 'Ciência e Natureza',
+                desc: 'Unimos o rigor da ciência moderna com o poder da natureza. Nossos tratamentos são validados cientificamente e formulados com ingredientes naturais de alta qualidade.'
               },
             ].map((v, i) => (
               <div key={i} className="bg-[#F9F6F0]/5 backdrop-blur-sm border border-[#F9F6F0]/10 rounded-3xl p-8 hover:-translate-y-1 transition-all duration-300">
@@ -127,13 +127,13 @@ export default function MissionPage() {
               </h2>
               <div className="space-y-5 text-[#4A6B5A] leading-relaxed">
                 <p>
-                  A <strong className="text-[#1A2E24]">Ayurveda</strong>, com mais de 5.000 anos de historia, nos ensina que a saude e o equilibrio entre os elementos naturais. Adaptamos seus principios para compreender a constituicao unica de cada animal e oferecer tratamentos verdadeiramente personalizados.
+                  A <strong className="text-[#1A2E24]">Ayurveda</strong>, com mais de 5.000 anos de história, nos ensina que a saúde e o equilíbrio entre os elementos naturais. Adaptamos seus princípios para compreender a constituição unica de cada animal e oferecer tratamentos verdadeiramente personalizados.
                 </p>
                 <p>
-                  Da <strong className="text-[#1A2E24]">Medicina Tradicional Chinesa</strong>, herdamos a visao holistica que integra acupuntura, fitoterapia e formulas manipuladas para restaurar o fluxo vital de energia — tratando nao apenas o corpo, mas tambem o emocional do animal.
+                  Da <strong className="text-[#1A2E24]">Medicina Tradicional Chinesa</strong>, herdamos a visao holística que integra acupuntura, fitoterapia e fórmulas manipuladas para restaurar o fluxo vital de energia — tratando nao apenas o corpo, mas tambem o emocional do animal.
                 </p>
                 <p>
-                  Combinamos essas tradicoes com <strong className="text-[#1A2E24]">homeopatia, hormonios bioidenticos e CBD</strong>, criando protocolos integradores que respeitam a individualidade de cada pet. Porque nao existe tratamento unico — existe o tratamento certo para cada ser.
+                  Combinamos essas tradições com <strong className="text-[#1A2E24]">homeopatia, hormonios bioidenticos e CBD</strong>, criando protocolos integradores que respeitam a individualidade de cada pet. Porque nao existe tratamento único — existe o tratamento certo para cada ser.
                 </p>
               </div>
             </div>
@@ -147,15 +147,15 @@ export default function MissionPage() {
           <div className="text-center mb-16">
             <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#84978F]">Nosso Compromisso</span>
             <h2 className="font-['Outfit'] text-3xl sm:text-4xl font-medium tracking-tight text-[#1A2E24] mt-3">
-              O que voce pode esperar de nos
+              O que você pode esperar de nos
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: BookOpen, title: 'Educacao', desc: 'Conteudo gratuito e acessivel para que voce entenda os tratamentos e cuide melhor do seu pet.' },
-              { icon: Users, title: 'Acolhimento', desc: 'Cada tutor e ouvido com atencao. Entendemos a preocupacao com quem voce ama.' },
-              { icon: Globe, title: 'Acessibilidade', desc: 'Consultas 100% online, envio para todo o Brasil e precos justos para tratamentos de qualidade.' },
-              { icon: Leaf, title: 'Transparencia', desc: 'Sabemos a origem de cada ingrediente. Voce sabe exatamente o que seu pet esta recebendo.' },
+              { icon: BookOpen, title: 'Educação', desc: 'Conteúdo gratuito e acessível para que você entenda os tratamentos e cuide melhor do seu pet.' },
+              { icon: Users, title: 'Acolhimento', desc: 'Cada tutor é ouvido com atenção. Entendemos a preocupação com quem você ama.' },
+              { icon: Globe, title: 'Acessibilidade', desc: 'Consultas 100% online, envio para todo o Brasil e preços justos para tratamentos de qualidade.' },
+              { icon: Leaf, title: 'Transparência', desc: 'Sabemos a origem de cada ingrediente. Você sabe exatamente o que seu pet está recebendo.' },
             ].map((item, i) => (
               <div key={i} className="bg-white/60 backdrop-blur-sm border border-[#E0DDD5] rounded-3xl p-8 text-center hover:-translate-y-1 transition-all duration-300">
                 <div className="w-12 h-12 bg-[#2C4C3B]/10 rounded-xl flex items-center justify-center mx-auto mb-4">
@@ -174,7 +174,7 @@ export default function MissionPage() {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Heart className="w-10 h-10 text-[#C87A5D] mx-auto mb-6" />
           <h2 className="font-['Outfit'] text-3xl sm:text-4xl font-medium tracking-tight text-[#F9F6F0] mb-4">
-            Vamos juntos cuidar de quem voce ama?
+            Vamos juntos cuidar de quem você ama?
           </h2>
           <p className="text-[#F9F6F0]/70 mb-8 max-w-lg mx-auto leading-relaxed">
             Agende uma consulta com nossos especialistas e descubra como a medicina integrativa pode transformar a vida do seu pet.

@@ -18,7 +18,7 @@ function TipDetail() {
   }, [id]);
 
   if (loading) return <div className="min-h-screen bg-[#F9F6F0] flex items-center justify-center"><div className="w-8 h-8 border-2 border-[#2C4C3B] border-t-transparent rounded-full animate-spin" /></div>;
-  if (!tip) return <div className="min-h-screen bg-[#F9F6F0] flex items-center justify-center text-[#4A6B5A]">Artigo nao encontrado.</div>;
+  if (!tip) return <div className="min-h-screen bg-[#F9F6F0] flex items-center justify-center text-[#4A6B5A]">Artigo não encontrado.</div>;
 
   return (
     <div data-testid="tip-detail-page" className="min-h-screen bg-[#F9F6F0]">
@@ -64,7 +64,7 @@ function TipsList() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#84978F]">Blog</span>
           <h1 className="font-['Outfit'] text-4xl sm:text-5xl font-semibold tracking-tight text-[#F9F6F0] mt-3">Dicas de Especialistas</h1>
-          <p className="text-[#F9F6F0]/70 mt-4 max-w-lg mx-auto">Conteudo educacional sobre medicina veterinaria integrativa.</p>
+          <p className="text-[#F9F6F0]/70 mt-4 max-w-lg mx-auto">Conteúdo educacional sobre medicina veterinária integrativa.</p>
         </div>
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

@@ -4,24 +4,24 @@ import { Star, Mail, Phone, Award, Heart, MapPin } from 'lucide-react';
 const MENTOR = {
   name: 'Dra. Tabatha Novikov',
   role: 'Mentora & Fundadora',
-  specialty: 'Medicina Veterinaria Integrativa',
+  specialty: 'Medicina Veterinária Integrativa',
   crmv: 'CRMV-SP 21194',
-  location: 'Sao Paulo - SP',
-  bio: 'Visionaria e apaixonada pela saude animal, a Dra. Tabatha Novikov e a mente e o coracao por tras da MEDVET Integrativa. Com formacao em Medicina Veterinaria e especializacoes em Acupuntura, Medicina Tradicional Chinesa, Fitoterapia, Homeopatia e Terapias Bioenergeticas, Tabatha dedicou sua carreira a integrar o melhor da ciencia moderna com a sabedoria milenar das medicinas ancestrais. Sua abordagem unica combina diagnostico energetico, tratamentos personalizados e um profundo respeito pela individualidade de cada animal. Acredita que a verdadeira cura comeca pelo amor e que cada pet merece ser tratado como um ser completo — corpo, mente e espirito.',
-  philosophy: 'Minha missao e mostrar que existe um caminho mais natural, mais humano e mais eficaz de cuidar dos nossos companheiros. A medicina integrativa nao nega a ciencia — ela a amplia com milhares de anos de sabedoria.',
-  specialties: ['Acupuntura & MTC', 'Fitoterapia Chinesa', 'Homeopatia', 'Ozonioterapia', 'Terapia Neural', 'Nutricao Funcional'],
+  location: 'São Paulo - SP',
+  bio: 'Visionária e apaixonada pela saúde animal, a Dra. Tabatha Novikov é a mente e o coração por tras da MEDVET Integrativa. Com formação em Medicina Veterinária e especializações em Acupuntura, Medicina Tradicional Chinesa, Fitoterapia, Homeopatia e Terapias Bioenergéticas, Tabatha dedicou sua carreira a integrar o melhor da ciência moderna com a sabedoria milenar das medicinas ancestrais. Sua abordagem unica combina diagnóstico energético, tratamentos personalizados e um profundo respeito pela individualidade de cada animal. Acredita que a verdadeira cura começa pelo amor e que cada pet merece ser tratado como um ser completo — corpo, mente e espírito.',
+  philosophy: 'Minha missão é mostrar que existe um caminho mais natural, mais humano e mais eficaz de cuidar dos nossos companheiros. A medicina integrativa não nega a ciência — ela a amplia com milhares de anos de sabedoria.',
+  specialties: ['Acupuntura & MTC', 'Fitoterapia Chinesa', 'Homeopatia', 'Ozonioterapia', 'Terapia Neural', 'Nutrição Funcional'],
   email: 'tabatha@medvetintegrativa.com',
   phone: '(11) 99999-0001',
   image: 'https://customer-assets.emergentagent.com/job_holistic-vet-shop/artifacts/ausjnm3m_Tabatha%20Novikok.webp'
 };
 
 const TEAM = [
-  { name: 'Dr. Paulo Henrique Viana', specialty: 'Acupuntura & Eletroacupuntura', bio: 'Especialista em acupuntura veterinaria com mais de 12 anos de experiencia. Formado pela ANCLIVEPA-SP em MTC, atua com foco em dor cronica, reabilitacao neurologica e displasia.', crmv: 'CRMV-SP 00001', email: 'paulo@medvetintegrativa.com', phone: '(11) 99999-0002', image: 'https://images.unsplash.com/photo-1770836037816-4445dbd449fd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTB8MHwxfHNlYXJjaHw0fHx2ZXRlcmluYXJpYW4lMjBtYW4lMjBwcm9mZXNzaW9uYWwlMjBwb3J0cmFpdCUyMGRvY3RvciUyMHBldHxlbnwwfHx8fDE3NzYxOTAyMjB8MA&ixlib=rb-4.1.0&q=85', color: 'bg-[#2C4C3B]' },
-  { name: 'Dra. Camila Santos', specialty: 'CBD & Fitoterapia', bio: 'Pioneira no uso terapeutico de CBD veterinario no Brasil. Pesquisadora em canabinoides e fitoterapia chinesa, com especializacao em manejo de dor e epilepsia refrataria.', crmv: 'CRMV-RJ 00002', email: 'camila@medvetintegrativa.com', phone: '(11) 99999-0003', image: 'https://images.unsplash.com/photo-1638202993928-7267aad84c31?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHwxfHx2ZXRlcmluYXJpYW4lMjBwb3J0cmFpdCUyMHByb2Zlc3Npb25hbCUyMHdvbWFuJTIwZG9jdG9yJTIwY2xpbmljfGVufDB8fHx8MTc3NjE5MDIyMXww&ixlib=rb-4.1.0&q=85', color: 'bg-[#84978F]' },
-  { name: 'Dra. Juliana Ferreira', specialty: 'Nutricao Funcional & Ayurveda', bio: 'Formada em nutricao veterinaria integrativa com especializacao em dietoterapia chinesa e principios ayurvedicos. Referencia em saude da pelagem e nutricao personalizada.', crmv: 'CRMV-MG 00003', email: 'juliana@medvetintegrativa.com', phone: '(11) 99999-0004', image: 'https://images.unsplash.com/photo-1638202993928-7267aad84c31?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHwxfHx2ZXRlcmluYXJpYW4lMjBwb3J0cmFpdCUyMHByb2Zlc3Npb25hbCUyMHdvbWFuJTIwZG9jdG9yJTIwY2xpbmljfGVufDB8fHx8MTc3NjE5MDIyMXww&ixlib=rb-4.1.0&q=85', color: 'bg-[#C87A5D]' },
-  { name: 'Dr. Ricardo Lima', specialty: 'Fisioterapia & Reabilitacao', bio: 'Especialista em fisioterapia veterinaria, hidroterapia e quiropraxia animal. Foco em reabilitacao pos-cirurgica, paralisia e mobilidade de pets idosos.', crmv: 'CRMV-SP 00004', email: 'ricardo@medvetintegrativa.com', phone: '(11) 99999-0005', image: 'https://images.unsplash.com/photo-1596058939740-516d0d71f3d4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTB8MHwxfHNlYXJjaHwyfHx2ZXRlcmluYXJpYW4lMjBtYW4lMjBwcm9mZXNzaW9uYWwlMjBwb3J0cmFpdCUyMGRvY3RvciUyMHBldHxlbnwwfHx8fDE3NzYxOTAyMjB8MA&ixlib=rb-4.1.0&q=85', color: 'bg-[#A4B8C4]' },
-  { name: 'Dra. Renata Campos', specialty: 'Cromoterapia & Florais', bio: 'Terapeuta holisticacom formacao em cromoterapia, florais de Bach e Reiki animal. Atua com equilibrio emocional, traumas comportamentais e terapias energeticas.', crmv: 'CRMV-PR 00005', email: 'renata@medvetintegrativa.com', phone: '(11) 99999-0006', image: 'https://images.unsplash.com/photo-1638202993928-7267aad84c31?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHwxfHx2ZXRlcmluYXJpYW4lMjBwb3J0cmFpdCUyMHByb2Zlc3Npb25hbCUyMHdvbWFuJTIwZG9jdG9yJTIwY2xpbmljfGVufDB8fHx8MTc3NjE5MDIyMXww&ixlib=rb-4.1.0&q=85', color: 'bg-[#84978F]' },
-  { name: 'Dr. Fernando Costa', specialty: 'Ozonioterapia & Terapias Avancadas', bio: 'Especialista em ozonioterapia, laserterapia, magnetoterapia e PRP veterinario. Referencia em terapias regenerativas e tratamento de feridas complexas.', crmv: 'CRMV-SP 00006', email: 'fernando@medvetintegrativa.com', phone: '(11) 99999-0007', image: 'https://images.unsplash.com/photo-1770836037793-95bdbf190f71?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTB8MHwxfHNlYXJjaHwxfHx2ZXRlcmluYXJpYW4lMjBtYW4lMjBwcm9mZXNzaW9uYWwlMjBwb3J0cmFpdCUyMGRvY3RvciUyMHBldHxlbnwwfHx8fDE3NzYxOTAyMjB8MA&ixlib=rb-4.1.0&q=85', color: 'bg-[#2C4C3B]' },
+  { name: 'Dr. Paulo Henrique Viana', specialty: 'Acupuntura & Eletroacupuntura', bio: 'Especialista em acupuntura veterinária com mais de 12 anos de experiência. Formado pela ANCLIVEPA-SP em MTC, atua com foco em dor crônica, reabilitação neurológica e displasia.', crmv: 'CRMV-SP 00001', email: 'paulo@medvetintegrativa.com', phone: '(11) 99999-0002', image: 'https://images.unsplash.com/photo-1770836037816-4445dbd449fd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTB8MHwxfHNlYXJjaHw0fHx2ZXRlcmluYXJpYW4lMjBtYW4lMjBwcm9mZXNzaW9uYWwlMjBwb3J0cmFpdCUyMGRvY3RvciUyMHBldHxlbnwwfHx8fDE3NzYxOTAyMjB8MA&ixlib=rb-4.1.0&q=85', color: 'bg-[#2C4C3B]' },
+  { name: 'Dra. Camila Santos', specialty: 'CBD & Fitoterapia', bio: 'Pioneira no uso terapêutico de CBD veterinário no Brasil. Pesquisadora em canabinoides e fitoterapia chinesa, com especialização em manejo de dor e epilepsia refratária.', crmv: 'CRMV-RJ 00002', email: 'camila@medvetintegrativa.com', phone: '(11) 99999-0003', image: 'https://images.unsplash.com/photo-1638202993928-7267aad84c31?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHwxfHx2ZXRlcmluYXJpYW4lMjBwb3J0cmFpdCUyMHByb2Zlc3Npb25hbCUyMHdvbWFuJTIwZG9jdG9yJTIwY2xpbmljfGVufDB8fHx8MTc3NjE5MDIyMXww&ixlib=rb-4.1.0&q=85', color: 'bg-[#84978F]' },
+  { name: 'Dra. Juliana Ferreira', specialty: 'Nutrição Funcional & Ayurveda', bio: 'Formada em nutrição veterinária integrativa com especialização em dietoterapia chinesa e princípios ayurvédicos. Referência em saúde da pelagem e nutrição personalizada.', crmv: 'CRMV-MG 00003', email: 'juliana@medvetintegrativa.com', phone: '(11) 99999-0004', image: 'https://images.unsplash.com/photo-1638202993928-7267aad84c31?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHwxfHx2ZXRlcmluYXJpYW4lMjBwb3J0cmFpdCUyMHByb2Zlc3Npb25hbCUyMHdvbWFuJTIwZG9jdG9yJTIwY2xpbmljfGVufDB8fHx8MTc3NjE5MDIyMXww&ixlib=rb-4.1.0&q=85', color: 'bg-[#C87A5D]' },
+  { name: 'Dr. Ricardo Lima', specialty: 'Fisioterapia & Reabilitação', bio: 'Especialista em fisioterapia veterinária, hidroterapia e quiropraxia animal. Foco em reabilitação pós-cirúrgica, paralisia e mobilidade de pets idosos.', crmv: 'CRMV-SP 00004', email: 'ricardo@medvetintegrativa.com', phone: '(11) 99999-0005', image: 'https://images.unsplash.com/photo-1596058939740-516d0d71f3d4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTB8MHwxfHNlYXJjaHwyfHx2ZXRlcmluYXJpYW4lMjBtYW4lMjBwcm9mZXNzaW9uYWwlMjBwb3J0cmFpdCUyMGRvY3RvciUyMHBldHxlbnwwfHx8fDE3NzYxOTAyMjB8MA&ixlib=rb-4.1.0&q=85', color: 'bg-[#A4B8C4]' },
+  { name: 'Dra. Renata Campos', specialty: 'Cromoterapia & Florais', bio: 'Terapeuta holísticacom formação em cromoterapia, florais de Bach e Reiki animal. Atua com equilíbrio emocional, traumas comportamentais e terapias energéticas.', crmv: 'CRMV-PR 00005', email: 'renata@medvetintegrativa.com', phone: '(11) 99999-0006', image: 'https://images.unsplash.com/photo-1638202993928-7267aad84c31?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHwxfHx2ZXRlcmluYXJpYW4lMjBwb3J0cmFpdCUyMHByb2Zlc3Npb25hbCUyMHdvbWFuJTIwZG9jdG9yJTIwY2xpbmljfGVufDB8fHx8MTc3NjE5MDIyMXww&ixlib=rb-4.1.0&q=85', color: 'bg-[#84978F]' },
+  { name: 'Dr. Fernando Costa', specialty: 'Ozonioterapia & Terapias Avançadas', bio: 'Especialista em ozonioterapia, laserterapia, magnetoterapia e PRP veterinário. Referência em terapias regenerativas e tratamento de feridas complexas.', crmv: 'CRMV-SP 00006', email: 'fernando@medvetintegrativa.com', phone: '(11) 99999-0007', image: 'https://images.unsplash.com/photo-1770836037793-95bdbf190f71?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTB8MHwxfHNlYXJjaHwxfHx2ZXRlcmluYXJpYW4lMjBtYW4lMjBwcm9mZXNzaW9uYWwlMjBwb3J0cmFpdCUyMGRvY3RvciUyMHBldHxlbnwwfHx8fDE3NzYxOTAyMjB8MA&ixlib=rb-4.1.0&q=85', color: 'bg-[#2C4C3B]' },
 ];
 
 export default function TeamPage() {
@@ -31,7 +31,7 @@ export default function TeamPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#84978F]">Nossa Equipe</span>
           <h1 className="font-['Outfit'] text-4xl sm:text-5xl font-semibold tracking-tight text-[#F9F6F0] mt-3">Especialistas que Cuidam com Amor</h1>
-          <p className="text-[#F9F6F0]/70 mt-4 max-w-lg mx-auto">Veterinarios formados em medicina integrativa, unidos pela paixao por tratar animais de forma natural e holistica.</p>
+          <p className="text-[#F9F6F0]/70 mt-4 max-w-lg mx-auto">Veterinários formados em medicina integrativa, unidos pela paixão por tratar animais de forma natural e holística.</p>
         </div>
       </section>
 
@@ -77,7 +77,7 @@ export default function TeamPage() {
         {/* Team Grid */}
         <section>
           <div className="text-center mb-12">
-            <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#84978F]">Equipe Clinica</span>
+            <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#84978F]">Equipe Clínica</span>
             <h2 className="font-['Outfit'] text-3xl sm:text-4xl font-medium tracking-tight text-[#1A2E24] mt-3">Nossos Especialistas</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -108,7 +108,7 @@ export default function TeamPage() {
         <section className="mt-20 bg-[#2C4C3B] rounded-3xl p-10 sm:p-14 text-center">
           <Heart className="w-10 h-10 text-[#C87A5D] mx-auto mb-4" />
           <h2 className="font-['Outfit'] text-2xl sm:text-3xl font-medium text-[#F9F6F0] mb-3">Agende com nossos especialistas</h2>
-          <p className="text-[#F9F6F0]/70 mb-6 max-w-md mx-auto">Escolha a especialidade e horario ideal para a consulta do seu pet.</p>
+          <p className="text-[#F9F6F0]/70 mb-6 max-w-md mx-auto">Escolha a especialidade e horário ideal para a consulta do seu pet.</p>
           <Link to="/consultas" className="bg-[#C87A5D] text-[#F9F6F0] hover:bg-[#B3674C] rounded-full px-8 py-3.5 font-medium transition-all inline-block">Agendar Consulta</Link>
         </section>
       </div>

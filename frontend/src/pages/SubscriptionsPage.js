@@ -10,14 +10,14 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 const PLANS = [
   {
     id: 'basico',
-    name: 'Basico',
+    name: 'Básico',
     icon: Sparkles,
     price: 79.90,
     period: 'mes',
     color: 'border-[#84978F]',
     accent: 'bg-[#84978F]',
     features: [
-      'Oleo de Gergelim Prensado a Frio (200ml)',
+      'Óleo de Gergelim Prensado a Frio (200ml)',
       'Shampoo Natural Aveia e Aloe Vera',
       'Guia digital de cuidados com a pelagem',
       'Suporte por WhatsApp',
@@ -33,12 +33,12 @@ const PLANS = [
     color: 'border-[#C87A5D]',
     accent: 'bg-[#C87A5D]',
     features: [
-      'Oleo de Gergelim + Oleo de Coco (200ml cada)',
-      'Omega 3-6-9 Veterinario',
+      'Óleo de Gergelim + Óleo de Coco (200ml cada)',
+      'Ômega 3-6-9 Veterinário',
       'Shampoo + Condicionador Leave-in',
       'Biotina + Zinco Manipulados',
       'Consulta online mensal (15 min)',
-      'Frete gratis',
+      'Frete grátis',
       '15% OFF em produtos avulsos',
     ],
     popular: true,
@@ -52,12 +52,12 @@ const PLANS = [
     color: 'border-[#2C4C3B]',
     accent: 'bg-[#2C4C3B]',
     features: [
-      'Kit Pelagem Saudavel Completo',
-      'Racao Natural Receita Ayurvedica',
+      'Kit Pelagem Saudável Completo',
+      'Ração Natural Receita Ayurvédica',
       'Mix Nutricional Pelagem Brilhante',
-      'Todos os oleos (Gergelim, Coco, Linhaca)',
+      'Todos os óleos (Gergelim, Coco, Linhaça)',
       'Consulta online mensal (30 min)',
-      'Frete gratis + entrega prioritaria',
+      'Frete grátis + entrega prioritária',
       '25% OFF em todos os produtos',
       'Pontos de fidelidade em dobro',
     ],
@@ -72,7 +72,7 @@ export default function SubscriptionsPage() {
 
   const handleSubscribe = async (plan) => {
     if (!user || user === false) {
-      toast.error('Faca login para assinar um plano');
+      toast.error('Faça login para assinar um plano');
       return;
     }
     setSubscribing(plan.id);
@@ -102,7 +102,7 @@ export default function SubscriptionsPage() {
             <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#F9F6F0]/80">Assinaturas Mensais</span>
           </div>
           <h1 className="font-['Outfit'] text-4xl sm:text-5xl font-semibold tracking-tight text-[#F9F6F0]">
-            Planos de <span className="text-[#C87A5D]">Pelagem Saudavel</span>
+            Planos de <span className="text-[#C87A5D]">Pelagem Saudável</span>
           </h1>
           <p className="text-[#F9F6F0]/70 mt-4 max-w-2xl mx-auto">
             Receba mensalmente os melhores produtos naturais para a pelagem do seu pet, com acompanhamento profissional e descontos exclusivos.
@@ -153,21 +153,21 @@ export default function SubscriptionsPage() {
             <Check className="w-12 h-12 text-[#2C4C3B] mx-auto mb-4" />
             <h3 className="font-['Outfit'] text-xl font-semibold text-[#1A2E24] mb-2">Assinatura Ativada!</h3>
             <p className="text-[#4A6B5A] mb-1">Plano: <strong>{success.plan_name}</strong></p>
-            <p className="text-[#4A6B5A] mb-4">Proximo envio em: <strong>{success.next_delivery}</strong></p>
-            <p className="text-xs text-[#84978F]">Voce recebera um e-mail com os detalhes da assinatura.</p>
+            <p className="text-[#4A6B5A] mb-4">Próximo envio em: <strong>{success.next_delivery}</strong></p>
+            <p className="text-xs text-[#84978F]">Você receberá um e-mail com os detalhes da assinatura.</p>
             <Link to="/dashboard" className="inline-block mt-4 text-sm text-[#2C4C3B] font-medium hover:underline">Ver meu painel</Link>
           </div>
         )}
 
         {/* FAQ */}
         <div className="mt-16 max-w-2xl mx-auto">
-          <h2 className="font-['Outfit'] text-2xl font-medium text-[#1A2E24] text-center mb-8">Duvidas sobre assinaturas</h2>
+          <h2 className="font-['Outfit'] text-2xl font-medium text-[#1A2E24] text-center mb-8">Dúvidas sobre assinaturas</h2>
           <div className="space-y-4">
             {[
               { q: 'Posso cancelar a qualquer momento?', a: 'Sim! Sem fidelidade ou multa. Cancele quando quiser pelo painel ou WhatsApp.' },
-              { q: 'Como funciona a entrega?', a: 'Os produtos sao enviados no dia 5 de cada mes com frete gratis (Premium e Ouro). Entrega em 3-7 dias uteis.' },
-              { q: 'Posso trocar de plano?', a: 'Sim, voce pode fazer upgrade ou downgrade a qualquer momento. A mudanca vale a partir do proximo ciclo.' },
-              { q: 'A consulta online esta inclusa?', a: 'Nos planos Premium (15 min) e Ouro (30 min). Um veterinario especialista avalia a pelagem do seu pet por video.' },
+              { q: 'Como funciona a entrega?', a: 'Os produtos são enviados no dia 5 de cada mes com frete grátis (Premium e Ouro). Entrega em 3-7 dias úteis.' },
+              { q: 'Posso trocar de plano?', a: 'Sim, você pode fazer upgrade ou downgrade a qualquer momento. A mudança vale a partir do próximo ciclo.' },
+              { q: 'A consulta online está inclusa?', a: 'Nos planos Premium (15 min) e Ouro (30 min). Um veterinário especialista avalia a pelagem do seu pet por video.' },
             ].map((item, i) => (
               <div key={i} className="bg-white/60 border border-[#E0DDD5] rounded-2xl p-6">
                 <h4 className="font-medium text-[#1A2E24] mb-2">{item.q}</h4>

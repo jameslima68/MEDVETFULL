@@ -9,7 +9,7 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 const URGENCY_CONFIG = {
   leve: { color: 'bg-[#2C4C3B]/10 text-[#2C4C3B]', label: 'Leve', desc: 'Pode ser tratado com terapias complementares.' },
   moderado: { color: 'bg-[#C87A5D]/10 text-[#C87A5D]', label: 'Moderado', desc: 'Recomenda-se consulta com especialista.' },
-  severo: { color: 'bg-red-100 text-red-600', label: 'Severo', desc: 'Consulte um veterinario urgentemente.' },
+  severo: { color: 'bg-red-100 text-red-600', label: 'Severo', desc: 'Consulte um veterinário urgentemente.' },
 };
 
 export default function SymptomCalculatorPage() {
@@ -63,7 +63,7 @@ export default function SymptomCalculatorPage() {
             <div className="bg-white/60 border border-[#E0DDD5] rounded-3xl p-8">
               <h3 className="font-['Outfit'] text-lg font-medium text-[#1A2E24] mb-4">Tipo de animal</h3>
               <div className="flex gap-3">
-                {[{ v: 'cao', l: 'Cao' }, { v: 'gato', l: 'Gato' }].map(t => (
+                {[{ v: 'cao', l: 'Cão' }, { v: 'gato', l: 'Gato' }].map(t => (
                   <button key={t.v} onClick={() => setPetType(t.v)} data-testid={`calc-pet-${t.v}`}
                     className={`px-6 py-3 rounded-xl text-sm font-medium transition-all ${petType === t.v ? 'bg-[#2C4C3B] text-[#F9F6F0]' : 'bg-white/50 border border-[#E0DDD5] text-[#4A6B5A]'}`}>{t.l}</button>
                 ))}
@@ -152,7 +152,7 @@ export default function SymptomCalculatorPage() {
             <div className="bg-[#EAE7E1] border border-[#E0DDD5] rounded-2xl p-5">
               <p className="text-xs text-[#4A6B5A] flex items-start gap-2">
                 <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5 text-[#C87A5D]" />
-                {result.message} Esta ferramenta e informativa e nao substitui uma consulta veterinaria profissional.
+                {result.message} Esta ferramenta é informativa e não substitui uma consulta veterinária profissional.
               </p>
             </div>
 

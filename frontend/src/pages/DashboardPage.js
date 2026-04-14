@@ -60,13 +60,13 @@ export default function DashboardPage() {
           <Link to="/produtos" data-testid="quick-products" className="bg-white/60 backdrop-blur-sm border border-[#E0DDD5] rounded-2xl p-6 hover:shadow-md transition-all group">
             <Tag className="w-8 h-8 text-[#2C4C3B] mb-3" />
             <h3 className="font-['Outfit'] text-lg font-medium text-[#1A2E24]">Ver Produtos</h3>
-            <p className="text-sm text-[#4A6B5A] mt-1">Explore nosso catalogo de tratamentos</p>
+            <p className="text-sm text-[#4A6B5A] mt-1">Explore nosso catálogo de tratamentos</p>
             <ChevronRight className="w-5 h-5 text-[#84978F] mt-3 group-hover:translate-x-1 transition-transform" />
           </Link>
           <Link to="/dicas" data-testid="quick-tips" className="bg-white/60 backdrop-blur-sm border border-[#E0DDD5] rounded-2xl p-6 hover:shadow-md transition-all group">
             <FileText className="w-8 h-8 text-[#2C4C3B] mb-3" />
             <h3 className="font-['Outfit'] text-lg font-medium text-[#1A2E24]">Dicas & Blog</h3>
-            <p className="text-sm text-[#4A6B5A] mt-1">Conteudo educacional de especialistas</p>
+            <p className="text-sm text-[#4A6B5A] mt-1">Conteúdo educacional de especialistas</p>
             <ChevronRight className="w-5 h-5 text-[#84978F] mt-3 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
@@ -89,7 +89,7 @@ export default function DashboardPage() {
             ) : consultations.length === 0 ? (
               <div data-testid="no-consultations" className="bg-white/60 backdrop-blur-sm border border-[#E0DDD5] rounded-2xl p-10 text-center">
                 <Calendar className="w-12 h-12 text-[#84978F] mx-auto mb-4" />
-                <p className="text-[#4A6B5A] mb-4">Voce ainda nao tem consultas agendadas.</p>
+                <p className="text-[#4A6B5A] mb-4">Você ainda não tem consultas agendadas.</p>
                 <Link to="/consultas" className="bg-[#2C4C3B] text-[#F9F6F0] hover:bg-[#1A2E24] rounded-full px-6 py-2.5 text-sm font-medium transition-all inline-block">Agendar agora</Link>
               </div>
             ) : (
@@ -125,7 +125,7 @@ export default function DashboardPage() {
             ) : purchases.length === 0 ? (
               <div data-testid="no-purchases" className="bg-white/60 backdrop-blur-sm border border-[#E0DDD5] rounded-2xl p-10 text-center">
                 <ShoppingBag className="w-12 h-12 text-[#84978F] mx-auto mb-4" />
-                <p className="text-[#4A6B5A] mb-4">Voce ainda nao tem compras.</p>
+                <p className="text-[#4A6B5A] mb-4">Você ainda não tem compras.</p>
                 <Link to="/produtos" className="bg-[#2C4C3B] text-[#F9F6F0] hover:bg-[#1A2E24] rounded-full px-6 py-2.5 text-sm font-medium transition-all inline-block">Ver produtos</Link>
               </div>
             ) : (
@@ -142,7 +142,7 @@ export default function DashboardPage() {
                       </div>
                       <div>
                         <p className="font-['Outfit'] font-medium text-[#1A2E24]">{p.product_name}</p>
-                        <p className="text-sm text-[#84978F]">{p.payment_method === 'pix' ? 'PIX' : 'Cartao'} - {new Date(p.created_at).toLocaleDateString('pt-BR')}</p>
+                        <p className="text-sm text-[#84978F]">{p.payment_method === 'pix' ? 'PIX' : 'Cartão'} - {new Date(p.created_at).toLocaleDateString('pt-BR')}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-4">

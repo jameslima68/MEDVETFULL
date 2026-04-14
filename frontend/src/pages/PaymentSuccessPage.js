@@ -38,7 +38,7 @@ export default function PaymentSuccessPage() {
           <>
             <Loader2 className="w-12 h-12 text-[#2C4C3B] mx-auto mb-6 animate-spin" />
             <h2 className="font-['Outfit'] text-2xl font-semibold text-[#1A2E24] mb-3">Verificando pagamento...</h2>
-            <p className="text-[#4A6B5A]">Aguarde enquanto confirmamos seu pagamento.</p>
+            <p className="text-[#4A6B5A]">Águarde enquanto confirmamos seu pagamento.</p>
           </>
         )}
         {status === 'paid' && (
@@ -51,7 +51,7 @@ export default function PaymentSuccessPage() {
             {paymentData?.metadata?.product_name && (
               <p className="font-semibold text-[#2C4C3B] mb-4">{paymentData.metadata.product_name}</p>
             )}
-            <p className="text-sm text-[#84978F] mb-6">Voce recebera um e-mail com os detalhes do pedido.</p>
+            <p className="text-sm text-[#84978F] mb-6">Você receberá um e-mail com os detalhes do pedido.</p>
             <div className="flex flex-col gap-3">
               <Link to="/produtos" data-testid="back-to-products" className="bg-[#2C4C3B] text-[#F9F6F0] hover:bg-[#1A2E24] rounded-full px-8 py-3 font-medium transition-all inline-block">
                 Continuar Comprando
@@ -68,10 +68,10 @@ export default function PaymentSuccessPage() {
               <span className="text-2xl text-red-600 font-bold">!</span>
             </div>
             <h2 className="font-['Outfit'] text-2xl font-semibold text-[#1A2E24] mb-3">
-              {status === 'expired' ? 'Sessao Expirada' : 'Erro no Pagamento'}
+              {status === 'expired' ? 'Sessão Expirada' : 'Erro no Pagamento'}
             </h2>
             <p className="text-[#4A6B5A] mb-6">
-              {status === 'timeout' ? 'Nao foi possivel confirmar o pagamento. Verifique seu e-mail.' : 'Houve um problema com o pagamento. Tente novamente.'}
+              {status === 'timeout' ? 'Não foi possível confirmar o pagamento. Verifique seu e-mail.' : 'Houve um problema com o pagamento. Tente novamente.'}
             </p>
             <Link to="/produtos" className="bg-[#2C4C3B] text-[#F9F6F0] hover:bg-[#1A2E24] rounded-full px-8 py-3 font-medium transition-all inline-block">
               Voltar aos Produtos

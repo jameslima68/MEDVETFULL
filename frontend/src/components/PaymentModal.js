@@ -28,8 +28,8 @@ export default function PaymentModal({ product, onClose }) {
       setCouponApplied(data);
       toast.success(`Cupom aplicado! Desconto de R$ ${data.discount.toFixed(2).replace('.', ',')}`);
     } catch (e) {
-      const msg = e.response?.data?.detail || 'Cupom invalido';
-      toast.error(typeof msg === 'string' ? msg : 'Cupom invalido');
+      const msg = e.response?.data?.detail || 'Cupom inválido';
+      toast.error(typeof msg === 'string' ? msg : 'Cupom inválido');
       setCouponApplied(null);
     } finally {
       setValidatingCoupon(false);
@@ -69,7 +69,7 @@ export default function PaymentModal({ product, onClose }) {
         coupon_code: couponApplied?.coupon_code || ''
       });
       setPixData(data);
-      toast.success('Codigo PIX gerado!');
+      toast.success('Código PIX gerado!');
     } catch {
       toast.error('Erro ao gerar PIX.');
     } finally {
@@ -80,7 +80,7 @@ export default function PaymentModal({ product, onClose }) {
   const copyPix = () => {
     navigator.clipboard.writeText(pixData.pix_code);
     setCopied(true);
-    toast.success('Codigo PIX copiado!');
+    toast.success('Código PIX copiado!');
     setTimeout(() => setCopied(false), 3000);
   };
 
@@ -152,7 +152,7 @@ export default function PaymentModal({ product, onClose }) {
 
           {!method && !pixData && (
             <div className="space-y-4">
-              <p className="text-sm text-[#4A6B5A] mb-2">Escolha o metodo de pagamento:</p>
+              <p className="text-sm text-[#4A6B5A] mb-2">Escolha o método de pagamento:</p>
               <button
                 onClick={() => { setMethod('stripe'); handleStripe(); }}
                 disabled={loading}
@@ -163,7 +163,7 @@ export default function PaymentModal({ product, onClose }) {
                   <CreditCard className="w-6 h-6 text-[#2C4C3B]" />
                 </div>
                 <div>
-                  <p className="font-medium text-[#1A2E24]">Cartao de Credito/Debito</p>
+                  <p className="font-medium text-[#1A2E24]">Cartão de Crédito/Débito</p>
                   <p className="text-xs text-[#84978F]">Pagamento seguro via Stripe</p>
                 </div>
               </button>
@@ -178,7 +178,7 @@ export default function PaymentModal({ product, onClose }) {
                 </div>
                 <div>
                   <p className="font-medium text-[#1A2E24]">PIX</p>
-                  <p className="text-xs text-[#84978F]">Transferencia instantanea</p>
+                  <p className="text-xs text-[#84978F]">Transferência instantânea</p>
                 </div>
               </button>
             </div>
@@ -186,12 +186,12 @@ export default function PaymentModal({ product, onClose }) {
 
           {method === 'pix' && !pixData && (
             <div className="space-y-4">
-              <p className="text-sm text-[#4A6B5A]">Preencha seus dados para gerar o codigo PIX:</p>
+              <p className="text-sm text-[#4A6B5A]">Preencha seus dados para gerar o código PIX:</p>
               <input placeholder="Seu nome" value={pixForm.name} onChange={e => setPixForm(f => ({...f, name: e.target.value}))} data-testid="pix-name" className="w-full bg-white/50 border border-[#E0DDD5] focus:border-[#84978F] focus:ring-1 focus:ring-[#84978F] rounded-xl px-4 py-3 text-[#1A2E24] text-sm outline-none transition-all" />
               <input placeholder="seu@email.com" type="email" value={pixForm.email} onChange={e => setPixForm(f => ({...f, email: e.target.value}))} data-testid="pix-email" className="w-full bg-white/50 border border-[#E0DDD5] focus:border-[#84978F] focus:ring-1 focus:ring-[#84978F] rounded-xl px-4 py-3 text-[#1A2E24] text-sm outline-none transition-all" />
               <div className="flex gap-3">
                 <button onClick={handlePix} disabled={loading} data-testid="generate-pix-btn" className="flex-1 bg-[#00BDAE] text-white hover:bg-[#00A99D] rounded-full px-6 py-3 text-sm font-medium transition-all disabled:opacity-50">
-                  {loading ? 'Gerando...' : 'Gerar Codigo PIX'}
+                  {loading ? 'Gerando...' : 'Gerar Código PIX'}
                 </button>
                 <button onClick={() => setMethod(null)} className="px-4 py-3 border border-[#E0DDD5] rounded-full text-sm text-[#4A6B5A]">Voltar</button>
               </div>
@@ -203,7 +203,7 @@ export default function PaymentModal({ product, onClose }) {
               <div className="w-12 h-12 bg-[#00BDAE]/10 rounded-full flex items-center justify-center mx-auto">
                 <CheckCircle2 className="w-6 h-6 text-[#00BDAE]" />
               </div>
-              <p className="text-sm text-[#4A6B5A]">Escaneie o QR Code ou copie o codigo PIX:</p>
+              <p className="text-sm text-[#4A6B5A]">Escaneie o QR Code ou copie o código PIX:</p>
               {pixData.qr_code && (
                 <div className="bg-white rounded-2xl p-4 inline-block mx-auto border border-[#E0DDD5]">
                   <img src={pixData.qr_code} alt="QR Code PIX" className="w-48 h-48 mx-auto" data-testid="pix-qr-code" />
@@ -215,9 +215,9 @@ export default function PaymentModal({ product, onClose }) {
               </div>
               <div className="bg-white/50 border border-[#E0DDD5] rounded-xl p-3 text-xs text-[#4A6B5A] break-all max-h-20 overflow-y-auto">{pixData.pix_code}</div>
               <button onClick={copyPix} data-testid="copy-pix-btn" className={`w-full flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium transition-all ${copied ? 'bg-[#2C4C3B] text-[#F9F6F0]' : 'bg-[#00BDAE] text-white hover:bg-[#00A99D]'}`}>
-                {copied ? <><CheckCircle2 className="w-4 h-4" /> Copiado!</> : <><Copy className="w-4 h-4" /> Copiar Codigo PIX</>}
+                {copied ? <><CheckCircle2 className="w-4 h-4" /> Copiado!</> : <><Copy className="w-4 h-4" /> Copiar Código PIX</>}
               </button>
-              <p className="text-xs text-[#84978F]">Apos o pagamento, sua compra sera confirmada em ate 24 horas.</p>
+              <p className="text-xs text-[#84978F]">Após o pagamento, sua compra será confirmada em até 24 horas.</p>
               <button onClick={onClose} className="text-sm text-[#2C4C3B] font-medium hover:underline">Fechar</button>
             </div>
           )}
