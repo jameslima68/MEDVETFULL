@@ -139,11 +139,22 @@ class CheckoutRequest(BaseModel):
     product_id: str
     origin_url: str
     email: Optional[str] = None
+    coupon_code: Optional[str] = None
 
 class PixCheckoutRequest(BaseModel):
     product_id: str
     name: str
     email: str
+    coupon_code: Optional[str] = None
+
+class CouponCreate(BaseModel):
+    code: str
+    discount_type: str  # 'percentage' or 'fixed'
+    discount_value: float
+    min_purchase: float = 0
+    max_uses: int = 100
+    active: bool = True
+    description: Optional[str] = None
 
 # --- Email Helper ---
 async def send_email_notification(to_email: str, subject: str, html_content: str):
@@ -472,6 +483,17 @@ async def create_checkout(req: CheckoutRequest, request: Request):
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     
+    final_price = float(product["price"])
+    discount = 0.0
+    coupon_code = ""
+    if req.coupon_code:
+        cv = await validate_coupon(req.coupon_code, final_price)
+        if cv["valid"]:
+            discount = cv["discount"]
+            final_price = cv["final_price"]
+            coupon_code = req.coupon_code.upper().strip()
+            await db.coupons.update_one({"code": coupon_code}, {"$inc": {"uses": 1}})
+
     origin = req.origin_url.rstrip("/")
     success_url = f"{origin}/pagamento/sucesso?session_id={{CHECKOUT_SESSION_ID}}"
     cancel_url = f"{origin}/produtos"
@@ -484,11 +506,12 @@ async def create_checkout(req: CheckoutRequest, request: Request):
     metadata = {
         "product_id": product["id"],
         "product_name": product["name"],
-        "source": "medvet_integrativa"
+        "source": "medvet_integrativa",
+        "coupon": coupon_code
     }
     
     checkout_req = CheckoutSessionRequest(
-        amount=float(product["price"]),
+        amount=final_price,
         currency="brl",
         success_url=success_url,
         cancel_url=cancel_url,
@@ -496,13 +519,15 @@ async def create_checkout(req: CheckoutRequest, request: Request):
     )
     session = await stripe_checkout.create_checkout_session(checkout_req)
     
-    # Save transaction
     tx = {
         "id": str(ObjectId()),
         "session_id": session.session_id,
         "product_id": product["id"],
         "product_name": product["name"],
-        "amount": float(product["price"]),
+        "amount": final_price,
+        "original_price": float(product["price"]),
+        "discount": discount,
+        "coupon_code": coupon_code,
         "currency": "brl",
         "payment_method": "stripe",
         "payment_status": "pending",
@@ -595,15 +620,29 @@ async def create_pix_checkout(req: PixCheckoutRequest):
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     
+    final_price = float(product["price"])
+    discount = 0.0
+    coupon_code = ""
+    if req.coupon_code:
+        cv = await validate_coupon(req.coupon_code, final_price)
+        if cv["valid"]:
+            discount = cv["discount"]
+            final_price = cv["final_price"]
+            coupon_code = req.coupon_code.upper().strip()
+            await db.coupons.update_one({"code": coupon_code}, {"$inc": {"uses": 1}})
+
     tx_id = str(ObjectId())
-    pix_data = generate_pix_code(float(product["price"]), tx_id)
+    pix_data = generate_pix_code(final_price, tx_id)
     
     tx = {
         "id": tx_id,
         "session_id": f"pix_{tx_id}",
         "product_id": product["id"],
         "product_name": product["name"],
-        "amount": float(product["price"]),
+        "amount": final_price,
+        "original_price": float(product["price"]),
+        "discount": discount,
+        "coupon_code": coupon_code,
         "currency": "brl",
         "payment_method": "pix",
         "payment_status": "pending",
@@ -668,6 +707,142 @@ async def get_purchases(user: dict = Depends(get_current_user)):
     email = user["email"]
     purchases = await db.payment_transactions.find({"email": email}, {"_id": 0}).sort("created_at", -1).to_list(100)
     return purchases
+
+# --- Coupons ---
+async def validate_coupon(code: str, product_price: float) -> dict:
+    """Validate coupon and return discount info."""
+    if not code:
+        return {"valid": False}
+    coupon = await db.coupons.find_one({"code": code.upper().strip(), "active": True}, {"_id": 0})
+    if not coupon:
+        return {"valid": False, "error": "Cupom invalido ou expirado"}
+    if coupon.get("uses", 0) >= coupon.get("max_uses", 100):
+        return {"valid": False, "error": "Cupom esgotado"}
+    if product_price < coupon.get("min_purchase", 0):
+        return {"valid": False, "error": f"Compra minima de R$ {coupon['min_purchase']:.2f}"}
+    if coupon["discount_type"] == "percentage":
+        discount = round(product_price * coupon["discount_value"] / 100, 2)
+    else:
+        discount = min(coupon["discount_value"], product_price)
+    final_price = round(product_price - discount, 2)
+    return {"valid": True, "discount": discount, "final_price": final_price, "coupon": coupon}
+
+@api_router.post("/coupons/validate")
+async def validate_coupon_endpoint(code: str, product_id: str):
+    product = await db.products.find_one({"id": product_id}, {"_id": 0})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    result = await validate_coupon(code, float(product["price"]))
+    if not result["valid"]:
+        raise HTTPException(status_code=400, detail=result.get("error", "Cupom invalido"))
+    return {
+        "valid": True,
+        "original_price": float(product["price"]),
+        "discount": result["discount"],
+        "final_price": result["final_price"],
+        "coupon_code": code.upper().strip()
+    }
+
+# --- Admin: Coupons CRUD ---
+@api_router.get("/admin/coupons")
+async def admin_get_coupons(user: dict = Depends(get_admin_user)):
+    coupons = await db.coupons.find({}, {"_id": 0}).to_list(100)
+    return coupons
+
+@api_router.post("/admin/coupons")
+async def admin_create_coupon(req: CouponCreate, user: dict = Depends(get_admin_user)):
+    existing = await db.coupons.find_one({"code": req.code.upper().strip()})
+    if existing:
+        raise HTTPException(status_code=400, detail="Coupon code already exists")
+    doc = req.model_dump()
+    doc["id"] = str(ObjectId())
+    doc["code"] = doc["code"].upper().strip()
+    doc["uses"] = 0
+    doc["created_at"] = datetime.now(timezone.utc).isoformat()
+    await db.coupons.insert_one(doc)
+    doc.pop("_id", None)
+    return doc
+
+@api_router.delete("/admin/coupons/{coupon_id}")
+async def admin_delete_coupon(coupon_id: str, user: dict = Depends(get_admin_user)):
+    result = await db.coupons.delete_one({"id": coupon_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Coupon not found")
+    return {"message": "Coupon deleted"}
+
+@api_router.put("/admin/coupons/{coupon_id}/toggle")
+async def admin_toggle_coupon(coupon_id: str, user: dict = Depends(get_admin_user)):
+    coupon = await db.coupons.find_one({"id": coupon_id})
+    if not coupon:
+        raise HTTPException(status_code=404, detail="Coupon not found")
+    new_active = not coupon.get("active", True)
+    await db.coupons.update_one({"id": coupon_id}, {"$set": {"active": new_active}})
+    return {"active": new_active}
+
+# --- Admin: Analytics/Reports ---
+@api_router.get("/admin/analytics/revenue")
+async def admin_revenue_analytics(user: dict = Depends(get_admin_user)):
+    """Revenue by day for last 30 days."""
+    pipeline = [
+        {"$match": {"payment_status": "paid"}},
+        {"$group": {"_id": {"$substr": ["$created_at", 0, 10]}, "revenue": {"$sum": "$amount"}, "count": {"$sum": 1}}},
+        {"$sort": {"_id": 1}},
+        {"$limit": 30}
+    ]
+    result = await db.payment_transactions.aggregate(pipeline).to_list(30)
+    return [{"date": r["_id"], "revenue": r["revenue"], "count": r["count"]} for r in result]
+
+@api_router.get("/admin/analytics/products")
+async def admin_product_analytics(user: dict = Depends(get_admin_user)):
+    """Products by category count and top sellers."""
+    # By category
+    cat_pipeline = [{"$group": {"_id": "$category", "count": {"$sum": 1}}}, {"$sort": {"count": -1}}]
+    by_category = await db.products.aggregate(cat_pipeline).to_list(20)
+    # Top sold
+    sold_pipeline = [
+        {"$match": {"payment_status": "paid"}},
+        {"$group": {"_id": "$product_name", "sold": {"$sum": 1}, "revenue": {"$sum": "$amount"}}},
+        {"$sort": {"sold": -1}},
+        {"$limit": 10}
+    ]
+    top_sold = await db.payment_transactions.aggregate(sold_pipeline).to_list(10)
+    return {
+        "by_category": [{"category": r["_id"], "count": r["count"]} for r in by_category],
+        "top_sold": [{"product": r["_id"], "sold": r["sold"], "revenue": r["revenue"]} for r in top_sold]
+    }
+
+@api_router.get("/admin/analytics/consultations")
+async def admin_consultation_analytics(user: dict = Depends(get_admin_user)):
+    """Consultations by category and status."""
+    cat_pipeline = [{"$group": {"_id": "$category", "count": {"$sum": 1}}}, {"$sort": {"count": -1}}]
+    by_category = await db.consultations.aggregate(cat_pipeline).to_list(20)
+    status_pipeline = [{"$group": {"_id": "$status", "count": {"$sum": 1}}}]
+    by_status = await db.consultations.aggregate(status_pipeline).to_list(10)
+    return {
+        "by_category": [{"category": r["_id"], "count": r["count"]} for r in by_category],
+        "by_status": [{"status": r["_id"], "count": r["count"]} for r in by_status]
+    }
+
+@api_router.get("/admin/analytics/overview")
+async def admin_overview(user: dict = Depends(get_admin_user)):
+    """Overview metrics."""
+    products = await db.products.count_documents({})
+    consultations = await db.consultations.count_documents({})
+    users = await db.users.count_documents({})
+    total_payments = await db.payment_transactions.count_documents({})
+    paid = await db.payment_transactions.count_documents({"payment_status": "paid"})
+    pix_count = await db.payment_transactions.count_documents({"payment_method": "pix"})
+    stripe_count = await db.payment_transactions.count_documents({"payment_method": "stripe"})
+    rev_pipeline = [{"$match": {"payment_status": "paid"}}, {"$group": {"_id": None, "total": {"$sum": "$amount"}}}]
+    rev = await db.payment_transactions.aggregate(rev_pipeline).to_list(1)
+    total_revenue = rev[0]["total"] if rev else 0
+    coupons_active = await db.coupons.count_documents({"active": True})
+    return {
+        "products": products, "consultations": consultations, "users": users,
+        "total_payments": total_payments, "paid_payments": paid,
+        "pix_payments": pix_count, "stripe_payments": stripe_count,
+        "total_revenue": total_revenue, "active_coupons": coupons_active
+    }
 
 # --- Contact ---
 @api_router.post("/contact")
@@ -864,6 +1039,19 @@ async def seed_faq():
     await db.faq.insert_many(faqs)
     logger.info("FAQ seeded")
 
+async def seed_coupons():
+    count = await db.coupons.count_documents({})
+    if count > 0:
+        return
+    coupons = [
+        {"id": "cup-1", "code": "BEMVINDO10", "discount_type": "percentage", "discount_value": 10, "min_purchase": 0, "max_uses": 500, "uses": 0, "active": True, "description": "10% de desconto para novos clientes", "created_at": datetime.now(timezone.utc).isoformat()},
+        {"id": "cup-2", "code": "MEDVET20", "discount_type": "percentage", "discount_value": 20, "min_purchase": 100, "max_uses": 200, "uses": 0, "active": True, "description": "20% OFF em compras acima de R$100", "created_at": datetime.now(timezone.utc).isoformat()},
+        {"id": "cup-3", "code": "FRETEGRATIS", "discount_type": "fixed", "discount_value": 25.00, "min_purchase": 80, "max_uses": 300, "uses": 0, "active": True, "description": "R$25 OFF (frete gratis)", "created_at": datetime.now(timezone.utc).isoformat()},
+        {"id": "cup-4", "code": "CBD15", "discount_type": "percentage", "discount_value": 15, "min_purchase": 50, "max_uses": 100, "uses": 0, "active": True, "description": "15% OFF em produtos CBD", "created_at": datetime.now(timezone.utc).isoformat()},
+    ]
+    await db.coupons.insert_many(coupons)
+    logger.info("Coupons seeded")
+
 @app.on_event("startup")
 async def startup():
     await db.users.create_index("email", unique=True)
@@ -874,6 +1062,7 @@ async def startup():
     await seed_testimonials()
     await seed_tips()
     await seed_faq()
+    await seed_coupons()
     # Write test credentials
     os.makedirs("/app/memory", exist_ok=True)
     with open("/app/memory/test_credentials.md", "w") as f:

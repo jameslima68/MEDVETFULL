@@ -495,6 +495,209 @@ class MedvetAPITester:
             401
         )
 
+    def test_coupon_system(self):
+        """Test coupon validation and CRUD operations"""
+        print("\n=== TESTING COUPON SYSTEM ===")
+        
+        # Test coupon validation with valid coupon
+        success, products = self.run_test("Get Products for Coupon Test", "GET", "products", 200)
+        if success and products:
+            test_product = products[0]
+            product_id = test_product.get('id')
+            
+            # Test valid coupon (BEMVINDO10 should be seeded)
+            success, coupon_result = self.run_test(
+                "Validate Valid Coupon (BEMVINDO10)",
+                "POST",
+                f"coupons/validate?code=BEMVINDO10&product_id={product_id}",
+                200
+            )
+            if success:
+                print(f"   Valid coupon - Original: R$ {coupon_result.get('original_price')}, Final: R$ {coupon_result.get('final_price')}, Discount: R$ {coupon_result.get('discount')}")
+            
+            # Test invalid coupon
+            self.run_test(
+                "Validate Invalid Coupon",
+                "POST",
+                f"coupons/validate?code=INVALID123&product_id={product_id}",
+                400
+            )
+        
+        # Test admin coupon CRUD
+        print("\n   Testing Admin Coupon CRUD...")
+        
+        # Get existing coupons
+        success, coupons = self.run_test(
+            "Admin Get Coupons",
+            "GET",
+            "admin/coupons",
+            200,
+            cookies=self.admin_cookies
+        )
+        if success:
+            print(f"   Found {len(coupons)} existing coupons")
+            for coupon in coupons[:4]:  # Show first 4
+                print(f"   - {coupon.get('code')} ({coupon.get('discount_type')}: {coupon.get('discount_value')}) - Active: {coupon.get('active')}")
+        
+        # Create new coupon
+        new_coupon = {
+            "code": "TESTAPI20",
+            "discount_type": "percentage",
+            "discount_value": 20,
+            "min_purchase": 50,
+            "max_uses": 10,
+            "description": "Test coupon created via API"
+        }
+        
+        success, created_coupon = self.run_test(
+            "Admin Create Coupon",
+            "POST",
+            "admin/coupons",
+            200,
+            data=new_coupon,
+            cookies=self.admin_cookies
+        )
+        
+        if success and created_coupon:
+            coupon_id = created_coupon.get('id')
+            print(f"   Created coupon with ID: {coupon_id}")
+            
+            # Test toggle coupon
+            success, toggle_result = self.run_test(
+                "Admin Toggle Coupon",
+                "PUT",
+                f"admin/coupons/{coupon_id}/toggle",
+                200,
+                cookies=self.admin_cookies
+            )
+            if success:
+                print(f"   Toggled coupon active status: {toggle_result.get('active')}")
+            
+            # Test delete coupon
+            success, _ = self.run_test(
+                "Admin Delete Coupon",
+                "DELETE",
+                f"admin/coupons/{coupon_id}",
+                200,
+                cookies=self.admin_cookies
+            )
+            if success:
+                print(f"   Deleted coupon with ID: {coupon_id}")
+
+    def test_analytics_endpoints(self):
+        """Test admin analytics endpoints"""
+        print("\n=== TESTING ANALYTICS ENDPOINTS ===")
+        
+        # Test overview analytics
+        success, overview = self.run_test(
+            "Admin Analytics Overview",
+            "GET",
+            "admin/analytics/overview",
+            200,
+            cookies=self.admin_cookies
+        )
+        if success:
+            print(f"   Overview - Products: {overview.get('products')}, Users: {overview.get('users')}, Revenue: R$ {overview.get('total_revenue', 0):.2f}")
+            print(f"   Payments - PIX: {overview.get('pix_payments')}, Stripe: {overview.get('stripe_payments')}, Active Coupons: {overview.get('active_coupons')}")
+        
+        # Test revenue analytics
+        success, revenue_data = self.run_test(
+            "Admin Analytics Revenue",
+            "GET",
+            "admin/analytics/revenue",
+            200,
+            cookies=self.admin_cookies
+        )
+        if success:
+            print(f"   Revenue data points: {len(revenue_data)}")
+            if revenue_data:
+                latest = revenue_data[-1] if revenue_data else {}
+                print(f"   Latest revenue entry: {latest.get('date')} - R$ {latest.get('revenue', 0):.2f} ({latest.get('count', 0)} transactions)")
+        
+        # Test product analytics
+        success, product_analytics = self.run_test(
+            "Admin Analytics Products",
+            "GET",
+            "admin/analytics/products",
+            200,
+            cookies=self.admin_cookies
+        )
+        if success:
+            by_category = product_analytics.get('by_category', [])
+            top_sold = product_analytics.get('top_sold', [])
+            print(f"   Product categories: {len(by_category)}")
+            print(f"   Top selling products: {len(top_sold)}")
+            if by_category:
+                categories_str = [f"{cat['category']} ({cat['count']})" for cat in by_category[:3]]
+                print(f"   Categories: {categories_str}")
+            if top_sold:
+                print(f"   Top seller: {top_sold[0].get('product')} ({top_sold[0].get('sold')} sold)")
+        
+        # Test consultation analytics
+        success, consultation_analytics = self.run_test(
+            "Admin Analytics Consultations",
+            "GET",
+            "admin/analytics/consultations",
+            200,
+            cookies=self.admin_cookies
+        )
+        if success:
+            by_category = consultation_analytics.get('by_category', [])
+            by_status = consultation_analytics.get('by_status', [])
+            print(f"   Consultation categories: {len(by_category)}")
+            print(f"   Consultation statuses: {len(by_status)}")
+
+    def test_checkout_with_coupons(self):
+        """Test checkout integration with coupons"""
+        print("\n=== TESTING CHECKOUT WITH COUPONS ===")
+        
+        # Get a product for testing
+        success, products = self.run_test("Get Products for Coupon Checkout", "GET", "products", 200)
+        if success and products:
+            test_product = products[0]
+            product_id = test_product.get('id')
+            
+            # Test Stripe checkout with coupon
+            checkout_data = {
+                "product_id": product_id,
+                "origin_url": "https://holistic-vet-shop.preview.emergentagent.com",
+                "email": "test@medvet.com",
+                "coupon_code": "BEMVINDO10"
+            }
+            
+            success, checkout_response = self.run_test(
+                "Stripe Checkout with Coupon",
+                "POST",
+                "checkout",
+                200,
+                data=checkout_data
+            )
+            
+            if success:
+                print(f"   Stripe checkout with coupon created: {checkout_response.get('session_id')}")
+            
+            # Test PIX checkout with coupon
+            pix_data = {
+                "product_id": product_id,
+                "name": "Test PIX User",
+                "email": "test.pix@medvet.com",
+                "coupon_code": "BEMVINDO10"
+            }
+            
+            success, pix_response = self.run_test(
+                "PIX Checkout with Coupon",
+                "POST",
+                "checkout/pix",
+                200,
+                data=pix_data
+            )
+            
+            if success:
+                print(f"   PIX checkout with coupon created: {pix_response.get('tx_id')}")
+                print(f"   Discounted amount: R$ {pix_response.get('amount', 0):.2f}")
+        else:
+            print("   ❌ No products available for coupon checkout test")
+
     def test_error_cases(self):
         """Test error handling"""
         print("\n=== TESTING ERROR CASES ===")
@@ -550,7 +753,10 @@ def main():
     tester.test_consultation_endpoints()
     tester.test_contact_endpoint()
     tester.test_admin_endpoints()
+    tester.test_coupon_system()
+    tester.test_analytics_endpoints()
     tester.test_stripe_checkout()
+    tester.test_checkout_with_coupons()
     tester.test_pix_payment()
     tester.test_purchase_history()
     tester.test_error_cases()
