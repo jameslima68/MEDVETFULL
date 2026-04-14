@@ -234,7 +234,7 @@ export default function AdminPage() {
                   <input placeholder="Nome" value={productForm.name} onChange={e => setProductForm(f => ({...f, name: e.target.value}))} className={inputCls} data-testid="admin-product-name" />
                   <input placeholder="Preco" type="number" step="0.01" value={productForm.price} onChange={e => setProductForm(f => ({...f, price: e.target.value}))} className={inputCls} data-testid="admin-product-price" />
                   <select value={productForm.category} onChange={e => setProductForm(f => ({...f, category: e.target.value}))} className={inputCls}>
-                    <option value="homeopatia">Homeopatia</option><option value="hormonios">Hormonios</option><option value="medicina-chinesa">Medicina Chinesa</option><option value="cbd">CBD</option><option value="acupuntura">Acupuntura</option><option value="saude-pelos">Saude dos Pelos</option>
+                    <option value="homeopatia">Homeopatia</option><option value="hormonios">Hormonios</option><option value="medicina-chinesa">Medicina Chinesa</option><option value="cbd">CBD</option><option value="acupuntura">Acupuntura</option><option value="saude-pelos">Saude dos Pelos</option><option value="cromoterapia">Cromoterapia</option>
                   </select>
                   <input placeholder="URL da Imagem" value={productForm.image_url} onChange={e => setProductForm(f => ({...f, image_url: e.target.value}))} className={inputCls} />
                   <div className="flex items-center gap-4">
