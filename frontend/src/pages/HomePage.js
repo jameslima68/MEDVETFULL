@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Leaf, FlaskConical, Droplets, Target, BookOpen, Star, ChevronRight, Shield, Truck, Clock, Headphones } from 'lucide-react';
+import { Leaf, FlaskConical, Droplets, Target, BookOpen, Star, ChevronRight, Shield, Truck, Clock, Headphones, Heart } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -124,6 +124,67 @@ export default function HomePage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Mission Preview */}
+      <section data-testid="mission-preview" className="py-20 sm:py-28 bg-[#2C4C3B] relative overflow-hidden">
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-10 left-10 w-64 h-64 border border-[#F9F6F0] rounded-full" />
+          <div className="absolute bottom-10 right-10 w-48 h-48 border border-[#F9F6F0] rounded-full" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 border border-[#F9F6F0] rounded-full" />
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 bg-[#F9F6F0]/10 backdrop-blur-sm rounded-full px-4 py-2">
+                <Heart className="w-4 h-4 text-[#C87A5D]" />
+                <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#F9F6F0]/80">Nossa Missao</span>
+              </div>
+              <h2 className="font-['Outfit'] text-3xl sm:text-4xl font-medium tracking-tight text-[#F9F6F0]">
+                Conhecimento, paixao e <span className="text-[#C87A5D]">cura milenar</span>
+              </h2>
+              <p className="text-[#F9F6F0]/70 leading-relaxed">
+                Nascemos da uniao entre paixao pelos animais e sabedoria ancestral. Resgatamos o poder de cura da <strong className="text-[#F9F6F0]">Ayurveda</strong> e da <strong className="text-[#F9F6F0]">Medicina Tradicional Chinesa</strong> — sistemas milenares que enxergam o ser vivo como um todo — para oferecer tratamentos verdadeiramente integradores ao seu pet.
+              </p>
+              <p className="text-[#F9F6F0]/70 leading-relaxed">
+                Mais do que tratar sintomas, buscamos o equilibrio natural com <strong className="text-[#F9F6F0]">carinho, amor</strong> e ciencia. Cada animal e unico e merece um cuidado que respeite sua essencia.
+              </p>
+              <Link
+                to="/missao"
+                data-testid="mission-read-more"
+                className="inline-flex items-center gap-2 bg-[#C87A5D] text-[#F9F6F0] hover:bg-[#B3674C] rounded-full px-7 py-3 font-medium transition-all mt-2"
+              >
+                Conheca nossa historia <ChevronRight className="w-4 h-4" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-4">
+                <div className="bg-[#F9F6F0]/10 backdrop-blur-sm border border-[#F9F6F0]/10 rounded-2xl p-6 hover:-translate-y-1 transition-all">
+                  <Leaf className="w-8 h-8 text-[#C87A5D] mb-3" />
+                  <h3 className="font-['Outfit'] text-lg font-medium text-[#F9F6F0] mb-2">Ayurveda</h3>
+                  <p className="text-[#F9F6F0]/60 text-sm">5.000 anos de sabedoria adaptados para a saude do seu pet.</p>
+                </div>
+                <div className="bg-[#F9F6F0]/10 backdrop-blur-sm border border-[#F9F6F0]/10 rounded-2xl p-6 hover:-translate-y-1 transition-all">
+                  <Target className="w-8 h-8 text-[#C87A5D] mb-3" />
+                  <h3 className="font-['Outfit'] text-lg font-medium text-[#F9F6F0] mb-2">Medicina Chinesa</h3>
+                  <p className="text-[#F9F6F0]/60 text-sm">Acupuntura e fitoterapia para restaurar o equilibrio vital.</p>
+                </div>
+              </div>
+              <div className="space-y-4 mt-8">
+                <div className="bg-[#F9F6F0]/10 backdrop-blur-sm border border-[#F9F6F0]/10 rounded-2xl p-6 hover:-translate-y-1 transition-all">
+                  <Droplets className="w-8 h-8 text-[#C87A5D] mb-3" />
+                  <h3 className="font-['Outfit'] text-lg font-medium text-[#F9F6F0] mb-2">Homeopatia</h3>
+                  <p className="text-[#F9F6F0]/60 text-sm">Tratamentos suaves e sem efeitos colaterais.</p>
+                </div>
+                <div className="bg-[#F9F6F0]/10 backdrop-blur-sm border border-[#F9F6F0]/10 rounded-2xl p-6 hover:-translate-y-1 transition-all">
+                  <Heart className="w-8 h-8 text-[#C87A5D] mb-3" />
+                  <h3 className="font-['Outfit'] text-lg font-medium text-[#F9F6F0] mb-2">Amor & Cuidado</h3>
+                  <p className="text-[#F9F6F0]/60 text-sm">Tratar com carinho e o primeiro passo para a cura.</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

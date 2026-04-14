@@ -13,6 +13,7 @@ import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import AdminPage from "./pages/AdminPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
+import MissionPage from "./pages/MissionPage";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <main className="flex-1">
             <Routes>
               <Route path="/" element={<HomePage />} />
+              <Route path="/missao" element={<MissionPage />} />
               <Route path="/produtos" element={<ProductsPage />} />
               <Route path="/consultas" element={<ConsultationPage />} />
               <Route path="/dicas" element={<TipsList />} />

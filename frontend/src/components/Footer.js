@@ -37,6 +37,7 @@ export default function Footer() {
           <div>
             <h4 className="font-['Outfit'] font-medium text-sm mb-4 text-[#F9F6F0]/90">Empresa</h4>
             <ul className="space-y-2.5">
+              <li><Link to="/missao" className="text-sm text-[#F9F6F0]/60 hover:text-[#F9F6F0] transition-colors">Nossa Missao</Link></li>
               <li><Link to="/dicas" className="text-sm text-[#F9F6F0]/60 hover:text-[#F9F6F0] transition-colors">Blog & Dicas</Link></li>
               <li><Link to="/consultas" className="text-sm text-[#F9F6F0]/60 hover:text-[#F9F6F0] transition-colors">Agendar Consulta</Link></li>
               <li><Link to="/login" className="text-sm text-[#F9F6F0]/60 hover:text-[#F9F6F0] transition-colors">Minha Conta</Link></li>
