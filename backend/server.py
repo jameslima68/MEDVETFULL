@@ -126,6 +126,11 @@ class ContactRequest(BaseModel):
     phone: Optional[str] = None
     message: str
 
+class SubscriptionRequest(BaseModel):
+    plan_id: str
+    plan_name: str
+    price: float
+
 class ProductUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
@@ -969,6 +974,60 @@ async def award_loyalty_points(email: str, amount: float, product_name: str):
         "created_at": datetime.now(timezone.utc).isoformat()
     })
     logger.info(f"[LOYALTY] {email} earned {points} points for {product_name}")
+
+# --- Subscriptions ---
+@api_router.post("/subscriptions")
+async def create_subscription(req: SubscriptionRequest, user: dict = Depends(get_current_user)):
+    existing = await db.subscriptions.find_one({"email": user["email"], "status": "active"})
+    if existing:
+        raise HTTPException(status_code=400, detail="Voce ja possui uma assinatura ativa. Cancele a atual para assinar outro plano.")
+    next_month = datetime.now(timezone.utc) + timedelta(days=30)
+    doc = {
+        "id": str(ObjectId()),
+        "email": user["email"],
+        "user_name": user.get("name", ""),
+        "plan_id": req.plan_id,
+        "plan_name": req.plan_name,
+        "price": req.price,
+        "status": "active",
+        "next_delivery": next_month.strftime("%d/%m/%Y"),
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.subscriptions.insert_one(doc)
+    doc.pop("_id", None)
+    asyncio.create_task(send_email_notification(
+        user["email"],
+        f"MEDVET Integrativa - Assinatura {req.plan_name} Ativada",
+        f"""<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#F9F6F0;padding:32px;">
+        <h1 style="color:#2C4C3B;text-align:center;">MEDVET INTEGRATIVA</h1>
+        <div style="background:white;border-radius:16px;padding:24px;border:1px solid #E0DDD5;">
+          <h2 style="color:#2C4C3B;">Assinatura Ativada!</h2>
+          <p style="color:#4A6B5A;">Plano: <strong>{req.plan_name}</strong></p>
+          <p style="color:#2C4C3B;font-size:24px;font-weight:bold;">R$ {req.price:.2f}/mes</p>
+          <p style="color:#4A6B5A;">Proximo envio: <strong>{next_month.strftime('%d/%m/%Y')}</strong></p>
+        </div></div>"""
+    ))
+    return doc
+
+@api_router.get("/subscriptions")
+async def get_user_subscriptions(user: dict = Depends(get_current_user)):
+    subs = await db.subscriptions.find({"email": user["email"]}, {"_id": 0}).sort("created_at", -1).to_list(20)
+    return subs
+
+@api_router.put("/subscriptions/{sub_id}/cancel")
+async def cancel_subscription(sub_id: str, user: dict = Depends(get_current_user)):
+    result = await db.subscriptions.update_one(
+        {"id": sub_id, "email": user["email"], "status": "active"},
+        {"$set": {"status": "cancelled", "cancelled_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Subscription not found or already cancelled")
+    return {"message": "Assinatura cancelada"}
+
+@api_router.get("/admin/subscriptions")
+async def admin_get_subscriptions(user: dict = Depends(get_admin_user)):
+    subs = await db.subscriptions.find({}, {"_id": 0}).sort("created_at", -1).to_list(200)
+    return subs
 
 # --- Contact ---
 @api_router.post("/contact")

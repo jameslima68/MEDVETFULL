@@ -859,6 +859,131 @@ class MedvetAPITester:
             401
         )
 
+    def test_subscription_endpoints(self):
+        """Test subscription system endpoints"""
+        print("\n=== TESTING SUBSCRIPTION ENDPOINTS ===")
+        
+        # Test creating subscription (requires auth)
+        subscription_data = {
+            "plan_id": "premium",
+            "plan_name": "Premium",
+            "price": 149.90
+        }
+        
+        success, subscription_response = self.run_test(
+            "Create Subscription (Authenticated)",
+            "POST",
+            "subscriptions",
+            200,
+            data=subscription_data,
+            cookies=self.user_cookies
+        )
+        
+        subscription_id = None
+        if success:
+            subscription_id = subscription_response.get('id')
+            plan_name = subscription_response.get('plan_name')
+            price = subscription_response.get('price')
+            next_delivery = subscription_response.get('next_delivery')
+            print(f"   Subscription created: {plan_name} (R$ {price:.2f}) - Next delivery: {next_delivery}")
+            print(f"   Subscription ID: {subscription_id}")
+        
+        # Test getting user subscriptions
+        success, user_subscriptions = self.run_test(
+            "Get User Subscriptions",
+            "GET",
+            "subscriptions",
+            200,
+            cookies=self.user_cookies
+        )
+        
+        if success:
+            print(f"   Found {len(user_subscriptions)} user subscriptions")
+            for sub in user_subscriptions:
+                print(f"   - {sub.get('plan_name')} (R$ {sub.get('price', 0):.2f}) - Status: {sub.get('status')}")
+        
+        # Test creating duplicate subscription (should fail)
+        success, duplicate_response = self.run_test(
+            "Create Duplicate Subscription (should fail)",
+            "POST",
+            "subscriptions",
+            400,
+            data=subscription_data,
+            cookies=self.user_cookies
+        )
+        if not success:
+            print("   ✅ Correctly prevented duplicate subscription")
+        
+        # Test canceling subscription
+        if subscription_id:
+            success, cancel_response = self.run_test(
+                f"Cancel Subscription ({subscription_id})",
+                "PUT",
+                f"subscriptions/{subscription_id}/cancel",
+                200,
+                cookies=self.user_cookies
+            )
+            
+            if success:
+                print(f"   Subscription {subscription_id} cancelled successfully")
+                
+                # Verify subscription is cancelled
+                success, updated_subscriptions = self.run_test(
+                    "Get Updated User Subscriptions",
+                    "GET",
+                    "subscriptions",
+                    200,
+                    cookies=self.user_cookies
+                )
+                
+                if success:
+                    cancelled_sub = next((s for s in updated_subscriptions if s.get('id') == subscription_id), None)
+                    if cancelled_sub and cancelled_sub.get('status') == 'cancelled':
+                        print(f"   ✅ Subscription status correctly updated to cancelled")
+                    else:
+                        print(f"   ❌ Subscription status not updated correctly")
+        
+        # Test admin get all subscriptions
+        success, admin_subscriptions = self.run_test(
+            "Admin Get All Subscriptions",
+            "GET",
+            "admin/subscriptions",
+            200,
+            cookies=self.admin_cookies
+        )
+        
+        if success:
+            print(f"   Admin found {len(admin_subscriptions)} total subscriptions")
+            active_count = len([s for s in admin_subscriptions if s.get('status') == 'active'])
+            cancelled_count = len([s for s in admin_subscriptions if s.get('status') == 'cancelled'])
+            print(f"   Active: {active_count}, Cancelled: {cancelled_count}")
+        
+        # Test subscription without auth (should fail)
+        self.run_test(
+            "Create Subscription (No Auth)",
+            "POST",
+            "subscriptions",
+            401,
+            data=subscription_data
+        )
+        
+        # Test get subscriptions without auth (should fail)
+        self.run_test(
+            "Get Subscriptions (No Auth)",
+            "GET",
+            "subscriptions",
+            401
+        )
+        
+        # Test cancel non-existent subscription
+        self.run_test(
+            "Cancel Non-existent Subscription",
+            "PUT",
+            "subscriptions/nonexistent/cancel",
+            404,
+            cookies=self.user_cookies
+        )
+
     def test_error_cases(self):
         """Test error handling"""
         print("\n=== TESTING ERROR CASES ===")
@@ -940,6 +1065,7 @@ def main():
     tester.test_purchase_history()
     tester.test_testimonials_endpoints()  # New testimonials tests
     tester.test_loyalty_endpoints()       # New loyalty tests
+    tester.test_subscription_endpoints()  # New subscription tests
     tester.test_error_cases()
     
     # Print final results

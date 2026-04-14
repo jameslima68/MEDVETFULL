@@ -16,6 +16,8 @@ import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import MissionPage from "./pages/MissionPage";
 import TestimonialsPage from "./pages/TestimonialsPage";
 import LoyaltyPage from "./pages/LoyaltyPage";
+import CoatGuidePage from "./pages/CoatGuidePage";
+import SubscriptionsPage from "./pages/SubscriptionsPage";
 
 function App() {
   return (
@@ -38,6 +40,8 @@ function App() {
               <Route path="/pagamento/sucesso" element={<PaymentSuccessPage />} />
               <Route path="/depoimentos" element={<TestimonialsPage />} />
               <Route path="/fidelidade" element={<LoyaltyPage />} />
+              <Route path="/guia-pelagem" element={<CoatGuidePage />} />
+              <Route path="/assinaturas" element={<SubscriptionsPage />} />
             </Routes>
           </main>
           <Footer />
