@@ -43,7 +43,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
 
 def create_access_token(user_id: str, email: str) -> str:
-    payload = {"sub": user_id, "email": email, "exp": datetime.now(timezone.utc) + timedelta(minutes=15), "type": "access"}
+    payload = {"sub": user_id, "email": email, "exp": datetime.now(timezone.utc) + timedelta(hours=2), "type": "access"}
     return jwt.encode(payload, get_jwt_secret(), algorithm=JWT_ALGORITHM)
 
 def create_refresh_token(user_id: str) -> str:
@@ -74,7 +74,7 @@ async def get_current_user(request: Request) -> dict:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 def set_auth_cookies(response: Response, access_token: str, refresh_token: str):
-    response.set_cookie(key="access_token", value=access_token, httponly=True, secure=False, samesite="lax", max_age=900, path="/")
+    response.set_cookie(key="access_token", value=access_token, httponly=True, secure=False, samesite="lax", max_age=7200, path="/")
     response.set_cookie(key="refresh_token", value=refresh_token, httponly=True, secure=False, samesite="lax", max_age=604800, path="/")
 
 # --- Pydantic Models ---
@@ -212,7 +212,7 @@ async def refresh_token(request: Request, response: Response):
             raise HTTPException(status_code=401, detail="User not found")
         user_id = str(user["_id"])
         new_access = create_access_token(user_id, user["email"])
-        response.set_cookie(key="access_token", value=new_access, httponly=True, secure=False, samesite="lax", max_age=900, path="/")
+        response.set_cookie(key="access_token", value=new_access, httponly=True, secure=False, samesite="lax", max_age=7200, path="/")
         return {"message": "Token refreshed"}
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid refresh token")
@@ -428,7 +428,21 @@ async def get_checkout_status(session_id: str, request: Request):
     webhook_url = f"{host_url}/api/webhook/stripe"
     stripe_checkout = StripeCheckout(api_key=api_key, webhook_url=webhook_url)
     
-    checkout_status = await stripe_checkout.get_checkout_status(session_id)
+    try:
+        checkout_status = await stripe_checkout.get_checkout_status(session_id)
+    except Exception as e:
+        logger.error(f"Stripe status check error: {e}")
+        # Check if we have local transaction data
+        tx = await db.payment_transactions.find_one({"session_id": session_id}, {"_id": 0})
+        if tx:
+            return {
+                "status": tx.get("status", "unknown"),
+                "payment_status": tx.get("payment_status", "pending"),
+                "amount_total": int(tx.get("amount", 0) * 100),
+                "currency": tx.get("currency", "brl"),
+                "metadata": tx.get("metadata", {})
+            }
+        raise HTTPException(status_code=404, detail="Session not found")
     
     # Update transaction
     tx = await db.payment_transactions.find_one({"session_id": session_id})
