@@ -2,21 +2,26 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, Navigate } from 'react-router-dom';
 import axios from 'axios';
-import { Calendar, Clock, Tag, FileText, ChevronRight, Shield } from 'lucide-react';
+import { Calendar, Clock, Tag, FileText, ChevronRight, Shield, ShoppingBag, CreditCard, CheckCircle2 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth();
   const [consultations, setConsultations] = useState([]);
+  const [purchases, setPurchases] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (user && user !== false) {
-      axios.get(`${API}/consultations`, { withCredentials: true })
-        .then(res => setConsultations(res.data))
-        .catch(() => {})
-        .finally(() => setLoading(false));
+      Promise.all([
+        axios.get(`${API}/consultations`, { withCredentials: true }).catch(() => ({ data: [] })),
+        axios.get(`${API}/purchases`, { withCredentials: true }).catch(() => ({ data: [] })),
+      ]).then(([cRes, pRes]) => {
+        setConsultations(cRes.data);
+        setPurchases(pRes.data);
+      }).finally(() => setLoading(false));
     }
   }, [user]);
 
@@ -31,7 +36,7 @@ export default function DashboardPage() {
           <h1 className="font-['Outfit'] text-3xl sm:text-4xl font-semibold tracking-tight text-[#F9F6F0] mt-2">
             Ola, {user.name?.split(' ')[0]}!
           </h1>
-          <p className="text-[#F9F6F0]/70 mt-2">Gerencie suas consultas e acompanhe seus tratamentos.</p>
+          <p className="text-[#F9F6F0]/70 mt-2">Gerencie suas consultas, compras e tratamentos.</p>
         </div>
       </div>
 
@@ -66,46 +71,92 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        {/* Consultations */}
-        <div>
-          <h2 className="font-['Outfit'] text-xl font-medium text-[#1A2E24] mb-6">Minhas Consultas</h2>
-          {loading ? (
-            <div className="space-y-3">
-              {[1,2,3].map(i => <div key={i} className="bg-white/40 rounded-2xl h-24 animate-pulse" />)}
-            </div>
-          ) : consultations.length === 0 ? (
-            <div data-testid="no-consultations" className="bg-white/60 backdrop-blur-sm border border-[#E0DDD5] rounded-2xl p-10 text-center">
-              <Calendar className="w-12 h-12 text-[#84978F] mx-auto mb-4" />
-              <p className="text-[#4A6B5A] mb-4">Voce ainda nao tem consultas agendadas.</p>
-              <Link to="/consultas" className="bg-[#2C4C3B] text-[#F9F6F0] hover:bg-[#1A2E24] rounded-full px-6 py-2.5 text-sm font-medium transition-all inline-block">
-                Agendar agora
-              </Link>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {consultations.map(c => (
-                <div key={c.id} data-testid={`consultation-item-${c.id}`} className="bg-white/60 backdrop-blur-sm border border-[#E0DDD5] rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center gap-4">
-                  <div className="flex items-center gap-4 flex-1">
-                    <div className="w-12 h-12 bg-[#2C4C3B]/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Calendar className="w-6 h-6 text-[#2C4C3B]" />
+        {/* Tabs */}
+        <Tabs defaultValue="consultations" className="space-y-6">
+          <TabsList className="bg-white/60 border border-[#E0DDD5] rounded-xl p-1 h-auto">
+            <TabsTrigger value="consultations" data-testid="dash-tab-consultations" className="rounded-lg px-4 py-2 text-sm data-[state=active]:bg-[#2C4C3B] data-[state=active]:text-[#F9F6F0]">
+              <Calendar className="w-4 h-4 mr-2" /> Consultas
+            </TabsTrigger>
+            <TabsTrigger value="purchases" data-testid="dash-tab-purchases" className="rounded-lg px-4 py-2 text-sm data-[state=active]:bg-[#2C4C3B] data-[state=active]:text-[#F9F6F0]">
+              <ShoppingBag className="w-4 h-4 mr-2" /> Compras
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Consultations */}
+          <TabsContent value="consultations">
+            {loading ? (
+              <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="bg-white/40 rounded-2xl h-24 animate-pulse" />)}</div>
+            ) : consultations.length === 0 ? (
+              <div data-testid="no-consultations" className="bg-white/60 backdrop-blur-sm border border-[#E0DDD5] rounded-2xl p-10 text-center">
+                <Calendar className="w-12 h-12 text-[#84978F] mx-auto mb-4" />
+                <p className="text-[#4A6B5A] mb-4">Voce ainda nao tem consultas agendadas.</p>
+                <Link to="/consultas" className="bg-[#2C4C3B] text-[#F9F6F0] hover:bg-[#1A2E24] rounded-full px-6 py-2.5 text-sm font-medium transition-all inline-block">Agendar agora</Link>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {consultations.map(c => (
+                  <div key={c.id} data-testid={`consultation-item-${c.id}`} className="bg-white/60 backdrop-blur-sm border border-[#E0DDD5] rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center gap-4">
+                    <div className="flex items-center gap-4 flex-1">
+                      <div className="w-12 h-12 bg-[#2C4C3B]/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <Calendar className="w-6 h-6 text-[#2C4C3B]" />
+                      </div>
+                      <div>
+                        <p className="font-['Outfit'] font-medium text-[#1A2E24]">{c.category}</p>
+                        <p className="text-sm text-[#4A6B5A]">Pet: {c.pet_name} ({c.pet_type})</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-['Outfit'] font-medium text-[#1A2E24]">{c.category}</p>
-                      <p className="text-sm text-[#4A6B5A]">Pet: {c.pet_name} ({c.pet_type})</p>
+                    <div className="flex items-center gap-4 text-sm text-[#84978F]">
+                      <span className="flex items-center gap-1"><Calendar className="w-4 h-4" />{c.date}</span>
+                      <span className="flex items-center gap-1"><Clock className="w-4 h-4" />{c.time}</span>
+                    </div>
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${c.status === 'confirmed' ? 'bg-[#2C4C3B]/10 text-[#2C4C3B]' : c.status === 'cancelled' ? 'bg-red-100 text-red-600' : 'bg-[#C87A5D]/10 text-[#C87A5D]'}`}>
+                      {c.status === 'confirmed' ? 'Confirmada' : c.status === 'cancelled' ? 'Cancelada' : 'Pendente'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Purchases */}
+          <TabsContent value="purchases">
+            {loading ? (
+              <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="bg-white/40 rounded-2xl h-24 animate-pulse" />)}</div>
+            ) : purchases.length === 0 ? (
+              <div data-testid="no-purchases" className="bg-white/60 backdrop-blur-sm border border-[#E0DDD5] rounded-2xl p-10 text-center">
+                <ShoppingBag className="w-12 h-12 text-[#84978F] mx-auto mb-4" />
+                <p className="text-[#4A6B5A] mb-4">Voce ainda nao tem compras.</p>
+                <Link to="/produtos" className="bg-[#2C4C3B] text-[#F9F6F0] hover:bg-[#1A2E24] rounded-full px-6 py-2.5 text-sm font-medium transition-all inline-block">Ver produtos</Link>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {purchases.map(p => (
+                  <div key={p.id} data-testid={`purchase-item-${p.id}`} className="bg-white/60 backdrop-blur-sm border border-[#E0DDD5] rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center gap-4">
+                    <div className="flex items-center gap-4 flex-1">
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${p.payment_method === 'pix' ? 'bg-[#00BDAE]/10' : 'bg-[#2C4C3B]/10'}`}>
+                        {p.payment_method === 'pix' ? (
+                          <span className="text-[#00BDAE] font-bold text-sm">PIX</span>
+                        ) : (
+                          <CreditCard className="w-6 h-6 text-[#2C4C3B]" />
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-['Outfit'] font-medium text-[#1A2E24]">{p.product_name}</p>
+                        <p className="text-sm text-[#84978F]">{p.payment_method === 'pix' ? 'PIX' : 'Cartao'} - {new Date(p.created_at).toLocaleDateString('pt-BR')}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="font-['Outfit'] text-lg font-semibold text-[#2C4C3B]">R$ {p.amount?.toFixed(2).replace('.', ',')}</span>
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${p.payment_status === 'paid' ? 'bg-[#2C4C3B]/10 text-[#2C4C3B]' : 'bg-[#C87A5D]/10 text-[#C87A5D]'}`}>
+                        {p.payment_status === 'paid' ? 'Pago' : 'Pendente'}
+                      </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 text-sm text-[#84978F]">
-                    <span className="flex items-center gap-1"><Calendar className="w-4 h-4" />{c.date}</span>
-                    <span className="flex items-center gap-1"><Clock className="w-4 h-4" />{c.time}</span>
-                  </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold ${c.status === 'pending' ? 'bg-[#C87A5D]/10 text-[#C87A5D]' : 'bg-[#2C4C3B]/10 text-[#2C4C3B]'}`}>
-                    {c.status === 'pending' ? 'Pendente' : 'Confirmada'}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

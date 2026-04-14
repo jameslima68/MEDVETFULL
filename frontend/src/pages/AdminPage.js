@@ -313,25 +313,43 @@ export default function AdminPage() {
                     <tr>
                       <th className="text-left px-4 py-3 font-medium">Produto</th>
                       <th className="text-left px-4 py-3 font-medium">Valor</th>
+                      <th className="text-left px-4 py-3 font-medium">Metodo</th>
                       <th className="text-left px-4 py-3 font-medium">Status</th>
-                      <th className="text-left px-4 py-3 font-medium">Session ID</th>
+                      <th className="text-left px-4 py-3 font-medium">Cliente</th>
                       <th className="text-left px-4 py-3 font-medium">Data</th>
+                      <th className="text-right px-4 py-3 font-medium">Acoes</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#E0DDD5]">
                     {payments.length === 0 ? (
-                      <tr><td colSpan={5} className="text-center py-10 text-[#84978F]">Nenhum pagamento registrado</td></tr>
+                      <tr><td colSpan={7} className="text-center py-10 text-[#84978F]">Nenhum pagamento registrado</td></tr>
                     ) : payments.map((p, i) => (
                       <tr key={i} className="hover:bg-white/40 transition-colors">
                         <td className="px-4 py-3 font-medium text-[#1A2E24]">{p.product_name}</td>
                         <td className="px-4 py-3 text-[#2C4C3B] font-medium">R$ {p.amount?.toFixed(2).replace('.', ',')}</td>
                         <td className="px-4 py-3">
+                          <span className={`px-2 py-1 rounded-full text-xs font-bold ${p.payment_method === 'pix' ? 'bg-[#00BDAE]/10 text-[#00BDAE]' : 'bg-[#84978F]/10 text-[#84978F]'}`}>
+                            {p.payment_method === 'pix' ? 'PIX' : 'Stripe'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
                           <span className={`px-2 py-1 rounded-full text-xs font-bold ${p.payment_status === 'paid' ? 'bg-[#2C4C3B]/10 text-[#2C4C3B]' : p.payment_status === 'pending' ? 'bg-[#C87A5D]/10 text-[#C87A5D]' : 'bg-red-100 text-red-600'}`}>
                             {p.payment_status === 'paid' ? 'Pago' : p.payment_status === 'pending' ? 'Pendente' : p.payment_status}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-[#84978F] text-xs font-mono">{p.session_id?.slice(0, 20)}...</td>
+                        <td className="px-4 py-3 text-[#4A6B5A] text-xs">{p.email || p.customer_name || '-'}</td>
                         <td className="px-4 py-3 text-[#84978F] text-xs">{p.created_at ? new Date(p.created_at).toLocaleDateString('pt-BR') : '-'}</td>
+                        <td className="px-4 py-3 text-right">
+                          {p.payment_status !== 'paid' && p.payment_method === 'pix' && (
+                            <button
+                              onClick={async () => { try { await ax.put(`/admin/payments/${p.id}/confirm`); toast.success('Pagamento confirmado!'); loadData(); } catch { toast.error('Erro'); } }}
+                              data-testid={`confirm-pix-${p.id}`}
+                              className="px-3 py-1 bg-[#00BDAE] text-white rounded-full text-xs font-medium hover:bg-[#00A99D] transition-colors"
+                            >
+                              Confirmar PIX
+                            </button>
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </tbody>

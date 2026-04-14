@@ -12,6 +12,11 @@ import logging
 import bcrypt
 import jwt
 import secrets
+import asyncio
+import hashlib
+import qrcode
+import io
+import base64
 from bson import ObjectId
 from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional, Dict
@@ -133,6 +138,88 @@ class ProductUpdate(BaseModel):
 class CheckoutRequest(BaseModel):
     product_id: str
     origin_url: str
+    email: Optional[str] = None
+
+class PixCheckoutRequest(BaseModel):
+    product_id: str
+    name: str
+    email: str
+
+# --- Email Helper ---
+async def send_email_notification(to_email: str, subject: str, html_content: str):
+    """Send email via Resend if API key available, otherwise log."""
+    resend_key = os.environ.get("RESEND_API_KEY")
+    if not resend_key:
+        logger.info(f"[EMAIL LOG] To: {to_email} | Subject: {subject}")
+        return {"status": "logged", "message": "Email logged (no RESEND_API_KEY)"}
+    try:
+        import resend
+        resend.api_key = resend_key
+        sender = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
+        params = {"from": sender, "to": [to_email], "subject": subject, "html": html_content}
+        result = await asyncio.to_thread(resend.Emails.send, params)
+        logger.info(f"[EMAIL SENT] To: {to_email} | Subject: {subject}")
+        return {"status": "sent", "email_id": result.get("id")}
+    except Exception as e:
+        logger.error(f"[EMAIL ERROR] {e}")
+        return {"status": "error", "message": str(e)}
+
+def build_purchase_email(product_name: str, amount: float, payment_method: str, tx_id: str) -> str:
+    return f"""
+    <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#F9F6F0;padding:32px;">
+      <div style="text-align:center;margin-bottom:24px;">
+        <h1 style="color:#2C4C3B;font-size:24px;margin:0;">MEDVET INTEGRATIVA</h1>
+        <p style="color:#84978F;font-size:14px;">Medicina Veterinaria Integrativa</p>
+      </div>
+      <div style="background:white;border-radius:16px;padding:24px;border:1px solid #E0DDD5;">
+        <h2 style="color:#2C4C3B;font-size:20px;">Compra Confirmada!</h2>
+        <p style="color:#4A6B5A;">Seu pedido foi processado com sucesso.</p>
+        <table style="width:100%;margin:16px 0;border-collapse:collapse;">
+          <tr><td style="padding:8px 0;color:#84978F;">Produto:</td><td style="padding:8px 0;color:#1A2E24;font-weight:600;">{product_name}</td></tr>
+          <tr><td style="padding:8px 0;color:#84978F;">Valor:</td><td style="padding:8px 0;color:#2C4C3B;font-weight:600;">R$ {amount:.2f}</td></tr>
+          <tr><td style="padding:8px 0;color:#84978F;">Metodo:</td><td style="padding:8px 0;color:#1A2E24;">{payment_method}</td></tr>
+          <tr><td style="padding:8px 0;color:#84978F;">ID:</td><td style="padding:8px 0;color:#84978F;font-size:12px;">{tx_id}</td></tr>
+        </table>
+        <p style="color:#4A6B5A;font-size:14px;">Entraremos em contato para combinar o envio. Obrigado pela preferencia!</p>
+      </div>
+    </div>"""
+
+def build_consultation_email(name: str, pet_name: str, category: str, date: str, time: str) -> str:
+    return f"""
+    <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#F9F6F0;padding:32px;">
+      <div style="text-align:center;margin-bottom:24px;">
+        <h1 style="color:#2C4C3B;font-size:24px;margin:0;">MEDVET INTEGRATIVA</h1>
+        <p style="color:#84978F;font-size:14px;">Medicina Veterinaria Integrativa</p>
+      </div>
+      <div style="background:white;border-radius:16px;padding:24px;border:1px solid #E0DDD5;">
+        <h2 style="color:#2C4C3B;font-size:20px;">Consulta Agendada!</h2>
+        <p style="color:#4A6B5A;">Ola {name}, sua consulta foi agendada com sucesso.</p>
+        <table style="width:100%;margin:16px 0;border-collapse:collapse;">
+          <tr><td style="padding:8px 0;color:#84978F;">Pet:</td><td style="padding:8px 0;color:#1A2E24;font-weight:600;">{pet_name}</td></tr>
+          <tr><td style="padding:8px 0;color:#84978F;">Especialidade:</td><td style="padding:8px 0;color:#1A2E24;">{category}</td></tr>
+          <tr><td style="padding:8px 0;color:#84978F;">Data:</td><td style="padding:8px 0;color:#2C4C3B;font-weight:600;">{date}</td></tr>
+          <tr><td style="padding:8px 0;color:#84978F;">Horario:</td><td style="padding:8px 0;color:#2C4C3B;font-weight:600;">{time}</td></tr>
+        </table>
+        <p style="color:#4A6B5A;font-size:14px;">Voce recebera um link de videochamada antes da consulta. Ate la!</p>
+      </div>
+    </div>"""
+
+def generate_pix_code(amount: float, tx_id: str) -> dict:
+    """Generate a simulated PIX payment code and QR code."""
+    pix_key = "medvet@integrativa.com.br"
+    # Simulated PIX copy-paste code
+    raw = f"PIX{tx_id}{amount:.2f}{pix_key}"
+    code_hash = hashlib.sha256(raw.encode()).hexdigest()[:32].upper()
+    pix_copy_paste = f"00020126580014br.gov.bcb.pix0136{pix_key}5204000053039865404{amount:.2f}5802BR5925MEDVET INTEGRATIVA6009SAO PAULO62070503***6304{code_hash[:4]}"
+    # Generate QR code as base64
+    qr = qrcode.QRCode(version=1, box_size=8, border=2)
+    qr.add_data(pix_copy_paste)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="#2C4C3B", back_color="#F9F6F0")
+    buffer = io.BytesIO()
+    img.save(buffer, format="PNG")
+    qr_base64 = base64.b64encode(buffer.getvalue()).decode()
+    return {"pix_key": pix_key, "pix_code": pix_copy_paste, "qr_code": f"data:image/png;base64,{qr_base64}", "tx_id": tx_id}
 
 # --- Auth Endpoints ---
 @api_router.post("/auth/register")
@@ -259,6 +346,12 @@ async def create_consultation(req: ConsultationRequest):
     doc["created_at"] = datetime.now(timezone.utc).isoformat()
     await db.consultations.insert_one(doc)
     doc.pop("_id", None)
+    # Send confirmation email (async, non-blocking)
+    asyncio.create_task(send_email_notification(
+        req.email,
+        "MEDVET Integrativa - Consulta Agendada",
+        build_consultation_email(req.name, req.pet_name, req.category, req.date, req.time)
+    ))
     return doc
 
 @api_router.get("/consultations")
@@ -411,8 +504,10 @@ async def create_checkout(req: CheckoutRequest, request: Request):
         "product_name": product["name"],
         "amount": float(product["price"]),
         "currency": "brl",
+        "payment_method": "stripe",
         "payment_status": "pending",
         "status": "initiated",
+        "email": req.email or "",
         "metadata": metadata,
         "created_at": datetime.now(timezone.utc).isoformat()
     }
@@ -481,10 +576,98 @@ async def stripe_webhook(request: Request):
                 {"session_id": event.session_id},
                 {"$set": {"payment_status": "paid", "status": "complete", "updated_at": datetime.now(timezone.utc).isoformat()}}
             )
+            # Send purchase email
+            tx = await db.payment_transactions.find_one({"session_id": event.session_id}, {"_id": 0})
+            if tx and tx.get("email"):
+                asyncio.create_task(send_email_notification(
+                    tx["email"], "MEDVET Integrativa - Compra Confirmada",
+                    build_purchase_email(tx.get("product_name", ""), tx.get("amount", 0), "Cartao (Stripe)", tx.get("id", ""))
+                ))
         return {"status": "ok"}
     except Exception as e:
         logger.error(f"Webhook error: {e}")
         return {"status": "error"}
+
+# --- PIX Payment ---
+@api_router.post("/checkout/pix")
+async def create_pix_checkout(req: PixCheckoutRequest):
+    product = await db.products.find_one({"id": req.product_id}, {"_id": 0})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    tx_id = str(ObjectId())
+    pix_data = generate_pix_code(float(product["price"]), tx_id)
+    
+    tx = {
+        "id": tx_id,
+        "session_id": f"pix_{tx_id}",
+        "product_id": product["id"],
+        "product_name": product["name"],
+        "amount": float(product["price"]),
+        "currency": "brl",
+        "payment_method": "pix",
+        "payment_status": "pending",
+        "status": "awaiting_pix",
+        "email": req.email,
+        "customer_name": req.name,
+        "pix_code": pix_data["pix_code"],
+        "metadata": {"product_id": product["id"], "product_name": product["name"], "source": "medvet_pix"},
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.payment_transactions.insert_one(tx)
+    tx.pop("_id", None)
+    
+    # Send email with PIX info
+    asyncio.create_task(send_email_notification(
+        req.email, "MEDVET Integrativa - Pagamento PIX Pendente",
+        f"""<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#F9F6F0;padding:32px;">
+        <div style="text-align:center;margin-bottom:24px;">
+          <h1 style="color:#2C4C3B;font-size:24px;margin:0;">MEDVET INTEGRATIVA</h1>
+        </div>
+        <div style="background:white;border-radius:16px;padding:24px;border:1px solid #E0DDD5;">
+          <h2 style="color:#2C4C3B;font-size:20px;">Pagamento PIX Pendente</h2>
+          <p style="color:#4A6B5A;">Produto: <strong>{product['name']}</strong></p>
+          <p style="color:#2C4C3B;font-size:24px;font-weight:bold;">R$ {product['price']:.2f}</p>
+          <p style="color:#4A6B5A;">Chave PIX: <strong>{pix_data['pix_key']}</strong></p>
+          <p style="color:#84978F;font-size:12px;">Apos o pagamento, sua compra sera confirmada em ate 24h.</p>
+        </div></div>"""
+    ))
+    
+    return {
+        "tx_id": tx_id,
+        "pix_key": pix_data["pix_key"],
+        "pix_code": pix_data["pix_code"],
+        "qr_code": pix_data["qr_code"],
+        "amount": float(product["price"]),
+        "product_name": product["name"]
+    }
+
+# --- Admin: Confirm PIX Payment ---
+@api_router.put("/admin/payments/{tx_id}/confirm")
+async def admin_confirm_pix(tx_id: str, user: dict = Depends(get_admin_user)):
+    tx = await db.payment_transactions.find_one({"id": tx_id})
+    if not tx:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    if tx.get("payment_status") == "paid":
+        return {"message": "Already confirmed"}
+    await db.payment_transactions.update_one(
+        {"id": tx_id},
+        {"$set": {"payment_status": "paid", "status": "complete", "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    # Send confirmation email
+    if tx.get("email"):
+        asyncio.create_task(send_email_notification(
+            tx["email"], "MEDVET Integrativa - Compra Confirmada",
+            build_purchase_email(tx.get("product_name", ""), tx.get("amount", 0), "PIX", tx_id)
+        ))
+    return {"message": "Payment confirmed"}
+
+# --- Purchase History ---
+@api_router.get("/purchases")
+async def get_purchases(user: dict = Depends(get_current_user)):
+    email = user["email"]
+    purchases = await db.payment_transactions.find({"email": email}, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return purchases
 
 # --- Contact ---
 @api_router.post("/contact")

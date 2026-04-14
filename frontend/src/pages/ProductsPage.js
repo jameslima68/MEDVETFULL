@@ -4,6 +4,8 @@ import axios from 'axios';
 import { Search, Filter, SlidersHorizontal, ShoppingCart, X } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { Slider } from '../components/ui/slider';
+import { Toaster } from 'sonner';
+import PaymentModal from '../components/PaymentModal';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -15,6 +17,7 @@ export default function ProductsPage() {
   const [priceRange, setPriceRange] = useState([0, 2000]);
   const [activePrice, setActivePrice] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const activeCategory = searchParams.get('categoria') || '';
 
   useEffect(() => {
@@ -43,10 +46,7 @@ export default function ProductsPage() {
   useEffect(() => { loadProducts(); }, [loadProducts]);
 
   const handleBuy = (product) => {
-    const origin = window.location.origin;
-    axios.post(`${API}/checkout`, { product_id: product.id, origin_url: origin })
-      .then(res => { window.location.href = res.data.url; })
-      .catch(() => alert('Erro ao iniciar pagamento. Tente novamente.'));
+    setSelectedProduct(product);
   };
 
   const clearPriceFilter = () => {
@@ -203,6 +203,12 @@ export default function ProductsPage() {
           </div>
         )}
       </div>
+
+      {/* Payment Modal */}
+      {selectedProduct && (
+        <PaymentModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
+      )}
+      <Toaster position="top-right" richColors />
     </div>
   );
 }

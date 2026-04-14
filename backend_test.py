@@ -418,6 +418,83 @@ class MedvetAPITester:
         else:
             print("   ❌ No products available for checkout test")
 
+    def test_pix_payment(self):
+        """Test PIX payment integration"""
+        print("\n=== TESTING PIX PAYMENT ===")
+        
+        # First get a product to test PIX with
+        success, products = self.run_test("Get Products for PIX", "GET", "products", 200)
+        
+        if success and products:
+            test_product = products[0]  # Use first product
+            product_id = test_product.get('id')
+            
+            # Test PIX checkout creation
+            pix_data = {
+                "product_id": product_id,
+                "name": "Test PIX User",
+                "email": "test.pix@medvet.com"
+            }
+            
+            success, pix_response = self.run_test(
+                "Create PIX Checkout",
+                "POST",
+                "checkout/pix",
+                200,
+                data=pix_data
+            )
+            
+            if success and pix_response:
+                tx_id = pix_response.get('tx_id')
+                pix_key = pix_response.get('pix_key')
+                qr_code = pix_response.get('qr_code')
+                print(f"   Created PIX transaction: {tx_id}")
+                print(f"   PIX key: {pix_key}")
+                print(f"   QR code generated: {'Yes' if qr_code else 'No'}")
+                
+                # Test admin PIX confirmation
+                if tx_id:
+                    success, confirm_response = self.run_test(
+                        "Admin Confirm PIX Payment",
+                        "PUT",
+                        f"admin/payments/{tx_id}/confirm",
+                        200,
+                        cookies=self.admin_cookies
+                    )
+                    
+                    if success:
+                        print(f"   PIX payment confirmed successfully")
+                        return tx_id
+        else:
+            print("   ❌ No products available for PIX test")
+        return None
+
+    def test_purchase_history(self):
+        """Test purchase history endpoint"""
+        print("\n=== TESTING PURCHASE HISTORY ===")
+        
+        # Test getting purchase history (requires user auth)
+        success, purchases = self.run_test(
+            "Get User Purchase History",
+            "GET",
+            "purchases",
+            200,
+            cookies=self.user_cookies
+        )
+        
+        if success:
+            print(f"   Found {len(purchases)} purchases in history")
+            for purchase in purchases[:3]:  # Show first 3
+                print(f"   - {purchase.get('product_name', 'Unknown')} - {purchase.get('payment_method', 'Unknown')} - {purchase.get('payment_status', 'Unknown')}")
+        
+        # Test unauthorized access
+        self.run_test(
+            "Unauthorized Purchase History Access",
+            "GET",
+            "purchases",
+            401
+        )
+
     def test_error_cases(self):
         """Test error handling"""
         print("\n=== TESTING ERROR CASES ===")
@@ -474,6 +551,8 @@ def main():
     tester.test_contact_endpoint()
     tester.test_admin_endpoints()
     tester.test_stripe_checkout()
+    tester.test_pix_payment()
+    tester.test_purchase_history()
     tester.test_error_cases()
     
     # Print final results
