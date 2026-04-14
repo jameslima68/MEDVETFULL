@@ -857,7 +857,22 @@ class TestimonialSubmit(BaseModel):
     pet: str
     text: str
     rating: int = 5
-    photo_base64: Optional[str] = None  # base64 image
+    photo_base64: Optional[str] = None
+    video_url: Optional[str] = None  # YouTube/external video URL
+
+class BlogArticleCreate(BaseModel):
+    title: str
+    excerpt: str
+    content: str
+    author: str
+    category: str
+    image_url: Optional[str] = None
+    read_time: Optional[str] = None
+
+class SymptomQuery(BaseModel):
+    pet_type: str  # cao, gato
+    symptoms: List[str]
+    severity: str  # leve, moderado, severo
 
 @api_router.post("/testimonials/submit")
 async def submit_testimonial(req: TestimonialSubmit, request: Request):
@@ -874,6 +889,7 @@ async def submit_testimonial(req: TestimonialSubmit, request: Request):
         "text": req.text,
         "rating": min(max(req.rating, 1), 5),
         "photo": req.photo_base64 or "",
+        "video_url": req.video_url or "",
         "avatar": req.name[:2].upper(),
         "email": user["email"] if user else "",
         "approved": False,
@@ -974,6 +990,119 @@ async def award_loyalty_points(email: str, amount: float, product_name: str):
         "created_at": datetime.now(timezone.utc).isoformat()
     })
     logger.info(f"[LOYALTY] {email} earned {points} points for {product_name}")
+
+# --- Blog / Articles ---
+@api_router.get("/blog")
+async def get_blog_articles(category: Optional[str] = None):
+    query = {}
+    if category:
+        query["category"] = category
+    articles = await db.blog_articles.find(query, {"_id": 0}).sort("date", -1).to_list(100)
+    return articles
+
+@api_router.get("/blog/{article_id}")
+async def get_blog_article(article_id: str):
+    article = await db.blog_articles.find_one({"id": article_id}, {"_id": 0})
+    if not article:
+        raise HTTPException(status_code=404, detail="Article not found")
+    return article
+
+@api_router.post("/admin/blog")
+async def admin_create_blog(req: BlogArticleCreate, user: dict = Depends(get_admin_user)):
+    doc = req.model_dump()
+    doc["id"] = str(ObjectId())
+    doc["date"] = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    doc["read_time"] = doc.get("read_time") or "5 min"
+    await db.blog_articles.insert_one(doc)
+    doc.pop("_id", None)
+    return doc
+
+@api_router.delete("/admin/blog/{article_id}")
+async def admin_delete_blog(article_id: str, user: dict = Depends(get_admin_user)):
+    result = await db.blog_articles.delete_one({"id": article_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Not found")
+    return {"message": "Deleted"}
+
+# --- Symptom Calculator ---
+THERAPY_RECOMMENDATIONS = {
+    "dor_cronica": {"therapies": ["Acupuntura", "Eletroacupuntura", "CBD", "Laserterapia", "Magnetoterapia"], "products": ["acupuntura", "cbd"], "urgency": "moderado"},
+    "ansiedade": {"therapies": ["Florais de Bach", "Reiki", "Cromoterapia", "Musicoterapia", "CBD"], "products": ["cbd", "cromoterapia"], "urgency": "leve"},
+    "problemas_digestivos": {"therapies": ["Fitoterapia Chinesa", "Homeopatia", "Nutricao Funcional", "Acupuntura", "Dietoterapia"], "products": ["medicina-chinesa", "homeopatia"], "urgency": "moderado"},
+    "problemas_pele": {"therapies": ["Homeopatia", "Ozonioterapia", "Geoterapia", "Nutricao Funcional", "Fitoterapia"], "products": ["homeopatia", "saude-pelos"], "urgency": "leve"},
+    "problemas_articulares": {"therapies": ["Acupuntura", "Fisioterapia", "Hidroterapia", "Quiropraxia", "PRP"], "products": ["acupuntura"], "urgency": "moderado"},
+    "problemas_neurologicos": {"therapies": ["Acupuntura", "Eletroacupuntura", "Moxabustao", "Celulas-Tronco", "Fisioterapia"], "products": ["acupuntura", "medicina-chinesa"], "urgency": "severo"},
+    "alergia": {"therapies": ["Homeopatia", "Biorressonancia", "Nutricao Funcional", "Ozonioterapia", "Fitoterapia"], "products": ["homeopatia", "saude-pelos"], "urgency": "leve"},
+    "trauma_emocional": {"therapies": ["Florais de Bach", "Reiki", "Constelacao Familiar", "Cromoterapia", "Musicoterapia"], "products": ["cromoterapia"], "urgency": "leve"},
+    "pos_cirurgico": {"therapies": ["Laserterapia", "Fisioterapia", "Hidroterapia", "Acupuntura", "PRP"], "products": ["acupuntura"], "urgency": "moderado"},
+    "cancer": {"therapies": ["Viscum Album", "Ozonioterapia", "Acupuntura", "Fitoterapia Chinesa", "CBD"], "products": ["medicina-chinesa", "cbd"], "urgency": "severo"},
+    "problemas_respiratorios": {"therapies": ["Acupuntura", "Fitoterapia Chinesa", "Ozonioterapia", "Homeopatia", "Cromoterapia"], "products": ["homeopatia", "medicina-chinesa"], "urgency": "moderado"},
+    "idoso_qualidade_vida": {"therapies": ["Acupuntura", "Moxabustao", "Hormonios Bioidenticos", "Nutricao Funcional", "Massoterapia"], "products": ["hormonios", "acupuntura"], "urgency": "leve"},
+    "convulsoes": {"therapies": ["CBD", "Acupuntura", "Homeopatia", "Fitoterapia Chinesa", "Terapia Neural"], "products": ["cbd"], "urgency": "severo"},
+    "feridas": {"therapies": ["Ozonioterapia", "Laserterapia", "Apiterapia", "Geoterapia", "PRP"], "products": [], "urgency": "moderado"},
+    "obesidade": {"therapies": ["Nutricao Funcional", "Hidroterapia", "Acupuntura", "Fitoterapia", "Fisioterapia"], "products": ["saude-pelos"], "urgency": "leve"},
+    "queda_pelos": {"therapies": ["Nutricao Funcional", "Homeopatia", "Ozonioterapia", "Hormonios Bioidenticos", "Fitoterapia"], "products": ["saude-pelos", "hormonios"], "urgency": "leve"},
+}
+
+@api_router.post("/symptom-calculator")
+async def symptom_calculator(req: SymptomQuery):
+    results = []
+    all_therapies = set()
+    all_products = set()
+    max_urgency = "leve"
+    urgency_levels = {"leve": 0, "moderado": 1, "severo": 2}
+    for symptom in req.symptoms:
+        rec = THERAPY_RECOMMENDATIONS.get(symptom)
+        if rec:
+            results.append({"symptom": symptom, **rec})
+            all_therapies.update(rec["therapies"])
+            all_products.update(rec["products"])
+            if urgency_levels.get(rec["urgency"], 0) > urgency_levels.get(max_urgency, 0):
+                max_urgency = rec["urgency"]
+    # Adjust severity
+    if req.severity == "severo":
+        max_urgency = "severo"
+    return {
+        "recommended_therapies": sorted(list(all_therapies)),
+        "recommended_categories": sorted(list(all_products)),
+        "overall_urgency": max_urgency,
+        "details": results,
+        "message": "Consulte sempre um veterinario antes de iniciar qualquer tratamento."
+    }
+
+@api_router.get("/symptom-calculator/symptoms")
+async def get_available_symptoms():
+    symptoms = {
+        "Dor e Mobilidade": [
+            {"id": "dor_cronica", "label": "Dor cronica"},
+            {"id": "problemas_articulares", "label": "Problemas articulares (artrite, displasia)"},
+            {"id": "pos_cirurgico", "label": "Recuperacao pos-cirurgica"},
+        ],
+        "Pele e Pelagem": [
+            {"id": "problemas_pele", "label": "Problemas de pele e dermatites"},
+            {"id": "alergia", "label": "Alergias"},
+            {"id": "queda_pelos", "label": "Queda excessiva de pelos"},
+        ],
+        "Emocional e Comportamental": [
+            {"id": "ansiedade", "label": "Ansiedade e estresse"},
+            {"id": "trauma_emocional", "label": "Trauma emocional e medo"},
+        ],
+        "Digestivo e Metabolico": [
+            {"id": "problemas_digestivos", "label": "Problemas digestivos"},
+            {"id": "obesidade", "label": "Obesidade"},
+        ],
+        "Neurologico e Grave": [
+            {"id": "problemas_neurologicos", "label": "Problemas neurologicos"},
+            {"id": "convulsoes", "label": "Convulsoes e epilepsia"},
+            {"id": "cancer", "label": "Suporte oncologico"},
+        ],
+        "Outros": [
+            {"id": "problemas_respiratorios", "label": "Problemas respiratorios"},
+            {"id": "feridas", "label": "Feridas e cicatrizacao"},
+            {"id": "idoso_qualidade_vida", "label": "Qualidade de vida (pet idoso)"},
+        ],
+    }
+    return symptoms
 
 # --- Subscriptions ---
 @api_router.post("/subscriptions")
@@ -1265,6 +1394,24 @@ async def seed_coupons():
     await db.coupons.insert_many(coupons)
     logger.info("Coupons seeded")
 
+
+async def seed_blog_articles():
+    count = await db.blog_articles.count_documents({})
+    if count > 0:
+        return
+    articles = [
+        {"id": "blog-acu", "title": "Acupuntura Veterinaria: Tudo que Voce Precisa Saber", "excerpt": "Um guia completo sobre como a acupuntura pode transformar a saude do seu pet, com explicacoes sobre meridianos, pontos e tipos de agulhamento.", "content": "A acupuntura veterinaria e reconhecida pelo CFMV como especialidade desde 2000. Baseia-se na insercao de agulhas ultrafinas (0,20mm) em pontos especificos ao longo dos 14 meridianos principais do corpo, estimulando a liberacao de endorfinas, serotonina e cortisol endogeno. Estudos do Journal of Veterinary Internal Medicine demonstram eficacia em 85% dos casos de dor cronica. As sessoes duram 20-30 minutos e a maioria dos animais relaxa profundamente. A eletroacupuntura adiciona estimulacao eletrica de baixa frequencia (2-4Hz para dor cronica, 80-120Hz para dor aguda). A moxabustao complementa com calor terapeutico em condicoes de frio. Indicacoes principais: artrite, displasia, hernia de disco, paralisia, reabilitacao pos-cirurgica, manejo de dor oncologica.", "author": "Dr. Paulo Henrique Viana", "category": "acupuntura", "image_url": "https://images.unsplash.com/photo-1584738620467-51b852c2af2e?w=800", "date": "2026-01-15", "read_time": "15 min"},
+        {"id": "blog-fito", "title": "Fitoterapia Chinesa: Formulas Milenares para Pets", "excerpt": "Conheca as principais formulas da fitoterapia chinesa adaptadas para uso veterinario e como elas atuam no organismo animal.", "content": "A fitoterapia chinesa veterinaria utiliza mais de 400 ervas em combinacoes sinergicas chamadas formulas. Cada formula segue hierarquia: o ingrediente Imperador (acao principal), o Ministro (potencializa), o Assistente (harmoniza) e o Mensageiro (direciona). Formulas classicas adaptadas para pets: Xiao Yao San (estresse, figado), Si Jun Zi Tang (digestao, imunidade), Liu Wei Di Huang Wan (rim, envelhecimento), Bu Zhong Yi Qi Tang (fadiga, prolapso). Todas sao manipuladas sob medida apos diagnostico energetico que avalia lingua, pulso, temperatura e os 8 Principios da MTC. A fitoterapia chinesa e especialmente eficaz quando combinada com acupuntura, potencializando resultados em 40-60% segundo estudos da Chi University.", "author": "Dra. Tabatha Novikov", "category": "fitoterapia", "image_url": "https://images.unsplash.com/photo-1545840716-c82e9eec6930?w=800", "date": "2026-01-20", "read_time": "12 min"},
+        {"id": "blog-ozonio", "title": "Ozonioterapia: O Poder do Ozonio na Saude Animal", "excerpt": "Como a mistura de oxigenio e ozonio pode tratar infeccoes, inflamacoes e fortalecer a imunidade do seu pet.", "content": "A ozonioterapia veterinaria utiliza uma mistura controlada de 95-99.5% oxigenio e 0.5-5% ozonio (O3). O ozonio possui propriedades anti-inflamatorias, antisepticas, antifungicas e imunomoduladoras. Vias de aplicacao: retal (mais comum, sistemica), topica (feridas, otites), subcutanea, intra-articular e auto-hemoterapia menor. Indicacoes comprovadas: feridas infectadas resistentes, otites cronicas, dermatites fungicas, doenca periodontal, hernias de disco, doencas autoimunes. Estudos publicados na Veterinary Dermatology mostram 90% de melhora em dermatites cronicas. O tratamento e indolor, sem efeitos colaterais quando aplicado corretamente, e pode reduzir necessidade de antibioticos em ate 70%.", "author": "Dr. Fernando Costa", "category": "ozonioterapia", "image_url": "https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800", "date": "2026-02-01", "read_time": "10 min"},
+        {"id": "blog-reiki", "title": "Reiki Animal: Energia que Cura com Amor", "excerpt": "Entenda como a terapia energetica japonesa pode beneficiar o equilibrio emocional e fisico do seu pet.", "content": "O Reiki e uma terapia energetica japonesa criada por Mikao Usui que canaliza energia universal (Rei = universal, Ki = energia vital) pelas maos do terapeuta. Em animais, o Reiki e aplicado com as maos posicionadas a poucos centimetros do corpo, sem contato forçado — animais sensiveis captam a energia e frequentemente se aproximam espontaneamente. Beneficios documentados: reducao de ansiedade em 80% dos casos, melhora do sono, aceleracao pos-cirurgica, conforto em animais terminais. O Reiki atua nos 7 chakras principais do animal, equilibrando centros energeticos. E especialmente indicado para animais resgatados com traumas, pets em tratamento oncologico e companheiros em cuidados paliativos. Pode ser aplicado presencialmente ou a distancia.", "author": "Dra. Renata Campos", "category": "reiki", "image_url": "https://images.unsplash.com/photo-1618018353764-685cb47681d9?w=800", "date": "2026-02-10", "read_time": "8 min"},
+        {"id": "blog-florais", "title": "Florais de Bach para Pets: Equilibrio Emocional Natural", "excerpt": "As 38 essencias florais de Dr. Bach e como elas podem ajudar seu pet a superar medos, ansiedade e traumas.", "content": "Os Florais de Bach sao 38 essencias preparadas a partir de flores silvestres, cada uma atuando em um estado emocional especifico. Para pets: Rescue Remedy (emergencias, sustos, fogos), Mimulus (medos conhecidos — trovao, veterinario), Rock Rose (panico extremo), Star of Bethlehem (traumas, luto), Walnut (adaptacao a mudancas), Vine (dominancia/agressividade), Chicory (apego excessivo), Agrimony (inquietacao disfarçada). A prescricao ideal e individualizada: observa-se comportamento, historico e personalidade do animal. Administracao: 4 gotas, 4 vezes ao dia, diretamente na boca ou na agua. Sem contraindicacoes, pode ser combinado com qualquer tratamento. Resultados em 2-4 semanas para cronico, imediato em emergencias.", "author": "Dra. Renata Campos", "category": "florais", "image_url": "https://images.unsplash.com/photo-1652759718142-5e6f8ece161c?w=800", "date": "2026-02-18", "read_time": "11 min"},
+        {"id": "blog-fisio", "title": "Fisioterapia e Hidroterapia Veterinaria: Recuperacao com Movimento", "excerpt": "Tecnicas de reabilitacao fisica que devolvem mobilidade e qualidade de vida ao seu pet.", "content": "A fisioterapia veterinaria integra cinesioterapia (exercicios terapeuticos), eletroterapia (TENS, FES), termoterapia e hidroterapia. A HIDROTERAPIA e destaque: em esteira aquatica, a flutuabilidade reduz ate 60% do peso corporal, permitindo exercicio seguro para articulacoes comprometidas. A resistencia da agua fortalece musculatura 2x mais rapido que exercicio em solo. Indicacoes: pos-operatorio ortopedico (ligamento cruzado, displasia), paralisia (DDIV), atrofia muscular, obesidade, reabilitacao neurologica. A quiropraxia veterinaria complementa com ajustes vertebrais que restauram comunicacao neural. Protocolos tipicos: 2-3x/semana por 4-12 semanas, com exercicios domiciliares. Resultados: 85% retornam a mobilidade funcional.", "author": "Dr. Ricardo Lima", "category": "fisioterapia", "image_url": "https://images.unsplash.com/photo-1762686796610-acde6d785ad3?w=800", "date": "2026-03-01", "read_time": "13 min"},
+        {"id": "blog-celulas", "title": "Celulas-Tronco e PRP: Medicina Regenerativa Veterinaria", "excerpt": "Tratamentos de ponta que usam o proprio organismo do animal para regenerar tecidos danificados.", "content": "CELULAS-TRONCO MESENQUIMAIS: Extraidas do tecido adiposo do proprio animal (lipoaspiracao minima), processadas e reinjetadas no local da lesao. Secretam fatores anti-inflamatorios e de crescimento que regeneram cartilagem, tendoes, ligamentos e ate tecido renal. Estudos da Universidade de Cornell mostram 78% de melhora em osteoartrite. PRP (Plasma Rico em Plaquetas): Coleta de sangue do animal, centrifugacao para concentrar plaquetas (5-7x a concentracao normal) e injecao no local da lesao. Os fatores de crescimento (PDGF, TGF-B, VEGF) aceleram cicatrizacao em 40-60%. Indicacoes de PRP: lesoes tendineanas, feridas cronicas, osteoartrite, pos-cirurgico articular. Ambos os tratamentos sao autologos (do proprio animal), eliminando risco de rejeicao.", "author": "Dr. Fernando Costa", "category": "regenerativa", "image_url": "https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800", "date": "2026-03-15", "read_time": "14 min"},
+        {"id": "blog-nutricao", "title": "Nutricao Funcional: Alimento como Medicina para Pets", "excerpt": "Como a alimentacao natural e personalizada pode prevenir doencas e transformar a saude do seu animal.", "content": "A nutricao funcional veterinaria trata cada alimento como ferramenta terapeutica. Pilares: PROTEINAS de alta qualidade (frango, peixe, ovos) para formacao muscular e imunidade. GORDURAS BOAS (omega 3 de peixe, omega 6 de gergelim e linhaca) para pele, pelos e cerebro. FITOQUIMICOS (curcuma, brocolis, mirtilo) como antioxidantes e anti-inflamatorios. PREBIOTICOS e PROBIOTICOS para saude intestinal — 70% da imunidade esta no intestino. Na dietoterapia chinesa, alimentos tem natureza termica: QUENTES (cordeiro, canela) para pets com frio. FRESCOS (pato, pepino) para pets com calor. NEUTROS (frango, arroz) para manutencao. A prescricao e individualizada considerando especie, raca, idade, condicao de saude e ate estacao do ano.", "author": "Dra. Juliana Ferreira", "category": "nutricao", "image_url": "https://images.unsplash.com/photo-1603890227524-e6f9a790c263?w=800", "date": "2026-03-25", "read_time": "11 min"},
+    ]
+    await db.blog_articles.insert_many(articles)
+    logger.info(f"Blog articles seeded: {len(articles)}")
+
 @app.on_event("startup")
 async def startup():
     await db.users.create_index("email", unique=True)
@@ -1276,6 +1423,7 @@ async def startup():
     await seed_tips()
     await seed_faq()
     await seed_coupons()
+    await seed_blog_articles()
     # Write test credentials
     os.makedirs("/app/memory", exist_ok=True)
     with open("/app/memory/test_credentials.md", "w") as f:

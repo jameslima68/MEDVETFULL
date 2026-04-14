@@ -17,8 +17,10 @@ const NAV_LINKS = [
 const THERAPY_LINKS = [
   { label: 'Todas as Terapias', href: '/terapias' },
   { label: 'Acupuntura & MTC', href: '/acupuntura-mtc' },
-  { label: 'Guia de Pelagem', href: '/guia-pelagem' },
+  { label: 'Blog de Terapias', href: '/blog' },
+  { label: 'Calculadora de Tratamento', href: '/calculadora-tratamento' },
   { label: 'Quiz: Elemento do Pet', href: '/quiz-elemento' },
+  { label: 'Guia de Pelagem', href: '/guia-pelagem' },
 ];
 
 const NAV_LINKS_2 = [

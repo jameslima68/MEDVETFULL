@@ -22,6 +22,8 @@ import AcupunctureTCMPage from "./pages/AcupunctureTCMPage";
 import TeamPage from "./pages/TeamPage";
 import TherapiesPage from "./pages/TherapiesPage";
 import ElementQuizPage from "./pages/ElementQuizPage";
+import { BlogList, BlogArticle } from "./pages/BlogPage";
+import SymptomCalculatorPage from "./pages/SymptomCalculatorPage";
 
 function App() {
   return (
@@ -50,6 +52,9 @@ function App() {
               <Route path="/equipe" element={<TeamPage />} />
               <Route path="/terapias" element={<TherapiesPage />} />
               <Route path="/quiz-elemento" element={<ElementQuizPage />} />
+              <Route path="/blog" element={<BlogList />} />
+              <Route path="/blog/:id" element={<BlogArticle />} />
+              <Route path="/calculadora-tratamento" element={<SymptomCalculatorPage />} />
             </Routes>
           </main>
           <Footer />
