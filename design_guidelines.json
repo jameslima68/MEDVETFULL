@@ -1,0 +1,97 @@
+{
+  "project_name": "MEDVET INTEGRATIVA",
+  "theme": "Light",
+  "archetype": "Archetype 1: Organic & Earthy",
+  "design_philosophy": "A modern, premium telehealth and e-commerce platform for integrative veterinary medicine. The design must evoke trust, calm, and natural healing. Avoid cold, clinical whites and instead use warm bone-whites, deep forest greens, and sage to create a nurturing, earthy environment.",
+  "colors": {
+    "background": {
+      "default": "#F9F6F0",
+      "alt": "#EAE7E1",
+      "dark_section": "#2C4C3B"
+    },
+    "text": {
+      "primary": "#1A2E24",
+      "secondary": "#4A6B5A",
+      "inverse": "#F9F6F0"
+    },
+    "brand": {
+      "primary": "#84978F",
+      "primary_hover": "#6B8077",
+      "secondary": "#2C4C3B",
+      "accent": "#C87A5D",
+      "accent_hover": "#B3674C",
+      "soft_blue": "#A4B8C4"
+    },
+    "border": {
+      "light": "#E0DDD5",
+      "medium": "#C2BEB4",
+      "focus": "#84978F"
+    }
+  },
+  "typography": {
+    "fonts": {
+      "heading": "'Outfit', sans-serif",
+      "body": "'Manrope', sans-serif"
+    },
+    "rules": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-[#1A2E24]",
+      "h2": "text-3xl sm:text-4xl font-medium tracking-tight text-[#1A2E24]",
+      "h3": "text-xl sm:text-2xl font-medium text-[#2C4C3B]",
+      "body": "text-base leading-relaxed text-[#4A6B5A]",
+      "overline": "text-xs font-bold tracking-[0.2em] uppercase text-[#84978F]"
+    }
+  },
+  "spacing_and_layout": {
+    "general": "Use generous spacing. Use 2x standard padding for sections (py-24 or py-32 for desktop). Elements should have 'breathing room'.",
+    "grid_system": "Use 'Bento Grid' variations for the product categories and features. Use gap-6 to gap-8 between items.",
+    "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+  },
+  "components_strategy": {
+    "buttons": {
+      "primary": "bg-[#2C4C3B] text-[#F9F6F0] hover:bg-[#1A2E24] rounded-full px-8 py-3 font-medium transition-all shadow-sm",
+      "secondary": "bg-[#84978F] text-[#F9F6F0] hover:bg-[#6B8077] rounded-full px-8 py-3 font-medium transition-all",
+      "outline": "bg-transparent border border-[#2C4C3B] text-[#2C4C3B] hover:bg-[#2C4C3B]/5 rounded-full px-8 py-3 font-medium transition-all"
+    },
+    "cards": {
+      "style": "bg-white/60 backdrop-blur-sm border border-[#E0DDD5] rounded-3xl p-8 shadow-[0_8px_32px_rgba(44,76,59,0.04)] hover:shadow-[0_12px_48px_rgba(44,76,59,0.08)] transition-all duration-300",
+      "image_treatment": "Images inside cards must be rounded-2xl with max-h-[80vh] constraint."
+    },
+    "header": {
+      "style": "sticky top-0 z-50 backdrop-blur-xl bg-[#F9F6F0]/80 border-b border-[#2C4C3B]/10 transition-all duration-300"
+    },
+    "forms_and_inputs": {
+      "style": "bg-white/50 border border-[#E0DDD5] focus:border-[#84978F] focus:ring-1 focus:ring-[#84978F] rounded-xl px-4 py-3 w-full text-[#1A2E24]"
+    }
+  },
+  "media": {
+    "hero": {
+      "url": "https://images.unsplash.com/photo-1763586756425-9cb57b53a437?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHwzfHxwZXQlMjB3ZWxsbmVzcyUyMGNhdCUyMGRvZyUyMG5hdHVyZXxlbnwwfHx8fDE3NzYxMjU4NTh8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Golden retriever dog in a natural outdoor setting. Use for the main hero section to communicate natural wellness."
+    },
+    "categories": {
+      "homeopatia_cbd": "https://images.unsplash.com/photo-1700151573574-93eca8777bf0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzN8MHwxfHNlYXJjaHw0fHxjYmQlMjBvaWwlMjBtZWRpY2luZSUyMG5hdHVyYWx8ZW58MHx8fHwxNzc2MTI1ODcxfDA&ixlib=rb-4.1.0&q=85",
+      "consultations": "https://images.unsplash.com/photo-1644675443401-ea4c14bad0e6?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzN8MHwxfHNlYXJjaHwyfHx2ZXRlcmluYXJ5JTIwY2xpbmljJTIwbW9kZXJufGVufDB8fHx8MTc3NjEyNTg3MXww&ixlib=rb-4.1.0&q=85",
+      "acupuncture": "https://images.unsplash.com/photo-1759863742702-41316e3db192?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHw0fHxwZXQlMjB3ZWxsbmVzcyUyMGNhdCUyMGRvZyUyMG5hdHVyZXxlbnwwfHx8fDE3NzYxMjU4NTh8MA&ixlib=rb-4.1.0&q=85",
+      "general_wellness": "https://images.unsplash.com/photo-1621371236495-1520d8dc72a5?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHw0fHx2ZXRlcmluYXJ5JTIwZG9nfGVufDB8fHx8MTc3NjEyNTg1OHww&ixlib=rb-4.1.0&q=85"
+    }
+  },
+  "icons_library": "lucide-react",
+  "motion_and_interactions": {
+    "hover": "Subtle -translate-y-1 on cards with expanded shadow.",
+    "buttons": "Opacity or slight darkening on hover. Must explicitly declare hover:text-* colors to maintain contrast.",
+    "page_load": "Fade and slight slide-up (using Framer Motion if applicable, or CSS animations) for major sections."
+  },
+  "accessibility": {
+    "contrast": "Ensure text over images uses a gradient overlay (e.g., bg-gradient-to-t from-[#1A2E24]/80 to-transparent) to guarantee readability.",
+    "testing": "All interactive elements (buttons, nav links, form inputs) MUST include a 'data-testid' attribute in kebab-case."
+  },
+  "instructions_to_main_agent": [
+    "Do not use default Tailwind blue/gray scales. Stick STRICTLY to the colors defined in this JSON.",
+    "Import 'Outfit' and 'Manrope' fonts using standard Google Fonts links or next/font if in Next.js, and configure them in tailwind.config.js.",
+    "Build the navigation with a sticky header. Include a prominent 'Agendar Consulta' (Schedule Consultation) CTA and 'Entrar' (Login).",
+    "Create a Hero Section containing the main headline, a trusting subheadline, the 'Golden retriever' hero image (either as side-by-side or a large immersive block with overlay), and clear CTAs.",
+    "Implement a 'Product Categories' grid using the Bento layout style. Use the provided category images.",
+    "Add a 'WhatsApp' floating action button (FAB) fixed to the bottom right for instant contact.",
+    "Ensure all Shadcn UI components (buttons, inputs, dialogs) are customized to match the 'Organic & Earthy' color palette (override default ring colors and borders)."
+  ]
+}
