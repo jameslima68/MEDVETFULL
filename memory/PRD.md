@@ -1,56 +1,55 @@
 # MEDVET INTEGRATIVA - PRD
 
-## Problem Statement
-Site de vendas de produtos de medicina veterinaria integrativa com dicas de tratamento por especialistas veterinarios. Produtos: homeopaticos, hormonios bioidenticos, manipulados da medicina chinesa, CBD e acupuntura. Baseado no modelo de negocios do site medvi.org.
+## Problema Original
+Criar um site chamado MEDVET INTEGRATIVA de vendas de produtos de medicina veterinaria integrativa com dicas de tratamento por especialistas veterinarios. Produtos: homeopaticos, hormonios bioidenticos, manipulados da medicina chinesa, CBD e acupuntura. Baseado no modelo de negocios do site https://home.medvi.org/ mas voltado para medicina veterinaria integrativa.
 
-## Architecture
-- **Frontend**: React 19 + Tailwind CSS + Shadcn UI
-- **Backend**: FastAPI + MongoDB (Motor async driver)
-- **Auth**: JWT httpOnly cookies + bcrypt password hashing
-- **Design**: Organic & Earthy theme (Outfit + Manrope fonts, sage/forest greens)
+## Stack Tecnica
+- Frontend: React + Tailwind CSS + Shadcn UI
+- Backend: FastAPI + MongoDB
+- Pagamentos: Stripe (ativo) + PIX (simulado)
+- Autenticacao: JWT
+- Idioma: Portugues (PT-BR)
 
-## User Personas
-1. **Pet Owner**: Busca tratamentos naturais para seus animais
-2. **Veterinario**: Pode recomendar produtos e agendar consultas
-3. **Admin**: Gerencia produtos, consultas e conteudo
+## Funcionalidades Implementadas
+- Autenticacao JWT (login, registro, admin)
+- Catalogo de produtos (49+ produtos, 7 categorias)
+- Checkout Stripe + PIX simulado
+- Sistema de cupons de desconto
+- Programa de fidelidade (pontos)
+- Assinaturas mensais
+- Painel admin (stats, inventario, cupons, graficos)
+- Paginas educacionais: Guia de Pelagem, Calculadora de Dosagem
+- Quiz dos 5 Elementos
+- Pagina Acupuntura & MTC
+- Catalogo de 29 Terapias
+- Cromoterapia para pets
+- Pagina da Equipe (com foto real da Dra. Tabatha Novikov - CRMV-SP 21194)
+- Blog com artigos completos
+- Calculadora de Sintomas interativa
+- Depoimentos com suporte a video URL
+- Pagina Nossa Missao
+- Notificacoes por email (MOCKED - logger)
+- Historico de compras
 
-## Core Requirements (Static)
-- Catalogo de produtos por categoria
-- Agendamento de consultas online com calendario
-- Autenticacao de usuarios (login/registro)
-- Blog/dicas de especialistas
-- FAQ com accordion
-- WhatsApp floating button
-- Dashboard do cliente
+## Credenciais
+- Admin: admin@medvet.com / admin123
 
-## What's Been Implemented (2026-04-14)
-- Full homepage with hero, categories bento grid, featured products, testimonials, FAQ accordion, CTA sections
-- Products page with category filtering and search
-- Consultation scheduling page with calendar date picker and time slots
-- Tips/Blog listing and detail pages
-- Login/Register pages with JWT auth
-- Client dashboard with consultation history
-- WhatsApp floating action button
-- Responsive header with dropdown user menu
-- Footer with links and contact info
-- All seed data (6 categories, 11 products, 4 testimonials, 4 tips, 6 FAQs)
-- Admin seeding with brute force protection
+## APIs Principais
+- POST /api/auth/login, /api/auth/register, GET /api/auth/me
+- GET /api/products, POST /api/checkout, POST /api/pix/checkout
+- GET /api/coupons/validate/{code}
+- GET /api/admin/stats
+- POST /api/testimonials/submit, GET /api/testimonials/approved
+- GET /api/blog, GET /api/blog/{id}
+- POST /api/symptom-calculator, GET /api/symptom-calculator/symptoms
+- GET /api/subscriptions/plans, POST /api/subscriptions/subscribe
 
-## Testing Results
-- Backend: 95% | Frontend: 90% | Integration: 95% | Overall: 93%
+## Backlog (Priorizado)
+- P1: Configurar dominio e DNS para emails profissionais (adiado pelo usuario)
+- P2: Notificacoes push no navegador (adiado pelo usuario)
+- P2: Integrar PIX real via Mercado Pago/PagSeguro
+- P2: Refatorar server.py (1400+ linhas) em modulos separados (/routes, /models, /seeders)
 
-## Prioritized Backlog
-### P0 - Done
-- [x] Homepage, Products, Consultation, Tips, Auth, Dashboard
-
-### P1 - Next
-- [ ] Product detail page with full description
-- [ ] Admin panel for managing products/consultations
-- [ ] Email notifications for consultations
-- [ ] Payment integration (Stripe or Pix)
-
-### P2 - Future
-- [ ] Search functionality improvements
-- [ ] User profile editing
-- [ ] Reviews/ratings system
-- [ ] Multi-language support
+## Features Simuladas/Mocked
+- PIX: Gera QR code dummy e auto-aprova (sem Mercado Pago real)
+- Email: Imprime no console do backend (sem SMTP/Resend real)
