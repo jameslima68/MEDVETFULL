@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Star, Mail, Phone, Award, Heart, MapPin } from 'lucide-react';
 
 const MENTOR = {
-  name: 'Dra. Tabatha Novikov Ribeiro de Andrade',
+  name: 'Dra. Tabatha Novikov',
   role: 'Mentora & Fundadora',
   specialty: 'Medicina Veterinaria Integrativa',
   crmv: 'CRMV-SP 21194',
@@ -12,7 +12,7 @@ const MENTOR = {
   specialties: ['Acupuntura & MTC', 'Fitoterapia Chinesa', 'Homeopatia', 'Ozonioterapia', 'Terapia Neural', 'Nutricao Funcional'],
   email: 'tabatha@medvetintegrativa.com',
   phone: '(11) 99999-0001',
-  image: 'https://customer-assets.emergentagent.com/job_holistic-vet-shop/artifacts/ausjnm3m_Tabatha%20Novikok.webp'
+  image: 'https://static.prod-images.emergentagent.com/jobs/10aec1f8-3381-451e-883e-da9e1b489f6e/images/099b6e8153b66b709bd94f3685562636565717bc3dac81a23d98d57d2ffca4f9.png'
 };
 
 const TEAM = [
@@ -47,7 +47,7 @@ export default function TeamPage() {
           <div className="bg-white/60 backdrop-blur-sm border-2 border-[#C87A5D]/20 rounded-[2rem] overflow-hidden shadow-[0_20px_60px_rgba(200,122,93,0.1)]">
             <div className="grid lg:grid-cols-5 gap-0">
               <div className="lg:col-span-2 relative h-[400px] lg:h-auto">
-                <img src={MENTOR.image} alt={MENTOR.name} className="w-full h-full object-cover object-top" />
+                <img src={MENTOR.image} alt={MENTOR.name} className="w-full h-full object-cover object-top" style={{filter: 'contrast(1.08) brightness(1.04) saturate(1.12)', imageRendering: 'high-quality'}} />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#1A2E24]/40 to-transparent lg:bg-gradient-to-r" />
               </div>
               <div className="lg:col-span-3 p-8 sm:p-10 lg:p-12 space-y-5">
