@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, Navigate } from 'react-router-dom';
 import axios from 'axios';
-import { Calendar, Clock, Tag, FileText, ChevronRight } from 'lucide-react';
+import { Calendar, Clock, Tag, FileText, ChevronRight, Shield } from 'lucide-react';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -37,7 +37,15 @@ export default function DashboardPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+        <div className={`grid grid-cols-1 ${user.role === 'admin' ? 'sm:grid-cols-4' : 'sm:grid-cols-3'} gap-4 mb-10`}>
+          {user.role === 'admin' && (
+            <Link to="/admin" data-testid="quick-admin" className="bg-[#C87A5D]/10 border border-[#C87A5D]/20 rounded-2xl p-6 hover:shadow-md transition-all group">
+              <Shield className="w-8 h-8 text-[#C87A5D] mb-3" />
+              <h3 className="font-['Outfit'] text-lg font-medium text-[#1A2E24]">Painel Admin</h3>
+              <p className="text-sm text-[#4A6B5A] mt-1">Gerenciar produtos e pagamentos</p>
+              <ChevronRight className="w-5 h-5 text-[#C87A5D] mt-3 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          )}
           <Link to="/consultas" data-testid="quick-schedule" className="bg-white/60 backdrop-blur-sm border border-[#E0DDD5] rounded-2xl p-6 hover:shadow-md transition-all group">
             <Calendar className="w-8 h-8 text-[#2C4C3B] mb-3" />
             <h3 className="font-['Outfit'] text-lg font-medium text-[#1A2E24]">Agendar Consulta</h3>

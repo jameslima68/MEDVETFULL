@@ -151,6 +151,45 @@ class MedvetAPITester:
                 if first_tip_id:
                     self.run_test(f"Get Tip by ID ({first_tip_id})", "GET", f"tips/{first_tip_id}", 200)
 
+    def test_product_filtering_and_search(self):
+        """Test new product filtering and search features"""
+        print("\n=== TESTING PRODUCT FILTERING & SEARCH ===")
+        
+        # Test price filtering
+        success, filtered_products = self.run_test(
+            "Products with Price Filter (50-100)",
+            "GET",
+            "products?min_price=50&max_price=100",
+            200
+        )
+        if success:
+            print(f"   Found {len(filtered_products)} products in price range 50-100")
+            # Verify all products are within price range
+            for product in filtered_products:
+                price = product.get('price', 0)
+                if not (50 <= price <= 100):
+                    print(f"   ❌ Product {product.get('name')} has price {price} outside range")
+                    
+        # Test search functionality
+        success, search_results = self.run_test(
+            "Search Products (vitamina)",
+            "GET",
+            "products?search=vitamina",
+            200
+        )
+        if success:
+            print(f"   Found {len(search_results)} products matching 'vitamina'")
+            
+        # Test combined filters
+        success, combined_results = self.run_test(
+            "Combined Filter (homeopatia + price 40-60)",
+            "GET",
+            "products?category=homeopatia&min_price=40&max_price=60",
+            200
+        )
+        if success:
+            print(f"   Found {len(combined_results)} homeopatia products in price range 40-60")
+
     def test_consultation_endpoints(self):
         """Test consultation endpoints"""
         print("\n=== TESTING CONSULTATION ENDPOINTS ===")
@@ -183,6 +222,137 @@ class MedvetAPITester:
         # Test getting consultations (requires auth)
         self.run_test("Get User Consultations", "GET", "consultations", 200, cookies=self.user_cookies)
 
+    def test_admin_endpoints(self):
+        """Test admin-only endpoints"""
+        print("\n=== TESTING ADMIN ENDPOINTS ===")
+        
+        # Re-login as admin since we logged out earlier
+        print("   Re-authenticating as admin...")
+        success, response = self.run_test(
+            "Admin Re-login",
+            "POST",
+            "auth/login",
+            200,
+            data={"email": "admin@medvet.com", "password": "admin123"}
+        )
+        if success:
+            self.admin_cookies = self.session.cookies
+        
+        # Test admin stats
+        success, stats = self.run_test(
+            "Admin Stats",
+            "GET",
+            "admin/stats",
+            200,
+            cookies=self.admin_cookies
+        )
+        if success:
+            print(f"   Stats: {stats.get('products', 0)} products, {stats.get('users', 0)} users, {stats.get('consultations', 0)} consultations")
+            
+        # Test admin get all consultations
+        success, admin_consultations = self.run_test(
+            "Admin Get All Consultations",
+            "GET",
+            "admin/consultations",
+            200,
+            cookies=self.admin_cookies
+        )
+        if success:
+            print(f"   Found {len(admin_consultations)} consultations (admin view)")
+            
+        # Test admin get all users
+        success, admin_users = self.run_test(
+            "Admin Get All Users",
+            "GET",
+            "admin/users",
+            200,
+            cookies=self.admin_cookies
+        )
+        if success:
+            print(f"   Found {len(admin_users)} users")
+            
+        # Test admin get all payments
+        success, admin_payments = self.run_test(
+            "Admin Get All Payments",
+            "GET",
+            "admin/payments",
+            200,
+            cookies=self.admin_cookies
+        )
+        if success:
+            print(f"   Found {len(admin_payments)} payment transactions")
+            
+        # Test admin product CRUD
+        self.test_admin_product_crud()
+        
+        # Test non-admin access (should fail)
+        self.run_test(
+            "Non-Admin Access to Stats (should fail)",
+            "GET",
+            "admin/stats",
+            403,
+            cookies=self.user_cookies
+        )
+
+    def test_admin_product_crud(self):
+        """Test admin product CRUD operations"""
+        print("\n=== TESTING ADMIN PRODUCT CRUD ===")
+        
+        # Create a test product
+        test_product = {
+            "name": "Test Product API",
+            "description": "This is a test product created via API",
+            "price": 99.99,
+            "category": "homeopatia",
+            "image_url": "https://example.com/test.jpg",
+            "in_stock": True,
+            "featured": False
+        }
+        
+        success, created_product = self.run_test(
+            "Admin Create Product",
+            "POST",
+            "admin/products",
+            200,
+            data=test_product,
+            cookies=self.admin_cookies
+        )
+        
+        if success and created_product:
+            product_id = created_product.get('id')
+            print(f"   Created product with ID: {product_id}")
+            
+            # Update the product
+            update_data = {
+                "name": "Updated Test Product",
+                "price": 149.99,
+                "featured": True
+            }
+            
+            success, updated_product = self.run_test(
+                "Admin Update Product",
+                "PUT",
+                f"admin/products/{product_id}",
+                200,
+                data=update_data,
+                cookies=self.admin_cookies
+            )
+            
+            if success:
+                print(f"   Updated product: {updated_product.get('name')} - R$ {updated_product.get('price')}")
+            
+            # Delete the product
+            success, _ = self.run_test(
+                "Admin Delete Product",
+                "DELETE",
+                f"admin/products/{product_id}",
+                200,
+                cookies=self.admin_cookies
+            )
+            
+            if success:
+                print(f"   Deleted product with ID: {product_id}")
+
     def test_contact_endpoint(self):
         """Test contact endpoint"""
         print("\n=== TESTING CONTACT ENDPOINT ===")
@@ -201,6 +371,52 @@ class MedvetAPITester:
             200,
             data=contact_data
         )
+
+    def test_stripe_checkout(self):
+        """Test Stripe checkout integration"""
+        print("\n=== TESTING STRIPE CHECKOUT ===")
+        
+        # First get a product to test checkout with
+        success, products = self.run_test("Get Products for Checkout", "GET", "products", 200)
+        
+        if success and products:
+            test_product = products[0]  # Use first product
+            product_id = test_product.get('id')
+            
+            # Test checkout session creation
+            checkout_data = {
+                "product_id": product_id,
+                "origin_url": "https://holistic-vet-shop.preview.emergentagent.com"
+            }
+            
+            success, checkout_response = self.run_test(
+                "Create Checkout Session",
+                "POST",
+                "checkout",
+                200,
+                data=checkout_data
+            )
+            
+            if success and checkout_response:
+                session_id = checkout_response.get('session_id')
+                checkout_url = checkout_response.get('url')
+                print(f"   Created checkout session: {session_id}")
+                print(f"   Checkout URL: {checkout_url[:50]}...")
+                
+                # Test checkout status
+                if session_id:
+                    success, status_response = self.run_test(
+                        "Get Checkout Status",
+                        "GET",
+                        f"checkout/status/{session_id}",
+                        200
+                    )
+                    
+                    if success:
+                        print(f"   Checkout status: {status_response.get('status')}")
+                        print(f"   Payment status: {status_response.get('payment_status')}")
+        else:
+            print("   ❌ No products available for checkout test")
 
     def test_error_cases(self):
         """Test error handling"""
@@ -253,8 +469,11 @@ def main():
     
     tester.test_auth_endpoints()
     tester.test_public_endpoints()
+    tester.test_product_filtering_and_search()
     tester.test_consultation_endpoints()
     tester.test_contact_endpoint()
+    tester.test_admin_endpoints()
+    tester.test_stripe_checkout()
     tester.test_error_cases()
     
     # Print final results

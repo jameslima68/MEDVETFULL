@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Menu, X, Leaf, User, LogOut, ChevronDown } from 'lucide-react';
+import { Menu, X, Leaf, User, LogOut, ChevronDown, Shield } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -62,6 +62,13 @@ export default function Header() {
                   <ChevronDown className="w-4 h-4" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="bg-white border border-[#E0DDD5]">
+                  {user.role === 'admin' && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin" data-testid="admin-link" className="flex items-center gap-2 cursor-pointer">
+                        <Shield className="w-4 h-4" /> Admin
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem asChild>
                     <Link to="/dashboard" data-testid="dashboard-link" className="flex items-center gap-2 cursor-pointer">
                       <User className="w-4 h-4" /> Meu Painel
@@ -109,6 +116,7 @@ export default function Header() {
               {user && user !== false ? (
                 <>
                   <Link to="/dashboard" onClick={() => setMobileOpen(false)} className="block text-sm font-medium text-[#2C4C3B] py-2">Meu Painel</Link>
+                  {user.role === 'admin' && <Link to="/admin" onClick={() => setMobileOpen(false)} className="block text-sm font-medium text-[#C87A5D] py-2">Admin</Link>}
                   <button onClick={() => { logout(); setMobileOpen(false); }} className="text-sm font-medium text-red-600 py-2">Sair</button>
                 </>
               ) : (

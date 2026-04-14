@@ -11,6 +11,8 @@ import { TipsList, TipDetail } from "./pages/TipsPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
+import AdminPage from "./pages/AdminPage";
+import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 
 function App() {
   return (
@@ -28,6 +30,8 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/admin" element={<AdminPage />} />
+              <Route path="/pagamento/sucesso" element={<PaymentSuccessPage />} />
             </Routes>
           </main>
           <Footer />

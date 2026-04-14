@@ -14,8 +14,9 @@ import jwt
 import secrets
 from bson import ObjectId
 from pydantic import BaseModel, Field, ConfigDict
-from typing import List, Optional
+from typing import List, Optional, Dict
 from datetime import datetime, timezone, timedelta
+from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
@@ -120,6 +121,19 @@ class ContactRequest(BaseModel):
     phone: Optional[str] = None
     message: str
 
+class ProductUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    price: Optional[float] = None
+    category: Optional[str] = None
+    image_url: Optional[str] = None
+    in_stock: Optional[bool] = None
+    featured: Optional[bool] = None
+
+class CheckoutRequest(BaseModel):
+    product_id: str
+    origin_url: str
+
 # --- Auth Endpoints ---
 @api_router.post("/auth/register")
 async def register(req: RegisterRequest, response: Response):
@@ -205,10 +219,22 @@ async def refresh_token(request: Request, response: Response):
 
 # --- Products ---
 @api_router.get("/products")
-async def get_products(category: Optional[str] = None):
+async def get_products(category: Optional[str] = None, min_price: Optional[float] = None, max_price: Optional[float] = None, search: Optional[str] = None):
     query = {}
     if category:
         query["category"] = category
+    if min_price is not None or max_price is not None:
+        price_q = {}
+        if min_price is not None:
+            price_q["$gte"] = min_price
+        if max_price is not None:
+            price_q["$lte"] = max_price
+        query["price"] = price_q
+    if search:
+        query["$or"] = [
+            {"name": {"$regex": search, "$options": "i"}},
+            {"description": {"$regex": search, "$options": "i"}}
+        ]
     products = await db.products.find(query, {"_id": 0}).to_list(200)
     return products
 
@@ -265,6 +291,186 @@ async def get_testimonials():
 async def get_faq():
     faqs = await db.faq.find({}, {"_id": 0}).to_list(50)
     return faqs
+
+# --- Admin Guard ---
+async def get_admin_user(request: Request) -> dict:
+    user = await get_current_user(request)
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    return user
+
+# --- Admin: Products CRUD ---
+@api_router.post("/admin/products")
+async def admin_create_product(req: ProductCreate, user: dict = Depends(get_admin_user)):
+    doc = req.model_dump()
+    doc["id"] = str(ObjectId())
+    doc["created_at"] = datetime.now(timezone.utc).isoformat()
+    await db.products.insert_one(doc)
+    doc.pop("_id", None)
+    return doc
+
+@api_router.put("/admin/products/{product_id}")
+async def admin_update_product(product_id: str, req: ProductUpdate, user: dict = Depends(get_admin_user)):
+    updates = {k: v for k, v in req.model_dump().items() if v is not None}
+    if not updates:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    result = await db.products.update_one({"id": product_id}, {"$set": updates})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    product = await db.products.find_one({"id": product_id}, {"_id": 0})
+    return product
+
+@api_router.delete("/admin/products/{product_id}")
+async def admin_delete_product(product_id: str, user: dict = Depends(get_admin_user)):
+    result = await db.products.delete_one({"id": product_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return {"message": "Product deleted"}
+
+# --- Admin: Consultations ---
+@api_router.get("/admin/consultations")
+async def admin_get_consultations(user: dict = Depends(get_admin_user)):
+    consultations = await db.consultations.find({}, {"_id": 0}).to_list(500)
+    return consultations
+
+@api_router.put("/admin/consultations/{consultation_id}/status")
+async def admin_update_consultation_status(consultation_id: str, status: str, user: dict = Depends(get_admin_user)):
+    result = await db.consultations.update_one({"id": consultation_id}, {"$set": {"status": status}})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Consultation not found")
+    return {"message": f"Status updated to {status}"}
+
+# --- Admin: Stats ---
+@api_router.get("/admin/stats")
+async def admin_stats(user: dict = Depends(get_admin_user)):
+    products_count = await db.products.count_documents({})
+    consultations_count = await db.consultations.count_documents({})
+    users_count = await db.users.count_documents({})
+    payments_count = await db.payment_transactions.count_documents({})
+    paid_count = await db.payment_transactions.count_documents({"payment_status": "paid"})
+    pipeline = [{"$match": {"payment_status": "paid"}}, {"$group": {"_id": None, "total": {"$sum": "$amount"}}}]
+    revenue_result = await db.payment_transactions.aggregate(pipeline).to_list(1)
+    total_revenue = revenue_result[0]["total"] if revenue_result else 0
+    return {
+        "products": products_count,
+        "consultations": consultations_count,
+        "users": users_count,
+        "total_payments": payments_count,
+        "paid_payments": paid_count,
+        "total_revenue": total_revenue
+    }
+
+# --- Admin: Users ---
+@api_router.get("/admin/users")
+async def admin_get_users(user: dict = Depends(get_admin_user)):
+    users = await db.users.find({}, {"_id": 0, "password_hash": 0}).to_list(500)
+    return users
+
+# --- Admin: Payments ---
+@api_router.get("/admin/payments")
+async def admin_get_payments(user: dict = Depends(get_admin_user)):
+    payments = await db.payment_transactions.find({}, {"_id": 0}).to_list(500)
+    return payments
+
+# --- Stripe Payment ---
+@api_router.post("/checkout")
+async def create_checkout(req: CheckoutRequest, request: Request):
+    product = await db.products.find_one({"id": req.product_id}, {"_id": 0})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    origin = req.origin_url.rstrip("/")
+    success_url = f"{origin}/pagamento/sucesso?session_id={{CHECKOUT_SESSION_ID}}"
+    cancel_url = f"{origin}/produtos"
+    
+    api_key = os.environ.get("STRIPE_API_KEY")
+    host_url = str(request.base_url).rstrip("/")
+    webhook_url = f"{host_url}/api/webhook/stripe"
+    stripe_checkout = StripeCheckout(api_key=api_key, webhook_url=webhook_url)
+    
+    metadata = {
+        "product_id": product["id"],
+        "product_name": product["name"],
+        "source": "medvet_integrativa"
+    }
+    
+    checkout_req = CheckoutSessionRequest(
+        amount=float(product["price"]),
+        currency="brl",
+        success_url=success_url,
+        cancel_url=cancel_url,
+        metadata=metadata
+    )
+    session = await stripe_checkout.create_checkout_session(checkout_req)
+    
+    # Save transaction
+    tx = {
+        "id": str(ObjectId()),
+        "session_id": session.session_id,
+        "product_id": product["id"],
+        "product_name": product["name"],
+        "amount": float(product["price"]),
+        "currency": "brl",
+        "payment_status": "pending",
+        "status": "initiated",
+        "metadata": metadata,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.payment_transactions.insert_one(tx)
+    tx.pop("_id", None)
+    
+    return {"url": session.url, "session_id": session.session_id}
+
+@api_router.get("/checkout/status/{session_id}")
+async def get_checkout_status(session_id: str, request: Request):
+    api_key = os.environ.get("STRIPE_API_KEY")
+    host_url = str(request.base_url).rstrip("/")
+    webhook_url = f"{host_url}/api/webhook/stripe"
+    stripe_checkout = StripeCheckout(api_key=api_key, webhook_url=webhook_url)
+    
+    checkout_status = await stripe_checkout.get_checkout_status(session_id)
+    
+    # Update transaction
+    tx = await db.payment_transactions.find_one({"session_id": session_id})
+    if tx:
+        already_paid = tx.get("payment_status") == "paid"
+        if not already_paid:
+            await db.payment_transactions.update_one(
+                {"session_id": session_id},
+                {"$set": {
+                    "payment_status": checkout_status.payment_status,
+                    "status": checkout_status.status,
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }}
+            )
+    
+    return {
+        "status": checkout_status.status,
+        "payment_status": checkout_status.payment_status,
+        "amount_total": checkout_status.amount_total,
+        "currency": checkout_status.currency,
+        "metadata": checkout_status.metadata
+    }
+
+@api_router.post("/webhook/stripe")
+async def stripe_webhook(request: Request):
+    body = await request.body()
+    sig = request.headers.get("Stripe-Signature", "")
+    api_key = os.environ.get("STRIPE_API_KEY")
+    host_url = str(request.base_url).rstrip("/")
+    webhook_url = f"{host_url}/api/webhook/stripe"
+    stripe_checkout = StripeCheckout(api_key=api_key, webhook_url=webhook_url)
+    try:
+        event = await stripe_checkout.handle_webhook(body, sig)
+        if event.payment_status == "paid":
+            await db.payment_transactions.update_one(
+                {"session_id": event.session_id},
+                {"$set": {"payment_status": "paid", "status": "complete", "updated_at": datetime.now(timezone.utc).isoformat()}}
+            )
+        return {"status": "ok"}
+    except Exception as e:
+        logger.error(f"Webhook error: {e}")
+        return {"status": "error"}
 
 # --- Contact ---
 @api_router.post("/contact")
