@@ -601,13 +601,14 @@ async def stripe_webhook(request: Request):
                 {"session_id": event.session_id},
                 {"$set": {"payment_status": "paid", "status": "complete", "updated_at": datetime.now(timezone.utc).isoformat()}}
             )
-            # Send purchase email
+            # Send purchase email + loyalty points
             tx = await db.payment_transactions.find_one({"session_id": event.session_id}, {"_id": 0})
             if tx and tx.get("email"):
                 asyncio.create_task(send_email_notification(
                     tx["email"], "MEDVET Integrativa - Compra Confirmada",
                     build_purchase_email(tx.get("product_name", ""), tx.get("amount", 0), "Cartao (Stripe)", tx.get("id", ""))
                 ))
+                asyncio.create_task(award_loyalty_points(tx["email"], tx.get("amount", 0), tx.get("product_name", "")))
         return {"status": "ok"}
     except Exception as e:
         logger.error(f"Webhook error: {e}")
@@ -693,12 +694,13 @@ async def admin_confirm_pix(tx_id: str, user: dict = Depends(get_admin_user)):
         {"id": tx_id},
         {"$set": {"payment_status": "paid", "status": "complete", "updated_at": datetime.now(timezone.utc).isoformat()}}
     )
-    # Send confirmation email
+    # Send confirmation email + award loyalty points
     if tx.get("email"):
         asyncio.create_task(send_email_notification(
             tx["email"], "MEDVET Integrativa - Compra Confirmada",
             build_purchase_email(tx.get("product_name", ""), tx.get("amount", 0), "PIX", tx_id)
         ))
+        asyncio.create_task(award_loyalty_points(tx["email"], tx.get("amount", 0), tx.get("product_name", "")))
     return {"message": "Payment confirmed"}
 
 # --- Purchase History ---
@@ -843,6 +845,130 @@ async def admin_overview(user: dict = Depends(get_admin_user)):
         "pix_payments": pix_count, "stripe_payments": stripe_count,
         "total_revenue": total_revenue, "active_coupons": coupons_active
     }
+
+# --- Customer Testimonials with Photo ---
+class TestimonialSubmit(BaseModel):
+    name: str
+    pet: str
+    text: str
+    rating: int = 5
+    photo_base64: Optional[str] = None  # base64 image
+
+@api_router.post("/testimonials/submit")
+async def submit_testimonial(req: TestimonialSubmit, request: Request):
+    """Submit a testimonial (optionally with photo). Needs auth."""
+    user = None
+    try:
+        user = await get_current_user(request)
+    except Exception:
+        pass
+    doc = {
+        "id": str(ObjectId()),
+        "name": req.name,
+        "pet": req.pet,
+        "text": req.text,
+        "rating": min(max(req.rating, 1), 5),
+        "photo": req.photo_base64 or "",
+        "avatar": req.name[:2].upper(),
+        "email": user["email"] if user else "",
+        "approved": False,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.customer_testimonials.insert_one(doc)
+    doc.pop("_id", None)
+    return {"message": "Depoimento enviado! Sera publicado apos aprovacao.", "id": doc["id"]}
+
+@api_router.get("/testimonials/approved")
+async def get_approved_testimonials():
+    testimonials = await db.customer_testimonials.find({"approved": True}, {"_id": 0}).sort("created_at", -1).to_list(50)
+    return testimonials
+
+@api_router.get("/admin/testimonials")
+async def admin_get_customer_testimonials(user: dict = Depends(get_admin_user)):
+    testimonials = await db.customer_testimonials.find({}, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return testimonials
+
+@api_router.put("/admin/testimonials/{tid}/approve")
+async def admin_approve_testimonial(tid: str, user: dict = Depends(get_admin_user)):
+    result = await db.customer_testimonials.update_one({"id": tid}, {"$set": {"approved": True}})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Testimonial not found")
+    return {"message": "Approved"}
+
+@api_router.delete("/admin/testimonials/{tid}")
+async def admin_delete_testimonial(tid: str, user: dict = Depends(get_admin_user)):
+    result = await db.customer_testimonials.delete_one({"id": tid})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Not found")
+    return {"message": "Deleted"}
+
+# --- Loyalty Points ---
+POINTS_PER_REAL = 10  # 10 points per R$1 spent
+
+@api_router.get("/loyalty")
+async def get_loyalty_info(user: dict = Depends(get_current_user)):
+    """Get user's loyalty points and history."""
+    loyalty = await db.loyalty.find_one({"email": user["email"]}, {"_id": 0})
+    if not loyalty:
+        loyalty = {"email": user["email"], "points": 0, "total_earned": 0, "total_redeemed": 0, "tier": "Bronze"}
+    history = await db.loyalty_history.find({"email": user["email"]}, {"_id": 0}).sort("created_at", -1).to_list(50)
+    # Determine tier
+    total = loyalty.get("total_earned", 0)
+    if total >= 10000:
+        tier = "Ouro"
+    elif total >= 5000:
+        tier = "Prata"
+    else:
+        tier = "Bronze"
+    loyalty["tier"] = tier
+    return {"loyalty": loyalty, "history": history}
+
+@api_router.post("/loyalty/redeem")
+async def redeem_points(points: int, user: dict = Depends(get_current_user)):
+    """Redeem points for a discount coupon."""
+    if points < 500:
+        raise HTTPException(status_code=400, detail="Minimo 500 pontos para resgatar")
+    loyalty = await db.loyalty.find_one({"email": user["email"]})
+    if not loyalty or loyalty.get("points", 0) < points:
+        raise HTTPException(status_code=400, detail="Pontos insuficientes")
+    # Calculate discount: 500 points = R$5 discount
+    discount_value = round(points / 100, 2)
+    code = f"FIEL{str(ObjectId())[-6:].upper()}"
+    # Create coupon
+    await db.coupons.insert_one({
+        "id": str(ObjectId()), "code": code, "discount_type": "fixed",
+        "discount_value": discount_value, "min_purchase": 0, "max_uses": 1,
+        "uses": 0, "active": True, "description": f"Cupom de fidelidade ({points} pontos)",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    # Deduct points
+    await db.loyalty.update_one(
+        {"email": user["email"]},
+        {"$inc": {"points": -points, "total_redeemed": points}}
+    )
+    await db.loyalty_history.insert_one({
+        "id": str(ObjectId()), "email": user["email"], "type": "redeem",
+        "points": -points, "description": f"Resgate: cupom {code} (R$ {discount_value:.2f})",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    return {"coupon_code": code, "discount_value": discount_value, "remaining_points": loyalty["points"] - points}
+
+async def award_loyalty_points(email: str, amount: float, product_name: str):
+    """Award points after a purchase. Called internally."""
+    if not email:
+        return
+    points = int(amount * POINTS_PER_REAL)
+    await db.loyalty.update_one(
+        {"email": email},
+        {"$inc": {"points": points, "total_earned": points}, "$setOnInsert": {"total_redeemed": 0}},
+        upsert=True
+    )
+    await db.loyalty_history.insert_one({
+        "id": str(ObjectId()), "email": email, "type": "earn",
+        "points": points, "description": f"Compra: {product_name} (R$ {amount:.2f})",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    logger.info(f"[LOYALTY] {email} earned {points} points for {product_name}")
 
 # --- Contact ---
 @api_router.post("/contact")

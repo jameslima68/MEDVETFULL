@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Menu, X, Leaf, User, LogOut, ChevronDown, Shield } from 'lucide-react';
+import { Menu, X, Leaf, User, LogOut, ChevronDown, Shield, Award } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +12,7 @@ import {
 const NAV_LINKS = [
   { label: 'Nossa Missao', href: '/missao' },
   { label: 'Produtos', href: '/produtos' },
+  { label: 'Depoimentos', href: '/depoimentos' },
   { label: 'Dicas', href: '/dicas' },
   { label: 'Consultas', href: '/consultas' },
 ];
@@ -73,6 +74,11 @@ export default function Header() {
                   <DropdownMenuItem asChild>
                     <Link to="/dashboard" data-testid="dashboard-link" className="flex items-center gap-2 cursor-pointer">
                       <User className="w-4 h-4" /> Meu Painel
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/fidelidade" data-testid="loyalty-link" className="flex items-center gap-2 cursor-pointer">
+                      <Award className="w-4 h-4" /> Meus Pontos
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem data-testid="logout-btn" onClick={logout} className="flex items-center gap-2 cursor-pointer text-red-600">

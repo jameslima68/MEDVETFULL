@@ -698,6 +698,167 @@ class MedvetAPITester:
         else:
             print("   ❌ No products available for coupon checkout test")
 
+    def test_testimonials_endpoints(self):
+        """Test customer testimonials endpoints"""
+        print("\n=== TESTING TESTIMONIALS ENDPOINTS ===")
+        
+        # Test getting approved testimonials (public)
+        success, approved_testimonials = self.run_test(
+            "Get Approved Testimonials",
+            "GET",
+            "testimonials/approved",
+            200
+        )
+        if success:
+            print(f"   Found {len(approved_testimonials)} approved testimonials")
+        
+        # Test submitting testimonial (requires auth)
+        testimonial_data = {
+            "name": "Test User",
+            "pet": "Rex, Golden Retriever",
+            "text": "Excelente atendimento! Meu pet ficou muito melhor com o tratamento homeopatico.",
+            "rating": 5,
+            "photo_base64": ""  # No photo for test
+        }
+        
+        success, testimonial_response = self.run_test(
+            "Submit Testimonial (Authenticated)",
+            "POST",
+            "testimonials/submit",
+            200,
+            data=testimonial_data,
+            cookies=self.user_cookies
+        )
+        
+        if success:
+            testimonial_id = testimonial_response.get('id')
+            print(f"   Testimonial submitted with ID: {testimonial_id}")
+            
+            # Test admin get all testimonials
+            success, admin_testimonials = self.run_test(
+                "Admin Get All Testimonials",
+                "GET",
+                "admin/testimonials",
+                200,
+                cookies=self.admin_cookies
+            )
+            if success:
+                print(f"   Admin found {len(admin_testimonials)} testimonials (including pending)")
+                
+                # Find our submitted testimonial and approve it
+                for testimonial in admin_testimonials:
+                    if testimonial.get('id') == testimonial_id:
+                        success, approve_response = self.run_test(
+                            f"Admin Approve Testimonial ({testimonial_id})",
+                            "PUT",
+                            f"admin/testimonials/{testimonial_id}/approve",
+                            200,
+                            cookies=self.admin_cookies
+                        )
+                        if success:
+                            print(f"   Testimonial {testimonial_id} approved successfully")
+                        break
+        
+        # Test submitting testimonial without auth (should still work)
+        testimonial_data_no_auth = {
+            "name": "Anonymous User",
+            "pet": "Mimi, Gato Persa",
+            "text": "Tratamento incrivel para minha gata!",
+            "rating": 4
+        }
+        
+        success, _ = self.run_test(
+            "Submit Testimonial (No Auth)",
+            "POST",
+            "testimonials/submit",
+            200,
+            data=testimonial_data_no_auth
+        )
+        if success:
+            print("   Anonymous testimonial submitted successfully")
+
+    def test_loyalty_endpoints(self):
+        """Test loyalty points system endpoints"""
+        print("\n=== TESTING LOYALTY ENDPOINTS ===")
+        
+        # Test getting loyalty info (requires auth)
+        success, loyalty_data = self.run_test(
+            "Get Loyalty Info",
+            "GET",
+            "loyalty",
+            200,
+            cookies=self.user_cookies
+        )
+        
+        if success:
+            loyalty = loyalty_data.get('loyalty', {})
+            history = loyalty_data.get('history', [])
+            points = loyalty.get('points', 0)
+            tier = loyalty.get('tier', 'Bronze')
+            print(f"   User loyalty: {points} points, Tier: {tier}")
+            print(f"   History entries: {len(history)}")
+            
+            # Test redeeming points (minimum 500)
+            if points >= 500:
+                redeem_points = min(500, points)  # Redeem 500 or available points
+                success, redeem_response = self.run_test(
+                    f"Redeem {redeem_points} Points",
+                    "POST",
+                    f"loyalty/redeem?points={redeem_points}",
+                    200,
+                    cookies=self.user_cookies
+                )
+                
+                if success:
+                    coupon_code = redeem_response.get('coupon_code')
+                    discount_value = redeem_response.get('discount_value')
+                    remaining_points = redeem_response.get('remaining_points')
+                    print(f"   Redeemed {redeem_points} points for coupon: {coupon_code}")
+                    print(f"   Discount value: R$ {discount_value:.2f}")
+                    print(f"   Remaining points: {remaining_points}")
+                    
+                    # Verify the coupon was created by trying to validate it
+                    success, products = self.run_test("Get Products for Coupon Validation", "GET", "products", 200)
+                    if success and products and coupon_code:
+                        test_product = products[0]
+                        product_id = test_product.get('id')
+                        
+                        success, coupon_validation = self.run_test(
+                            f"Validate Generated Coupon ({coupon_code})",
+                            "POST",
+                            f"coupons/validate?code={coupon_code}&product_id={product_id}",
+                            200
+                        )
+                        if success:
+                            print(f"   Generated coupon is valid and working")
+            else:
+                print(f"   User has {points} points (minimum 500 needed for redemption)")
+                
+                # Test redeeming with insufficient points
+                self.run_test(
+                    "Redeem Points (Insufficient)",
+                    "POST",
+                    "loyalty/redeem?points=500",
+                    400,
+                    cookies=self.user_cookies
+                )
+        
+        # Test loyalty without auth (should fail)
+        self.run_test(
+            "Get Loyalty Info (No Auth)",
+            "GET",
+            "loyalty",
+            401
+        )
+        
+        # Test redeem without auth (should fail)
+        self.run_test(
+            "Redeem Points (No Auth)",
+            "POST",
+            "loyalty/redeem?points=500",
+            401
+        )
+
     def test_error_cases(self):
         """Test error handling"""
         print("\n=== TESTING ERROR CASES ===")
@@ -732,6 +893,24 @@ class MedvetAPITester:
         
         # Test unauthorized access
         self.run_test("Unauthorized Access to User Data", "GET", "auth/me", 401)
+        
+        # Test testimonial errors
+        self.run_test(
+            "Admin Approve Non-existent Testimonial",
+            "PUT",
+            "admin/testimonials/nonexistent/approve",
+            404,
+            cookies=self.admin_cookies
+        )
+        
+        # Test loyalty errors
+        self.run_test(
+            "Redeem Invalid Points Amount",
+            "POST",
+            "loyalty/redeem?points=100",  # Below minimum 500
+            400,
+            cookies=self.user_cookies
+        )
 
 def main():
     print("🚀 Starting MEDVET INTEGRATIVA API Tests")
@@ -759,6 +938,8 @@ def main():
     tester.test_checkout_with_coupons()
     tester.test_pix_payment()
     tester.test_purchase_history()
+    tester.test_testimonials_endpoints()  # New testimonials tests
+    tester.test_loyalty_endpoints()       # New loyalty tests
     tester.test_error_cases()
     
     # Print final results
