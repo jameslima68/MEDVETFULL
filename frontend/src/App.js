@@ -19,6 +19,9 @@ import LoyaltyPage from "./pages/LoyaltyPage";
 import CoatGuidePage from "./pages/CoatGuidePage";
 import SubscriptionsPage from "./pages/SubscriptionsPage";
 import AcupunctureTCMPage from "./pages/AcupunctureTCMPage";
+import TeamPage from "./pages/TeamPage";
+import TherapiesPage from "./pages/TherapiesPage";
+import ElementQuizPage from "./pages/ElementQuizPage";
 
 function App() {
   return (
@@ -44,6 +47,9 @@ function App() {
               <Route path="/guia-pelagem" element={<CoatGuidePage />} />
               <Route path="/assinaturas" element={<SubscriptionsPage />} />
               <Route path="/acupuntura-mtc" element={<AcupunctureTCMPage />} />
+              <Route path="/equipe" element={<TeamPage />} />
+              <Route path="/terapias" element={<TherapiesPage />} />
+              <Route path="/quiz-elemento" element={<ElementQuizPage />} />
             </Routes>
           </main>
           <Footer />

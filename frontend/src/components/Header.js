@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Menu, X, Leaf, User, LogOut, ChevronDown, Shield, Award } from 'lucide-react';
+import { Menu, X, Leaf, User, LogOut, ChevronDown, Shield, Award, Target, Sparkles, BookOpen } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,8 +12,18 @@ import {
 const NAV_LINKS = [
   { label: 'Nossa Missao', href: '/missao' },
   { label: 'Produtos', href: '/produtos' },
+];
+
+const THERAPY_LINKS = [
+  { label: 'Todas as Terapias', href: '/terapias' },
+  { label: 'Acupuntura & MTC', href: '/acupuntura-mtc' },
+  { label: 'Guia de Pelagem', href: '/guia-pelagem' },
+  { label: 'Quiz: Elemento do Pet', href: '/quiz-elemento' },
+];
+
+const NAV_LINKS_2 = [
+  { label: 'Equipe', href: '/equipe' },
   { label: 'Depoimentos', href: '/depoimentos' },
-  { label: 'Dicas', href: '/dicas' },
   { label: 'Consultas', href: '/consultas' },
 ];
 
@@ -39,12 +49,35 @@ export default function Header() {
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-6">
             {NAV_LINKS.map(link => (
               <Link
                 key={link.href}
                 to={link.href}
-                data-testid={`nav-${link.label.toLowerCase()}`}
+                data-testid={`nav-${link.label.toLowerCase().replace(/\s/g, '-')}`}
+                className={`text-sm font-medium transition-colors ${isActive(link.href) ? 'text-[#2C4C3B]' : 'text-[#4A6B5A] hover:text-[#2C4C3B]'}`}
+              >
+                {link.label}
+              </Link>
+            ))}
+            {/* Terapias Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger data-testid="nav-terapias" className={`flex items-center gap-1 text-sm font-medium transition-colors outline-none ${['/terapias','/acupuntura-mtc','/guia-pelagem','/quiz-elemento'].includes(location.pathname) ? 'text-[#2C4C3B]' : 'text-[#4A6B5A] hover:text-[#2C4C3B]'}`}>
+                Terapias <ChevronDown className="w-3 h-3" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="center" className="bg-white border border-[#E0DDD5] rounded-xl w-52">
+                {THERAPY_LINKS.map(link => (
+                  <DropdownMenuItem key={link.href} asChild>
+                    <Link to={link.href} className="flex items-center gap-2 cursor-pointer text-sm">{link.label}</Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            {NAV_LINKS_2.map(link => (
+              <Link
+                key={link.href}
+                to={link.href}
+                data-testid={`nav-${link.label.toLowerCase().replace(/\s/g, '-')}`}
                 className={`text-sm font-medium transition-colors ${isActive(link.href) ? 'text-[#2C4C3B]' : 'text-[#4A6B5A] hover:text-[#2C4C3B]'}`}
               >
                 {link.label}
@@ -108,13 +141,13 @@ export default function Header() {
       {/* Mobile Nav */}
       {mobileOpen && (
         <div data-testid="mobile-menu" className="md:hidden bg-[#F9F6F0] border-t border-[#E0DDD5] animate-fade-in">
-          <div className="px-4 py-4 space-y-3">
-            {NAV_LINKS.map(link => (
+          <div className="px-4 py-4 space-y-1">
+            {[...NAV_LINKS, ...THERAPY_LINKS.map(l => ({...l, sub: true})), ...NAV_LINKS_2].map(link => (
               <Link
                 key={link.href}
                 to={link.href}
                 onClick={() => setMobileOpen(false)}
-                className={`block text-sm font-medium py-2 ${isActive(link.href) ? 'text-[#2C4C3B]' : 'text-[#4A6B5A]'}`}
+                className={`block text-sm font-medium py-2 ${link.sub ? 'pl-4 text-[#84978F]' : ''} ${isActive(link.href) ? 'text-[#2C4C3B]' : 'text-[#4A6B5A]'}`}
               >
                 {link.label}
               </Link>
@@ -123,6 +156,7 @@ export default function Header() {
               {user && user !== false ? (
                 <>
                   <Link to="/dashboard" onClick={() => setMobileOpen(false)} className="block text-sm font-medium text-[#2C4C3B] py-2">Meu Painel</Link>
+                  <Link to="/fidelidade" onClick={() => setMobileOpen(false)} className="block text-sm font-medium text-[#84978F] py-2">Meus Pontos</Link>
                   {user.role === 'admin' && <Link to="/admin" onClick={() => setMobileOpen(false)} className="block text-sm font-medium text-[#C87A5D] py-2">Admin</Link>}
                   <button onClick={() => { logout(); setMobileOpen(false); }} className="text-sm font-medium text-red-600 py-2">Sair</button>
                 </>
