@@ -8,10 +8,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '../components/ui/dropdown-menu';
+import SidebarMenu from './SidebarMenu';
 
 const NAV_LINKS = [
   { label: 'Nossa Missão', href: '/missao' },
-  { label: 'Produtos', href: '/produtos' },
+  { label: 'Produtos', href: '/loja' },
 ];
 
 const THERAPY_LINKS = [
@@ -31,6 +32,7 @@ const NAV_LINKS_2 = [
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, logout } = useAuth();
   const location = useLocation();
 
@@ -41,7 +43,15 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo */}
-          <Link to="/" data-testid="logo-link" className="flex items-center gap-2 group">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              data-testid="sidebar-trigger"
+              className="p-2 text-[#2C4C3B] hover:bg-[#2C4C3B]/5 rounded-lg transition-colors"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <Link to="/" data-testid="logo-link" className="flex items-center gap-2 group">
             <div className="w-9 h-9 bg-[#2C4C3B] rounded-xl flex items-center justify-center group-hover:bg-[#1A2E24] transition-colors">
               <Leaf className="w-5 h-5 text-[#F9F6F0]" />
             </div>
@@ -49,6 +59,7 @@ export default function Header() {
               MEDVET <span className="text-[#84978F]">INTEGRATIVA</span>
             </span>
           </Link>
+          </div>
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-6">
@@ -172,6 +183,8 @@ export default function Header() {
           </div>
         </div>
       )}
+
+      <SidebarMenu isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
     </header>
   );
 }
