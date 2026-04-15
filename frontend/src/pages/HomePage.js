@@ -17,6 +17,132 @@ const ICON_MAP = {
   Rainbow: Rainbow,
 };
 
+const THERAPIES = [
+  { id: 'acupuntura', title: 'Acupuntura', desc: 'Parte da Medicina Tradicional Chinesa, é uma das mais conhecidas e utilizadas para alívio de dor, inflamação e doenças neurológicas.', icon: Target, category: 'acupuntura', img: 'https://images.unsplash.com/photo-1584738620467-51b852c2af2e?w=400&h=300&fit=crop' },
+  { id: 'fitoterapia', title: 'Fitoterapia', desc: 'Utiliza substâncias derivadas de plantas para tratamento e prevenção de diversas condições, também conhecida como "cura pelas plantas".', icon: Leaf, category: 'medicina-chinesa', img: 'https://images.unsplash.com/photo-1545840716-c82e9eec6930?w=400&h=300&fit=crop' },
+  { id: 'ozonioterapia', title: 'Ozonioterapia', desc: 'Consiste na aplicação de uma mistura de gás oxigênio e ozônio, com propriedades anti-inflamatórias, antissépticas e de fortalecimento imunológico.', icon: Wind, category: null, img: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?w=400&h=300&fit=crop' },
+  { id: 'homeopatia', title: 'Homeopatia', desc: 'Baseia-se no princípio de que "semelhante cura semelhante", utilizando medicamentos altamente diluídos para estimular a capacidade de autocura do organismo.', icon: Droplets, category: 'homeopatia', img: 'https://images.unsplash.com/photo-1564316911608-6b51e3a3cf3d?w=400&h=300&fit=crop' },
+  { id: 'reiki', title: 'Reiki', desc: 'Terapia energética que busca equilibrar a energia do pet, promovendo relaxamento e cura.', icon: Sparkles, category: null, img: 'https://images.unsplash.com/photo-1618018353764-685cb47681d9?w=400&h=300&fit=crop' },
+  { id: 'fisioterapia', title: 'Fisioterapia e Reabilitação', desc: 'Inclui técnicas como hidroterapia, cinesioterapia e eletroterapia para recuperar a mobilidade.', icon: Zap, category: null, img: 'https://images.unsplash.com/photo-1612830565936-6388483d801b?w=400&h=300&fit=crop' },
+  { id: 'quiropraxia', title: 'Quiropraxia', desc: 'Foca no alinhamento da coluna vertebral e do sistema nervoso para melhorar a função física e reduzir dores.', icon: Bone, category: null, img: 'https://images.unsplash.com/photo-1596058939740-516d0d71f3d4?w=400&h=300&fit=crop' },
+  { id: 'cbd', title: 'Terapia Canábica (CBD)', desc: 'Resultados promissores no manejo da dor crônica, ansiedade e convulsões.', icon: Droplets, category: 'cbd', img: 'https://images.unsplash.com/photo-1610243684348-dc537f6067ca?w=400&h=300&fit=crop' },
+  { id: 'florais', title: 'Florais de Bach', desc: 'Utilizados para tratar desequilíbrios emocionais, como medos, ansiedade de separação e agressividade.', icon: Heart, category: 'cromoterapia', img: 'https://images.unsplash.com/photo-1585383234137-2367d3c5302d?w=400&h=300&fit=crop' },
+  { id: 'nutricao', title: 'Nutrição Funcional e Alimentação Natural', desc: 'Dietas balanceadas e personalizadas que visam a saúde interna e a prevenção de doenças.', icon: Leaf, category: 'terapia-alimentar', img: 'https://images.unsplash.com/photo-1745252798506-29500efc5b39?w=400&h=300&fit=crop' },
+  { id: 'cromoterapia', title: 'Musicoterapia e Cromoterapia', desc: 'Uso de sons e cores para reduzir estresse e equilibrar o ambiente emocional do pet.', icon: Rainbow, category: 'cromoterapia', img: 'https://images.unsplash.com/photo-1618018353764-685cb47681d9?w=400&h=300&fit=crop' },
+  { id: 'neural', title: 'Terapia Neural', desc: 'Injeções de anestésicos locais em pontos específicos para restaurar o funcionamento do sistema nervoso autônomo e aliviar dores.', icon: Zap, category: null, img: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?w=400&h=300&fit=crop' },
+  { id: 'hormonios', title: 'Terapia Hormonal Bioidêntica', desc: 'Reposição hormonal com moléculas idênticas às naturais, restaurando o equilíbrio e a qualidade de vida do animal.', icon: FlaskConical, category: 'hormonios', img: 'https://images.unsplash.com/photo-1582719299074-be127353065f?w=400&h=300&fit=crop' },
+  { id: 'massoterapia', title: 'Massoterapia e Liberação Miofascial', desc: 'Técnicas manuais que ajudam a liberar tensões musculares, melhorar a flexibilidade e promover relaxamento profundo.', icon: Hand, category: null, img: 'https://images.unsplash.com/photo-1596058939740-516d0d71f3d4?w=400&h=300&fit=crop' },
+  { id: 'osteopatia', title: 'Osteopatia', desc: 'Foca na manipulação das articulações e tecidos moles para restaurar o equilíbrio estrutural do corpo e melhorar a função geral.', icon: Bone, category: null, img: 'https://images.unsplash.com/photo-1612830565936-6388483d801b?w=400&h=300&fit=crop' },
+  { id: 'hidroterapia', title: 'Hidroterapia', desc: 'Utiliza as propriedades da água para reabilitação física com baixo impacto, sendo excelente para pets com problemas de mobilidade.', icon: Waves, category: null, img: 'https://images.unsplash.com/photo-1603890227524-e6f9a790c263?w=400&h=300&fit=crop' },
+  { id: 'biorressonancia', title: 'Biorressonância', desc: 'Técnica que busca identificar e tratar desequilíbrios energéticos nas células por meio de frequências eletromagnéticas.', icon: Zap, category: null, img: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?w=400&h=300&fit=crop' },
+  { id: 'geoterapia', title: 'Geoterapia (Argiloterapia)', desc: 'Uso de argilas medicinais para tratar inflamações, edemas e problemas de pele devido às propriedades minerais e absorventes.', icon: Sun, category: null, img: 'https://images.unsplash.com/photo-1759141936083-d10203b4d4f6?w=400&h=300&fit=crop' },
+  { id: 'apiterapia', title: 'Apiterapia', desc: 'Emprega produtos derivados de abelhas (mel, própolis e apitoxina) para fins terapêuticos e fortalecimento do sistema imunológico.', icon: Heart, category: null, img: 'https://images.unsplash.com/photo-1564316911608-6b51e3a3cf3d?w=400&h=300&fit=crop' },
+  { id: 'viscum', title: 'Viscum Album (Antroposofia)', desc: 'Terapia derivada da planta Viscum album, utilizada de forma integrativa no tratamento de câncer para melhorar a resposta imunológica.', icon: Leaf, category: null, img: 'https://images.unsplash.com/photo-1572005256772-af4c47972590?w=400&h=300&fit=crop' },
+  { id: 'constelacao', title: 'Constelação Familiar para Pets', desc: 'Abordagem sistêmica que busca entender se problemas comportamentais ou de saúde do pet estão ligados a dinâmicas emocionais do tutor.', icon: Brain, category: null, img: 'https://images.unsplash.com/photo-1618018353764-685cb47681d9?w=400&h=300&fit=crop' },
+  { id: 'termalismo', title: 'Termalismo (Crenoterapia)', desc: 'Tratamento que utiliza águas termais e banhos terapêuticos para aliviar dores articulares e doenças crônicas.', icon: Waves, category: null, img: 'https://images.unsplash.com/photo-1603890227524-e6f9a790c263?w=400&h=300&fit=crop' },
+  { id: 'laser', title: 'Laserterapia e Magnetoterapia', desc: 'Uso de luz laser de baixa intensidade ou campos magnéticos para acelerar a regeneração celular e aliviar a dor.', icon: Zap, category: null, img: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?w=400&h=300&fit=crop' },
+  { id: 'celulas', title: 'Células-Tronco (Stem Cell)', desc: 'Utilizada para regenerar tecidos danificados, especialmente em articulações desgastadas, hérnias de disco e doenças renais crônicas.', icon: Syringe, category: null, img: 'https://images.unsplash.com/photo-1582719299074-be127353065f?w=400&h=300&fit=crop' },
+  { id: 'prp', title: 'PRP (Plasma Rico em Plaquetas)', desc: 'Aplicação de concentrado de plaquetas do próprio sangue do animal para acelerar a cicatrização de tendões, ligamentos e feridas difíceis.', icon: Syringe, category: null, img: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?w=400&h=300&fit=crop' },
+  { id: 'pelagem', title: 'Saúde da Pelagem', desc: 'Produtos naturais, óleos prensados a frio e nutrição especializada para pelos brilhantes, fortes e saudáveis.', icon: Sparkles, category: 'saúde-pelos', img: 'https://images.unsplash.com/photo-1603890227524-e6f9a790c263?w=400&h=300&fit=crop' },
+];
+
+function TherapiesShowcase({ products }) {
+  const [expanded, setExpanded] = useState(null);
+
+  const toggle = (id) => setExpanded(prev => prev === id ? null : id);
+
+  const getRelatedProducts = (category) => {
+    if (!category) return [];
+    return products.filter(p => p.category === category).slice(0, 4);
+  };
+
+  return (
+    <section data-testid="featured-therapies" className="py-20 sm:py-28 bg-[#EAE7E1]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-14">
+          <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#84978F]">Nossos Tratamentos</span>
+          <h2 className="font-['Outfit'] text-3xl sm:text-4xl font-medium tracking-tight text-[#1A2E24] mt-3">
+            Terapias Integrativas para seu Pet
+          </h2>
+          <p className="text-base text-[#4A6B5A] mt-4 max-w-2xl mx-auto">
+            Clique em cada terapia para conhecer mais e descobrir produtos relacionados.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+          {THERAPIES.map(t => {
+            const isOpen = expanded === t.id;
+            const related = getRelatedProducts(t.category);
+            return (
+              <div key={t.id} className={`${isOpen ? 'col-span-2 sm:col-span-3 lg:col-span-4 xl:col-span-5' : ''}`}>
+                {/* Card */}
+                <button
+                  onClick={() => toggle(t.id)}
+                  data-testid={`therapy-${t.id}`}
+                  className={`w-full text-left rounded-2xl overflow-hidden transition-all duration-300 ${isOpen ? 'ring-2 ring-[#2C4C3B]' : 'hover:shadow-md hover:-translate-y-0.5'}`}
+                >
+                  {!isOpen ? (
+                    <div className="bg-white/70 backdrop-blur-sm border border-[#E0DDD5] rounded-2xl overflow-hidden">
+                      <div className="relative h-28 sm:h-32 overflow-hidden">
+                        <img src={t.img} alt={t.title} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#1A2E24]/60 to-transparent" />
+                        <div className="absolute bottom-2 left-3 right-3">
+                          <h4 className="font-['Outfit'] text-sm font-medium text-[#F9F6F0] leading-tight">{t.title}</h4>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-white border border-[#2C4C3B]/20 rounded-2xl">
+                      <div className="flex items-center justify-between px-5 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-[#2C4C3B]/10 rounded-xl flex items-center justify-center">
+                            <t.icon className="w-5 h-5 text-[#2C4C3B]" />
+                          </div>
+                          <h4 className="font-['Outfit'] text-lg font-medium text-[#1A2E24]">{t.title}</h4>
+                        </div>
+                        <span className="text-xs text-[#84978F] font-medium">Fechar</span>
+                      </div>
+                    </div>
+                  )}
+                </button>
+
+                {/* Expanded Content */}
+                {isOpen && (
+                  <div className="bg-white border border-[#E0DDD5] border-t-0 rounded-b-2xl px-5 pb-6 -mt-2 pt-4 animate-fade-in">
+                    <p className="text-sm text-[#4A6B5A] leading-relaxed mb-5 max-w-3xl">{t.desc}</p>
+
+                    {related.length > 0 && (
+                      <div>
+                        <p className="text-xs font-bold tracking-[0.15em] uppercase text-[#84978F] mb-3">Produtos relacionados</p>
+                        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                          {related.map(p => (
+                            <Link to={`/produtos?categoria=${p.category}`} key={p.id} className="flex-shrink-0 w-36 group">
+                              <div className="rounded-xl overflow-hidden h-24 mb-2">
+                                <img src={p.image_url} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                              </div>
+                              <p className="text-xs text-[#1A2E24] font-medium line-clamp-2 group-hover:text-[#2C4C3B] transition-colors">{p.name}</p>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {!related.length && (
+                      <Link to="/consultas" className="text-xs text-[#C87A5D] font-medium hover:underline">
+                        Agende uma consulta para saber mais sobre este tratamento
+                      </Link>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function HomePage() {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
@@ -35,7 +161,7 @@ export default function HomePage() {
           axios.get(`${API}/tips`),
         ]);
         setCategories(catRes.data);
-        setProducts(prodRes.data.filter(p => p.featured));
+        setProducts(prodRes.data);
         setTestimonials(testRes.data);
         setFaqs(faqRes.data);
         setTips(tipRes.data.slice(0, 3));
@@ -238,155 +364,7 @@ export default function HomePage() {
       </section>
 
       {/* Terapias Integrativas em Destaque */}
-      <section data-testid="featured-therapies" className="py-20 sm:py-28 bg-[#EAE7E1]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-14">
-            <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#84978F]">Nossos Tratamentos</span>
-            <h2 className="font-['Outfit'] text-3xl sm:text-4xl font-medium tracking-tight text-[#1A2E24] mt-3">
-              Terapias Integrativas para seu Pet
-            </h2>
-            <p className="text-base text-[#4A6B5A] mt-4 max-w-2xl mx-auto">
-              Conheça as principais terapias da medicina veterinária integrativa. Cada abordagem é personalizada para as necessidades do seu animal.
-            </p>
-          </div>
-
-          {/* Terapias Clássicas */}
-          <div className="mb-10">
-            <h3 className="font-['Outfit'] text-sm font-bold tracking-[0.15em] uppercase text-[#C87A5D] mb-5">Terapias Clássicas</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[
-                { icon: Target, title: 'Acupuntura', desc: 'Parte da Medicina Tradicional Chinesa, é uma das mais conhecidas e utilizadas para alívio de dor, inflamação e doenças neurológicas.', link: '/acupuntura-mtc' },
-                { icon: Leaf, title: 'Fitoterapia', desc: 'Utiliza substâncias derivadas de plantas para tratamento e prevenção de diversas condições, também conhecida como "cura pelas plantas".', link: '/terapias' },
-                { icon: Wind, title: 'Ozonioterapia', desc: 'Aplicação de uma mistura de gás oxigênio e ozônio, com propriedades anti-inflamatórias, antissépticas e de fortalecimento imunológico.', link: '/terapias' },
-                { icon: Droplets, title: 'Homeopatia', desc: 'Baseia-se no princípio de que "semelhante cura semelhante", utilizando medicamentos altamente diluídos para estimular a autocura do organismo.', link: '/produtos?categoria=homeopatia' },
-                { icon: Sparkles, title: 'Reiki', desc: 'Terapia energética que busca equilibrar a energia do pet, promovendo relaxamento profundo e acelerando processos de cura.', link: '/terapias' },
-                { icon: Droplets, title: 'Terapia Canábica (CBD)', desc: 'Resultados promissores no manejo da dor crônica, ansiedade e convulsões. Uma alternativa natural e eficaz.', link: '/produtos?categoria=cbd' },
-                { icon: Heart, title: 'Florais de Bach', desc: 'Utilizados para tratar desequilíbrios emocionais, como medos, ansiedade de separação e agressividade.', link: '/terapias' },
-                { icon: FlaskConical, title: 'Terapia Neural', desc: 'Injeções de anestésicos locais em pontos específicos para restaurar o funcionamento do sistema nervoso autônomo e aliviar dores.', link: '/terapias' },
-                { icon: FlaskConical, title: 'Hormônios Bioidênticos', desc: 'Reposição hormonal com moléculas idênticas às naturais, restaurando o equilíbrio e a qualidade de vida do animal.', link: '/produtos?categoria=hormonios' },
-              ].map((t, i) => (
-                <Link to={t.link} key={i} data-testid={`therapy-card-${i}`} className="bg-white/70 backdrop-blur-sm border border-[#E0DDD5] rounded-2xl p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group">
-                  <div className="flex items-start gap-3">
-                    <div className="w-9 h-9 bg-[#2C4C3B]/10 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <t.icon className="w-4 h-4 text-[#2C4C3B]" />
-                    </div>
-                    <div>
-                      <h4 className="font-['Outfit'] text-[15px] font-medium text-[#1A2E24] group-hover:text-[#2C4C3B] transition-colors">{t.title}</h4>
-                      <p className="text-xs text-[#4A6B5A] leading-relaxed mt-1.5">{t.desc}</p>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          {/* Terapias Físicas e Manuais */}
-          <div className="mb-10">
-            <h3 className="font-['Outfit'] text-sm font-bold tracking-[0.15em] uppercase text-[#C87A5D] mb-5">Terapias Físicas e Manuais</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[
-                { icon: Zap, title: 'Fisioterapia e Reabilitação', desc: 'Inclui hidroterapia, cinesioterapia e eletroterapia para recuperar a mobilidade e qualidade de vida do pet.' },
-                { icon: Bone, title: 'Quiropraxia', desc: 'Foca no alinhamento da coluna vertebral e do sistema nervoso para melhorar a função física e reduzir dores.' },
-                { icon: Hand, title: 'Massoterapia e Liberação Miofascial', desc: 'Técnicas manuais que liberam tensões musculares, melhoram a flexibilidade e promovem relaxamento profundo.' },
-                { icon: Bone, title: 'Osteopatia', desc: 'Manipulação das articulações e tecidos moles para restaurar o equilíbrio estrutural do corpo e melhorar a função geral.' },
-                { icon: Waves, title: 'Hidroterapia', desc: 'Utiliza propriedades da água em esteiras aquáticas ou piscinas para reabilitação com baixo impacto articular.' },
-              ].map((t, i) => (
-                <Link to="/terapias" key={i} className="bg-white/70 backdrop-blur-sm border border-[#E0DDD5] rounded-2xl p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group">
-                  <div className="flex items-start gap-3">
-                    <div className="w-9 h-9 bg-[#2C4C3B]/10 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <t.icon className="w-4 h-4 text-[#2C4C3B]" />
-                    </div>
-                    <div>
-                      <h4 className="font-['Outfit'] text-[15px] font-medium text-[#1A2E24] group-hover:text-[#2C4C3B] transition-colors">{t.title}</h4>
-                      <p className="text-xs text-[#4A6B5A] leading-relaxed mt-1.5">{t.desc}</p>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          {/* Nutrição e Bem-estar */}
-          <div className="mb-10">
-            <h3 className="font-['Outfit'] text-sm font-bold tracking-[0.15em] uppercase text-[#C87A5D] mb-5">Nutrição e Bem-estar</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[
-                { icon: Leaf, title: 'Nutrição Funcional e Alimentação Natural', desc: 'Dietas balanceadas e personalizadas — cetogênica, natural e funcional — que visam a saúde interna e a prevenção de doenças.', link: '/terapia-alimentar' },
-                { icon: Music, title: 'Musicoterapia e Cromoterapia', desc: 'Uso terapêutico de sons e cores para reduzir estresse, equilibrar o ambiente emocional e promover bem-estar.', link: '/produtos?categoria=cromoterapia' },
-              ].map((t, i) => (
-                <Link to={t.link} key={i} className="bg-white/70 backdrop-blur-sm border border-[#E0DDD5] rounded-2xl p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group">
-                  <div className="flex items-start gap-3">
-                    <div className="w-9 h-9 bg-[#2C4C3B]/10 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <t.icon className="w-4 h-4 text-[#2C4C3B]" />
-                    </div>
-                    <div>
-                      <h4 className="font-['Outfit'] text-[15px] font-medium text-[#1A2E24] group-hover:text-[#2C4C3B] transition-colors">{t.title}</h4>
-                      <p className="text-xs text-[#4A6B5A] leading-relaxed mt-1.5">{t.desc}</p>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          {/* Terapias Biológicas e Bioenergéticas */}
-          <div className="mb-10">
-            <h3 className="font-['Outfit'] text-sm font-bold tracking-[0.15em] uppercase text-[#C87A5D] mb-5">Terapias Biológicas e Bioenergéticas</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[
-                { icon: Zap, title: 'Biorressonância', desc: 'Identifica e trata desequilíbrios energéticos nas células por meio de frequências eletromagnéticas específicas.' },
-                { icon: Sun, title: 'Geoterapia (Argiloterapia)', desc: 'Uso de argilas medicinais para tratar inflamações, edemas e problemas de pele com propriedades minerais e absorventes.' },
-                { icon: Heart, title: 'Apiterapia', desc: 'Emprega produtos derivados de abelhas (mel, própolis, apitoxina) para fins terapêuticos e fortalecimento imunológico.' },
-                { icon: Leaf, title: 'Viscum Album (Antroposofia)', desc: 'Terapia da planta Viscum album, utilizada no tratamento integrativo de câncer para melhorar resposta imunológica e qualidade de vida.' },
-              ].map((t, i) => (
-                <Link to="/terapias" key={i} className="bg-white/70 backdrop-blur-sm border border-[#E0DDD5] rounded-2xl p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group">
-                  <div className="flex items-start gap-3">
-                    <div className="w-9 h-9 bg-[#2C4C3B]/10 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <t.icon className="w-4 h-4 text-[#2C4C3B]" />
-                    </div>
-                    <div>
-                      <h4 className="font-['Outfit'] text-[15px] font-medium text-[#1A2E24] group-hover:text-[#2C4C3B] transition-colors">{t.title}</h4>
-                      <p className="text-xs text-[#4A6B5A] leading-relaxed mt-1.5">{t.desc}</p>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          {/* Terapias de Suporte + Regeneração */}
-          <div className="mb-10">
-            <h3 className="font-['Outfit'] text-sm font-bold tracking-[0.15em] uppercase text-[#C87A5D] mb-5">Suporte, Ambiente e Regeneração Avançada</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[
-                { icon: Brain, title: 'Constelação Familiar para Pets', desc: 'Abordagem sistêmica que busca entender se problemas comportamentais ou de saúde estão ligados a dinâmicas emocionais do tutor.' },
-                { icon: Waves, title: 'Termalismo (Crenoterapia)', desc: 'Tratamento com águas termais e banhos terapêuticos para aliviar dores articulares e doenças crônicas.' },
-                { icon: Zap, title: 'Laserterapia e Magnetoterapia', desc: 'Uso de luz laser de baixa intensidade ou campos magnéticos para regeneração celular, redução de inflamações e alívio da dor.' },
-                { icon: Syringe, title: 'Células-Tronco (Stem Cell)', desc: 'Regeneração de tecidos danificados, especialmente em articulações desgastadas, hérnias de disco e doenças renais crônicas.' },
-                { icon: Syringe, title: 'PRP (Plasma Rico em Plaquetas)', desc: 'Concentrado de plaquetas do próprio sangue do animal para acelerar cicatrização de tendões, ligamentos e feridas difíceis.' },
-              ].map((t, i) => (
-                <Link to="/terapias" key={i} className="bg-white/70 backdrop-blur-sm border border-[#E0DDD5] rounded-2xl p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group">
-                  <div className="flex items-start gap-3">
-                    <div className="w-9 h-9 bg-[#2C4C3B]/10 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <t.icon className="w-4 h-4 text-[#2C4C3B]" />
-                    </div>
-                    <div>
-                      <h4 className="font-['Outfit'] text-[15px] font-medium text-[#1A2E24] group-hover:text-[#2C4C3B] transition-colors">{t.title}</h4>
-                      <p className="text-xs text-[#4A6B5A] leading-relaxed mt-1.5">{t.desc}</p>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          <div className="text-center mt-8">
-            <Link to="/terapias" data-testid="view-all-therapies" className="bg-[#2C4C3B] text-[#F9F6F0] hover:bg-[#1A2E24] rounded-full px-8 py-3.5 font-medium transition-all inline-flex items-center gap-2">
-              Ver Todas as 29 Terapias <ChevronRight className="w-4 h-4" />
-            </Link>
-          </div>
-        </div>
-      </section>
+      <TherapiesShowcase products={products} />
 
       {/* How it works */}
       <section className="py-20 sm:py-28">
