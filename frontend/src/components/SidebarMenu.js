@@ -58,9 +58,7 @@ export default function SidebarMenu({ isOpen, onClose }) {
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-[#E0DDD5]">
           <Link to="/" onClick={onClose} className="flex items-center gap-2">
-            <div className="w-9 h-9 bg-[#2C4C3B] rounded-xl flex items-center justify-center">
-              <Leaf className="w-5 h-5 text-[#F9F6F0]" />
-            </div>
+            <img src="/api/static/medvet_logo.png" alt="MEDVET Integrativa" className="w-9 h-9 rounded-xl" />
             <span className="font-['Outfit'] font-semibold text-lg text-[#1A2E24]">
               MEDVET <span className="text-[#84978F]">INTEGRATIVA</span>
             </span>

@@ -9,9 +9,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <div className="w-9 h-9 bg-[#F9F6F0]/10 rounded-xl flex items-center justify-center">
-                <Leaf className="w-5 h-5 text-[#F9F6F0]" />
-              </div>
+              <img src="/api/static/medvet_logo.png" alt="MEDVET Integrativa" className="w-9 h-9 rounded-xl" />
               <span className="font-['Outfit'] font-semibold text-lg">
                 MEDVET <span className="text-[#84978F]">INTEGRATIVA</span>
               </span>

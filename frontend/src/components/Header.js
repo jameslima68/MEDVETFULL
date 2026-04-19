@@ -53,9 +53,7 @@ export default function Header() {
               <Menu className="w-5 h-5" />
             </button>
             <Link to="/" data-testid="logo-link" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 bg-[#2C4C3B] rounded-xl flex items-center justify-center group-hover:bg-[#1A2E24] transition-colors">
-              <Leaf className="w-5 h-5 text-[#F9F6F0]" />
-            </div>
+            <img src="/api/static/medvet_logo.png" alt="MEDVET Integrativa" className="w-9 h-9 rounded-xl" />
             <span className="font-['Outfit'] font-semibold text-lg text-[#1A2E24] hidden sm:block">
               MEDVET <span className="text-[#84978F]">INTEGRATIVA</span>
             </span>
