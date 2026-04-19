@@ -27,6 +27,8 @@ import SymptomCalculatorPage from "./pages/SymptomCalculatorPage";
 import DietaryTherapyPage from "./pages/DietaryTherapyPage";
 import ProductSegmentsPage from "./pages/ProductSegmentsPage";
 import VideoPortalPage from "./pages/VideoPortalPage";
+import MyPetsPage from "./pages/MyPetsPage";
+import ChatWidget from "./components/ChatWidget";
 
 function App() {
   return (
@@ -61,10 +63,12 @@ function App() {
               <Route path="/terapia-alimentar" element={<DietaryTherapyPage />} />
               <Route path="/loja" element={<ProductSegmentsPage />} />
               <Route path="/videos" element={<VideoPortalPage />} />
+              <Route path="/meus-pets" element={<MyPetsPage />} />
             </Routes>
           </main>
           <Footer />
           <WhatsAppButton />
+          <ChatWidget />
         </div>
       </AuthProvider>
     </BrowserRouter>

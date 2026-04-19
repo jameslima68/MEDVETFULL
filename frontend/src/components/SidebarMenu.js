@@ -114,6 +114,16 @@ export default function SidebarMenu({ isOpen, onClose }) {
                 </div>
                 <ChevronRight className="w-4 h-4 text-[#84978F]" />
               </Link>
+              <Link
+                to="/meus-pets"
+                className="flex items-center justify-between px-6 py-4 text-[#1A2E24] hover:bg-[#2C4C3B]/5 transition-colors group"
+              >
+                <div className="flex items-center gap-3">
+                  <Heart className="w-5 h-5 text-[#84978F]" />
+                  <span className="text-[15px] font-medium">Meus Pets</span>
+                </div>
+                <ChevronRight className="w-4 h-4 text-[#84978F]" />
+              </Link>
               {user.role === 'admin' && (
                 <Link
                   to="/admin"

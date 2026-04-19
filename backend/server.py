@@ -72,6 +72,7 @@ async def get_current_user(request: Request) -> dict:
         if not user:
             raise HTTPException(status_code=401, detail="User not found")
         user["_id"] = str(user["_id"])
+        user["id"] = user["_id"]  # Add 'id' alias for consistency
         user.pop("password_hash", None)
         return user
     except jwt.ExpiredSignatureError:
@@ -1168,6 +1169,163 @@ async def create_contact(req: ContactRequest):
     await db.contacts.insert_one(doc)
     doc.pop("_id", None)
     return {"message": "Message sent successfully", "id": doc["id"]}
+
+# ===== MEUS PETS =====
+class PetCreate(BaseModel):
+    name: str
+    species: str  # cao, gato, outro
+    breed: str = ""
+    age_years: int = 0
+    age_months: int = 0
+    weight_kg: float = 0
+    conditions: List[str] = []
+    notes: str = ""
+
+@api_router.get("/pets")
+async def get_user_pets(user=Depends(get_current_user)):
+    pets = await db.pets.find({"user_id": user["id"]}, {"_id": 0}).to_list(50)
+    return pets
+
+@api_router.post("/pets")
+async def create_pet(pet: PetCreate, user=Depends(get_current_user)):
+    doc = pet.model_dump()
+    doc["id"] = str(ObjectId())
+    doc["user_id"] = user["id"]
+    doc["created_at"] = datetime.now(timezone.utc).isoformat()
+    await db.pets.insert_one(doc)
+    doc.pop("_id", None)
+    return doc
+
+@api_router.put("/pets/{pet_id}")
+async def update_pet(pet_id: str, pet: PetCreate, user=Depends(get_current_user)):
+    update_data = pet.model_dump()
+    result = await db.pets.update_one({"id": pet_id, "user_id": user["id"]}, {"$set": update_data})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    updated = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+    return updated
+
+@api_router.delete("/pets/{pet_id}")
+async def delete_pet(pet_id: str, user=Depends(get_current_user)):
+    result = await db.pets.delete_one({"id": pet_id, "user_id": user["id"]})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    return {"message": "Pet removed"}
+
+# ===== CHAT ESPECIALISTA =====
+THERAPY_KNOWLEDGE = {
+    "acupuntura": "A acupuntura veterinária é parte da Medicina Tradicional Chinesa. Utiliza agulhas em meridianos para restaurar o Qi. Indicada para dor crônica, doenças neurológicas, problemas articulares e digestivos. Estimula endorfinas naturais.",
+    "homeopatia": "A homeopatia veterinária usa medicamentos altamente diluídos baseados no princípio 'semelhante cura semelhante'. Tratamento individualizado, sem efeitos colaterais. Indicada para todas as idades e espécies.",
+    "fitoterapia": "A fitoterapia usa plantas medicinais para tratamento e prevenção. Cúrcuma (anti-inflamatório), gengibre (digestivo), camomila (calmante), equinácea (imunoestimulante). Fórmulas manipuladas sob medida.",
+    "cbd": "O CBD (canabidiol) é um fitocanabinóide não psicoativo. Atua no sistema endocanabinoide. Indicado para dor crônica, epilepsia refratária, ansiedade e inflamação. Regulamentado pela ANVISA.",
+    "florais": "Florais de Bach são essências vibracionais de flores silvestres. Tratam desequilíbrios emocionais: medos, ansiedade de separação, agressividade, ciúmes, luto. Sem contraindicações.",
+    "nutricao": "Nutrição funcional veterinária usa alimentos como ferramenta terapêutica. Inclui alimentação natural (AN), dieta cetogênica e BARF. Cada plano é personalizado pelo veterinário nutrólogo.",
+    "cromoterapia": "Cromoterapia usa cores do espectro solar para equilíbrio. Azul (calma), verde (imunidade), vermelho (vitalidade). Complementar a outros tratamentos.",
+    "hormonios": "Hormônios bioidênticos têm estrutura idêntica aos naturais. Melhor metabolizados, menos efeitos colaterais. Para tireoide, adrenal, menopausa animal.",
+    "ozonioterapia": "Ozonioterapia aplica mistura de oxigênio e ozônio. Anti-inflamatória, antisséptica, fortalece imunidade. Para feridas crônicas, infecções, articulações.",
+    "reiki": "Reiki é terapia energética japonesa. Equilibra campo energético via imposição de mãos. Promove relaxamento, acelera cicatrização. Animais são naturalmente receptivos.",
+    "fisioterapia": "Fisioterapia veterinária inclui hidroterapia, cinesioterapia e eletroterapia. Recupera mobilidade, fortalece musculatura. Fundamental no pós-operatório.",
+    "quiropraxia": "Quiropraxia veterinária alinha coluna e sistema nervoso. Ajustes manuais suaves. Para dor, rigidez, claudicação.",
+    "neural": "Terapia neural aplica microdoses de anestésicos em pontos específicos. Reseta campos interferentes de dor crônica.",
+    "pelagem": "Saúde da pelagem reflete saúde interna. Óleos prensados a frio (gergelim, coco, linhaça), ômega 3/6, biotina, zinco. Nutrição de dentro para fora.",
+}
+
+class ChatMessage(BaseModel):
+    message: str
+    pet_id: Optional[str] = None
+    context: str = "geral"  # geral, terapia, produto
+
+def generate_specialist_response(message: str, pet_info: dict = None, context: str = "geral"):
+    """Generate a contextual response based on keywords. Will be replaced by AI later."""
+    msg_lower = message.lower()
+    response_parts = []
+
+    # Pet context
+    if pet_info:
+        species_name = {"cao": "cão", "gato": "gato"}.get(pet_info.get("species", ""), "pet")
+        response_parts.append(f"Considerando que seu {species_name}")
+        if pet_info.get("breed"):
+            response_parts[-1] += f" da raça {pet_info['breed']}"
+        if pet_info.get("age_years"):
+            response_parts[-1] += f" com {pet_info['age_years']} ano(s)"
+        if pet_info.get("weight_kg"):
+            response_parts[-1] += f" e {pet_info['weight_kg']}kg"
+        if pet_info.get("conditions"):
+            response_parts[-1] += f", com histórico de {', '.join(pet_info['conditions'])}"
+        response_parts[-1] += ":"
+
+    # Match therapy keywords
+    matched_therapy = None
+    for key, knowledge in THERAPY_KNOWLEDGE.items():
+        if key in msg_lower or any(w in msg_lower for w in key.split()):
+            matched_therapy = key
+            response_parts.append(knowledge)
+            break
+
+    # General topic matching
+    if not matched_therapy:
+        if any(w in msg_lower for w in ["dor", "inflamação", "artrite", "artrose"]):
+            response_parts.append("Para dor e inflamação, as terapias mais indicadas são: acupuntura (alívio imediato), ozonioterapia (anti-inflamatório), CBD (manejo crônico) e fisioterapia (reabilitação). A combinação de terapias costuma trazer os melhores resultados.")
+        elif any(w in msg_lower for w in ["ansiedade", "medo", "estresse", "nervoso"]):
+            response_parts.append("Para questões emocionais e comportamentais, recomendamos: Florais de Bach (medos e ansiedade), Reiki (relaxamento energético), musicoterapia (redução de estresse) e CBD (ansiedade severa). A nutrição funcional também ajuda no equilíbrio emocional.")
+        elif any(w in msg_lower for w in ["alimentação", "dieta", "ração", "comida", "nutrição"]):
+            response_parts.append("Na nutrição integrativa veterinária, trabalhamos com alimentação natural (AN), dieta cetogênica e nutrição funcional. Cada plano é personalizado conforme espécie, porte, idade e condições de saúde. A suplementação com ômega 3, probióticos e vitaminas é essencial.")
+        elif any(w in msg_lower for w in ["pelo", "pelagem", "queda", "coceira", "pele"]):
+            response_parts.append("Para saúde da pelagem, recomendamos: óleos prensados a frio (gergelim, coco, linhaça), suplementação com ômega 3/6, biotina e zinco. A nutrição de dentro para fora é fundamental. A fitoterapia chinesa também oferece fórmulas específicas para pele e pelos.")
+        elif any(w in msg_lower for w in ["câncer", "tumor", "oncologia"]):
+            response_parts.append("No tratamento oncológico integrativo, utilizamos: dieta cetogênica (corta glicose do tumor), Viscum album/antroposofia (fortalece imunidade), ozonioterapia (complementar), acupuntura (manejo da dor) e fitoterapia (suporte hepático). Sempre em conjunto com o tratamento convencional.")
+        elif any(w in msg_lower for w in ["convulsão", "epilepsia", "neurológico"]):
+            response_parts.append("Para distúrbios neurológicos, as abordagens integrativas incluem: acupuntura (neuromodulação), CBD (epilepsia refratária), dieta cetogênica (neuroprotetora), homeopatia (constitucional) e fisioterapia (reabilitação neurológica).")
+        else:
+            response_parts.append("Obrigado pela sua pergunta! Na medicina veterinária integrativa, tratamos o animal como um ser completo — corpo, mente e espírito. Temos mais de 25 terapias disponíveis, desde acupuntura e homeopatia até nutrição funcional e terapia com CBD.")
+
+    # Add recommendation
+    if pet_info and pet_info.get("conditions"):
+        response_parts.append("\nCom base no histórico do seu pet, recomendo agendar uma consulta para uma avaliação personalizada.")
+    else:
+        response_parts.append("\nPara uma orientação mais precisa, recomendo cadastrar seu pet em 'Meus Pets' com os dados completos (raça, idade, peso e condições de saúde).")
+
+    response_parts.append("\n*Importante: Esta orientação é informativa e não substitui a consulta com um veterinário especialista.*")
+
+    return " ".join(response_parts)
+
+@api_router.post("/chat")
+async def chat_with_specialist(msg: ChatMessage, request: Request):
+    user = None
+    pet_info = None
+    try:
+        user = await get_current_user(request)
+    except:
+        pass
+
+    if msg.pet_id and user:
+        pet_doc = await db.pets.find_one({"id": msg.pet_id, "user_id": user["id"]}, {"_id": 0})
+        if pet_doc:
+            pet_info = pet_doc
+
+    response_text = generate_specialist_response(msg.message, pet_info, msg.context)
+
+    # Save chat history if user logged in
+    if user:
+        chat_doc = {
+            "id": str(ObjectId()),
+            "user_id": user["id"],
+            "pet_id": msg.pet_id,
+            "user_message": msg.message,
+            "specialist_response": response_text,
+            "context": msg.context,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.chat_history.insert_one(chat_doc)
+
+    return {"response": response_text, "pet_used": pet_info is not None}
+
+@api_router.get("/chat/history")
+async def get_chat_history(user=Depends(get_current_user), limit: int = 20):
+    chats = await db.chat_history.find(
+        {"user_id": user["id"]}, {"_id": 0}
+    ).sort("created_at", -1).to_list(limit)
+    return chats
 
 # ===== VIDEO PORTAL =====
 THERAPY_VIDEOS = [
