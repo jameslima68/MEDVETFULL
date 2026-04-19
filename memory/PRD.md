@@ -8,38 +8,33 @@ React + FastAPI + MongoDB + Tailwind CSS + Shadcn UI + Stripe + JWT
 
 ## Funcionalidades Implementadas
 - Autenticação JWT (login, registro, admin)
-- Catálogo de produtos (77+ produtos, 9 categorias incluindo Terapia Alimentar)
-- Homepage com showcase de 25 terapias integrativas (click-to-expand com textos explicativos)
-- **MEDVET TV** — Portal de vídeos (/videos) com 19 vídeos mapeados por terapia, filtros por tag, player modal
-- **Vídeos dentro de cada terapia** na homepage (expandido)
-- **Integração redes sociais** preparada: Instagram, TikTok, YouTube (aguardando IDs das contas)
-- Menu lateral slide-in estilo MEDVi com 12 itens
-- Página "Produtos por Tratamento" (/loja) por segmento
-- Terapia Alimentar (/terapia-alimentar) — cetogênica, natural, funcional + 8 produtos
+- Catálogo de produtos (77+ produtos, 9 categorias)
+- Homepage com 25 terapias integrativas (click-to-expand)
+- **Chatbot "Converse com Especialistas"** — flutuante em todas as páginas, respostas baseadas em regras para 14 áreas terapêuticas, personalização por pet cadastrado
+- **Meus Pets** (/meus-pets) — CRUD completo (nome, espécie, raça, idade, peso, condições/doenças)
+- MEDVET TV — Portal de vídeos com 19 vídeos mapeados
+- Integrações sociais preparadas (Instagram, TikTok, YouTube)
+- Menu lateral slide-in, Produtos por Tratamento (/loja)
+- Terapia Alimentar com 8 produtos
 - Checkout Stripe + PIX simulado, Cupons, Fidelidade, Assinaturas
 - Painel admin, Blog, Quiz 5 Elementos, Calculadora de Sintomas
 - Equipe (Dra. Tabatha Novikov CRMV-SP 21194)
-- Depoimentos com vídeo, Nossa Missão
-- Tratamentos presenciais marcados como "Em breve"
-- Acentuação PT-BR corrigida em 23+ arquivos
+- Tratamentos presenciais marcados "Em breve"
+- Acentuação PT-BR corrigida
 
 ## Credenciais
 - Admin: admin@medvet.com / admin123
 
-## Integrações Sociais (preparadas, aguardando IDs)
-- Instagram: env var INSTAGRAM_USERNAME + INSTAGRAM_URL
-- TikTok: env var TIKTOK_USERNAME + TIKTOK_URL
-- YouTube: env var YOUTUBE_CHANNEL_ID + YOUTUBE_URL
-
 ## Backlog
 - P1: Deploy + domínio medvetintegrativa.com
-- P1: Configurar IDs das redes sociais (Instagram, TikTok, YouTube)
-- P1: Gerar vídeos com IA (Sora 2) quando saldo disponível
+- P1: Integrar IA real no chatbot (GPT via Universal Key)
+- P1: Gerar vídeos com Sora 2
+- P1: Configurar redes sociais (Instagram, TikTok, YouTube)
 - P2: PIX real via Mercado Pago
-- P2: Notificações push
 - P2: Refatorar server.py em módulos
 
 ## Mocked/Placeholder
+- Chat: respostas baseadas em regras (sem IA)
+- Vídeos: placeholders "Em breve"
 - PIX simulado, Email via logger
-- Vídeos: 19 placeholders "Em breve" (sem arquivos de vídeo ainda)
-- Redes sociais: estrutura pronta, sem contas configuradas
+- Redes sociais: estrutura pronta, sem contas
