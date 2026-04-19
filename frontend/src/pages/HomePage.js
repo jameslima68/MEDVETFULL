@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Leaf, FlaskConical, Droplets, Target, BookOpen, Star, ChevronRight, Shield, Truck, Clock, Headphones, Heart, Sparkles, Rainbow, Zap, Wind, Music, Brain, Waves, Hand, Bone, Syringe, Sun } from 'lucide-react';
+import { Leaf, FlaskConical, Droplets, Target, BookOpen, Star, ChevronRight, Shield, Truck, Clock, Headphones, Heart, Sparkles, Rainbow, Zap, Wind, Music, Brain, Waves, Hand, Bone, Syringe, Sun, Play } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -48,7 +48,12 @@ const THERAPIES = [
 
 function TherapiesShowcase() {
   const [expanded, setExpanded] = useState(null);
+  const [videos, setVideos] = useState([]);
   const toggle = (id) => setExpanded(prev => prev === id ? null : id);
+
+  useEffect(() => {
+    axios.get(`${API}/videos`).then(r => setVideos(r.data)).catch(() => {});
+  }, []);
 
   return (
     <section data-testid="featured-therapies" className="py-20 sm:py-28 bg-[#EAE7E1]">
@@ -105,6 +110,29 @@ function TherapiesShowcase() {
                 {isOpen && (
                   <div className="bg-white border border-[#E0DDD5] border-t-0 rounded-b-2xl px-5 pb-6 -mt-2 pt-4 animate-fade-in">
                     <p className="text-sm text-[#4A6B5A] leading-relaxed max-w-4xl">{t.desc}</p>
+
+                    {(() => {
+                      const vid = videos.find(v => v.therapy === t.id);
+                      if (vid && vid.has_video) return (
+                        <div className="mt-4">
+                          <p className="text-xs font-bold tracking-[0.15em] uppercase text-[#84978F] mb-2">Vídeo sobre esta terapia</p>
+                          <video
+                            src={`${process.env.REACT_APP_BACKEND_URL}${vid.video_url}`}
+                            controls
+                            className="rounded-xl w-full max-w-md"
+                            poster={vid.thumbnail}
+                          />
+                        </div>
+                      );
+                      if (vid) return (
+                        <div className="mt-4 flex items-center gap-2 text-xs text-[#84978F]">
+                          <Play className="w-3.5 h-3.5 text-[#C87A5D]" />
+                          <span>Vídeo sobre esta terapia em produção</span>
+                        </div>
+                      );
+                      return null;
+                    })()}
+
                     {t.pro && (
                       <p className="mt-4 text-xs text-[#C87A5D] font-medium flex items-center gap-1.5">
                         <Clock className="w-3.5 h-3.5" />

@@ -26,6 +26,7 @@ import { BlogList, BlogArticle } from "./pages/BlogPage";
 import SymptomCalculatorPage from "./pages/SymptomCalculatorPage";
 import DietaryTherapyPage from "./pages/DietaryTherapyPage";
 import ProductSegmentsPage from "./pages/ProductSegmentsPage";
+import VideoPortalPage from "./pages/VideoPortalPage";
 
 function App() {
   return (
@@ -59,6 +60,7 @@ function App() {
               <Route path="/calculadora-tratamento" element={<SymptomCalculatorPage />} />
               <Route path="/terapia-alimentar" element={<DietaryTherapyPage />} />
               <Route path="/loja" element={<ProductSegmentsPage />} />
+              <Route path="/videos" element={<VideoPortalPage />} />
             </Routes>
           </main>
           <Footer />

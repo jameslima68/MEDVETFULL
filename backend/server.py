@@ -5,6 +5,7 @@ ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
 from fastapi import FastAPI, APIRouter, HTTPException, Request, Response, Depends
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
@@ -1168,8 +1169,82 @@ async def create_contact(req: ContactRequest):
     doc.pop("_id", None)
     return {"message": "Message sent successfully", "id": doc["id"]}
 
+# ===== VIDEO PORTAL =====
+THERAPY_VIDEOS = [
+    {"id": "vid-acupuntura", "therapy": "acupuntura", "title": "Acupuntura Veterinária: Alívio Natural da Dor", "description": "Descubra como a acupuntura pode aliviar dores crônicas e inflamações no seu pet de forma natural e sem efeitos colaterais.", "duration": "4s", "tags": ["acupuntura", "dor", "MTC"], "video_file": "acupuntura.mp4", "thumbnail": "https://images.unsplash.com/photo-1584738620467-51b852c2af2e?w=400&h=300&fit=crop"},
+    {"id": "vid-fitoterapia", "therapy": "fitoterapia", "title": "Fitoterapia: A Cura pelas Plantas", "description": "Conheça as plantas medicinais mais utilizadas na medicina veterinária integrativa e seus benefícios comprovados.", "duration": "4s", "tags": ["fitoterapia", "ervas", "natural"], "video_file": "fitoterapia.mp4", "thumbnail": "https://images.unsplash.com/photo-1545840716-c82e9eec6930?w=400&h=300&fit=crop"},
+    {"id": "vid-bem-estar", "therapy": "geral", "title": "Bem-estar Pet: Dicas de Cuidado Integrativo", "description": "Dicas práticas de bem-estar e cuidados integrativos para manter seu pet saudável e feliz todos os dias.", "duration": "4s", "tags": ["bem-estar", "dicas", "cuidados"], "video_file": "bem-estar.mp4", "thumbnail": "https://images.unsplash.com/photo-1603890227524-e6f9a790c263?w=400&h=300&fit=crop"},
+    {"id": "vid-homeopatia", "therapy": "homeopatia", "title": "Homeopatia: Cura Suave e Natural", "description": "Entenda como a homeopatia veterinária estimula a autocura do organismo do seu pet.", "duration": "placeholder", "tags": ["homeopatia", "natural"], "video_file": None, "thumbnail": "https://images.unsplash.com/photo-1564316911608-6b51e3a3cf3d?w=400&h=300&fit=crop"},
+    {"id": "vid-ozonioterapia", "therapy": "ozonioterapia", "title": "Ozonioterapia: Oxigênio que Cura", "description": "Saiba como a mistura de oxigênio e ozônio pode combater inflamações e fortalecer a imunidade do seu pet.", "duration": "placeholder", "tags": ["ozonioterapia", "imunidade"], "video_file": None, "thumbnail": "https://images.unsplash.com/photo-1579154204601-01588f351e67?w=400&h=300&fit=crop"},
+    {"id": "vid-reiki", "therapy": "reiki", "title": "Reiki para Pets: Energia que Equilibra", "description": "O poder da energia Reiki no relaxamento e cura dos nossos companheiros de quatro patas.", "duration": "placeholder", "tags": ["reiki", "energia", "relaxamento"], "video_file": None, "thumbnail": "https://images.unsplash.com/photo-1618018353764-685cb47681d9?w=400&h=300&fit=crop"},
+    {"id": "vid-cbd", "therapy": "cbd", "title": "CBD Veterinário: Manejo Natural da Dor", "description": "Como o canabidiol pode ajudar pets com dor crônica, ansiedade e convulsões.", "duration": "placeholder", "tags": ["CBD", "dor", "ansiedade"], "video_file": None, "thumbnail": "https://images.unsplash.com/photo-1610243684348-dc537f6067ca?w=400&h=300&fit=crop"},
+    {"id": "vid-florais", "therapy": "florais", "title": "Florais de Bach: Equilíbrio Emocional", "description": "Tratando medos, ansiedade e agressividade com as essências florais de Bach.", "duration": "placeholder", "tags": ["florais", "emocional", "ansiedade"], "video_file": None, "thumbnail": "https://images.unsplash.com/photo-1585383234137-2367d3c5302d?w=400&h=300&fit=crop"},
+    {"id": "vid-fisioterapia", "therapy": "fisioterapia", "title": "Fisioterapia Pet: Recuperando a Mobilidade", "description": "Hidroterapia, eletroterapia e exercícios terapêuticos para devolver qualidade de vida.", "duration": "placeholder", "tags": ["fisioterapia", "reabilitação"], "video_file": None, "thumbnail": "https://images.unsplash.com/photo-1612830565936-6388483d801b?w=400&h=300&fit=crop"},
+    {"id": "vid-nutricao", "therapy": "nutricao", "title": "Alimentação Natural: Nutrição como Medicina", "description": "Dieta cetogênica, BARF e alimentação funcional para pets mais saudáveis.", "duration": "placeholder", "tags": ["nutrição", "dieta", "natural"], "video_file": None, "thumbnail": "https://images.unsplash.com/photo-1745252798506-29500efc5b39?w=400&h=300&fit=crop"},
+    {"id": "vid-cromoterapia", "therapy": "cromoterapia", "title": "Cromoterapia: Cores que Curam", "description": "O poder terapêutico das cores no equilíbrio físico e emocional dos pets.", "duration": "placeholder", "tags": ["cromoterapia", "cores", "energia"], "video_file": None, "thumbnail": "https://images.unsplash.com/photo-1618018353764-685cb47681d9?w=400&h=300&fit=crop"},
+    {"id": "vid-neural", "therapy": "neural", "title": "Terapia Neural: Resetando a Dor", "description": "Como a terapia neural restaura o sistema nervoso e alivia dores crônicas.", "duration": "placeholder", "tags": ["neural", "dor", "nervoso"], "video_file": None, "thumbnail": "https://images.unsplash.com/photo-1579154204601-01588f351e67?w=400&h=300&fit=crop"},
+    {"id": "vid-hormonios", "therapy": "hormonios", "title": "Hormônios Bioidênticos: Equilíbrio Natural", "description": "Reposição hormonal com moléculas naturais para restaurar a vitalidade do seu pet.", "duration": "placeholder", "tags": ["hormônios", "bioidênticos"], "video_file": None, "thumbnail": "https://images.unsplash.com/photo-1582719299074-be127353065f?w=400&h=300&fit=crop"},
+    {"id": "vid-quiropraxia", "therapy": "quiropraxia", "title": "Quiropraxia Veterinária: Alinhamento e Bem-estar", "description": "Ajustes vertebrais suaves para melhorar a função física e reduzir dores.", "duration": "placeholder", "tags": ["quiropraxia", "coluna"], "video_file": None, "thumbnail": "https://images.unsplash.com/photo-1596058939740-516d0d71f3d4?w=400&h=300&fit=crop"},
+    {"id": "vid-massoterapia", "therapy": "massoterapia", "title": "Massoterapia Pet: Relaxamento Profundo", "description": "Técnicas manuais que liberam tensões e promovem bem-estar no seu animal.", "duration": "placeholder", "tags": ["massoterapia", "relaxamento"], "video_file": None, "thumbnail": "https://images.unsplash.com/photo-1596058939740-516d0d71f3d4?w=400&h=300&fit=crop"},
+    {"id": "vid-hidroterapia", "therapy": "hidroterapia", "title": "Hidroterapia: Reabilitação na Água", "description": "Reabilitação de baixo impacto usando as propriedades terapêuticas da água.", "duration": "placeholder", "tags": ["hidroterapia", "reabilitação"], "video_file": None, "thumbnail": "https://images.unsplash.com/photo-1603890227524-e6f9a790c263?w=400&h=300&fit=crop"},
+    {"id": "vid-celulas", "therapy": "celulas", "title": "Células-Tronco: Regeneração Avançada", "description": "A fronteira da medicina regenerativa aplicada à veterinária integrativa.", "duration": "placeholder", "tags": ["células-tronco", "regeneração"], "video_file": None, "thumbnail": "https://images.unsplash.com/photo-1582719299074-be127353065f?w=400&h=300&fit=crop"},
+    {"id": "vid-comportamento", "therapy": "geral", "title": "Comportamento Pet: Entendendo seu Animal", "description": "Dicas para entender e melhorar o comportamento do seu pet com abordagem integrativa.", "duration": "placeholder", "tags": ["comportamento", "dicas", "bem-estar"], "video_file": None, "thumbnail": "https://images.unsplash.com/photo-1584738620467-51b852c2af2e?w=400&h=300&fit=crop"},
+    {"id": "vid-pelagem", "therapy": "pelagem", "title": "Pelagem Saudável: Nutrição de Dentro para Fora", "description": "Como manter os pelos do seu pet brilhantes e saudáveis com óleos naturais e nutrição.", "duration": "placeholder", "tags": ["pelagem", "nutrição", "óleos"], "video_file": None, "thumbnail": "https://images.unsplash.com/photo-1603890227524-e6f9a790c263?w=400&h=300&fit=crop"},
+]
+
+@api_router.get("/videos")
+async def get_videos(therapy: str = None):
+    videos = THERAPY_VIDEOS.copy()
+    if therapy:
+        videos = [v for v in videos if v["therapy"] == therapy or v["therapy"] == "geral"]
+    result = []
+    for v in videos:
+        video_url = None
+        if v["video_file"]:
+            video_path = ROOT_DIR / "static" / "videos" / v["video_file"]
+            if video_path.exists():
+                video_url = f"/api/static/videos/{v['video_file']}"
+        result.append({
+            "id": v["id"],
+            "therapy": v["therapy"],
+            "title": v["title"],
+            "description": v["description"],
+            "duration": v["duration"],
+            "tags": v["tags"],
+            "thumbnail": v["thumbnail"],
+            "video_url": video_url,
+            "has_video": video_url is not None
+        })
+    return result
+
+@api_router.get("/social/config")
+async def get_social_config():
+    return {
+        "instagram": {
+            "username": os.environ.get("INSTAGRAM_USERNAME", ""),
+            "profile_url": os.environ.get("INSTAGRAM_URL", ""),
+            "configured": bool(os.environ.get("INSTAGRAM_USERNAME"))
+        },
+        "tiktok": {
+            "username": os.environ.get("TIKTOK_USERNAME", ""),
+            "profile_url": os.environ.get("TIKTOK_URL", ""),
+            "configured": bool(os.environ.get("TIKTOK_USERNAME"))
+        },
+        "youtube": {
+            "channel_id": os.environ.get("YOUTUBE_CHANNEL_ID", ""),
+            "channel_url": os.environ.get("YOUTUBE_URL", ""),
+            "configured": bool(os.environ.get("YOUTUBE_CHANNEL_ID"))
+        }
+    }
+
 # Include router
 app.include_router(api_router)
+
+# Static files for videos
+static_dir = ROOT_DIR / "static"
+static_dir.mkdir(exist_ok=True)
+(static_dir / "videos").mkdir(exist_ok=True)
+app.mount("/api/static", StaticFiles(directory=str(static_dir)), name="static")
 
 # CORS
 app.add_middleware(

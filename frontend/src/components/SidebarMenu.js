@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { X, ChevronRight, Leaf, Droplets, FlaskConical, Target, Sparkles, Rainbow, UtensilsCrossed, MessageCircle, Heart, User, LogOut, Shield, Award } from 'lucide-react';
+import { X, ChevronRight, Leaf, Droplets, FlaskConical, Target, Sparkles, Rainbow, UtensilsCrossed, MessageCircle, Heart, User, LogOut, Shield, Award, Play } from 'lucide-react';
 
 const MENU_ITEMS = [
   { label: 'Homeopatia Veterinária', href: '/produtos?categoria=homeopatia', icon: Leaf },
@@ -15,6 +15,7 @@ const MENU_ITEMS = [
   { label: 'Todas as Terapias', href: '/terapias', icon: Target },
   { label: 'Nossos Veterinários', href: '/equipe', icon: User },
   { label: 'Depoimentos', href: '/depoimentos', icon: Heart },
+  { label: 'MEDVET TV', href: '/videos', icon: Play },
 ];
 
 export default function SidebarMenu({ isOpen, onClose }) {

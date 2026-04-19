@@ -13,6 +13,7 @@ import SidebarMenu from './SidebarMenu';
 const NAV_LINKS = [
   { label: 'Nossa Missão', href: '/missao' },
   { label: 'Produtos', href: '/loja' },
+  { label: 'Vídeos', href: '/videos' },
 ];
 
 const THERAPY_LINKS = [
