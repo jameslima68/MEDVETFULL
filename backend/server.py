@@ -1235,59 +1235,79 @@ class ChatMessage(BaseModel):
     pet_id: Optional[str] = None
     context: str = "geral"  # geral, terapia, produto
 
-def generate_specialist_response(message: str, pet_info: dict = None, context: str = "geral"):
-    """Generate a contextual response based on keywords. Will be replaced by AI later."""
-    msg_lower = message.lower()
-    response_parts = []
+SYSTEM_PROMPT_VET = """Você é um especialista em medicina veterinária integrativa da clínica MEDVET Integrativa, liderada pela Dra. Tabatha Novikov (CRMV-SP 21194). Responda sempre em português do Brasil.
 
-    # Pet context
+Suas áreas de conhecimento incluem mais de 25 terapias integrativas:
+- Acupuntura e Medicina Tradicional Chinesa (MTC)
+- Fitoterapia e Ervas Medicinais
+- Homeopatia Veterinária
+- Ozonioterapia
+- Terapia Canábica (CBD)
+- Florais de Bach
+- Nutrição Funcional, Alimentação Natural e Dieta Cetogênica
+- Cromoterapia e Musicoterapia
+- Reiki e Terapias Energéticas
+- Fisioterapia, Hidroterapia e Reabilitação
+- Quiropraxia e Osteopatia
+- Massoterapia e Liberação Miofascial
+- Terapia Neural
+- Hormônios Bioidênticos
+- Biorressonância
+- Geoterapia (Argiloterapia)
+- Apiterapia
+- Viscum Album (Antroposofia)
+- Laserterapia e Magnetoterapia
+- Células-Tronco e PRP
+- Constelação Familiar para Pets
+
+Diretrizes:
+1. Responda com conhecimento veterinário e científico, mas de forma acessível
+2. Quando o tutor informar dados do pet (raça, idade, peso, condições), personalize a resposta
+3. Sempre sugira agendar uma consulta para avaliação presencial quando apropriado
+4. NUNCA mencione que você é uma inteligência artificial, chatbot ou assistente virtual. Você faz parte da equipe de especialistas da MEDVET Integrativa
+5. Ao final, sempre inclua: "Esta orientação é informativa e não substitui a consulta com um veterinário especialista."
+6. Seja empático, acolhedor e profissional
+7. Quando possível, mencione produtos naturais disponíveis na loja (óleos, suplementos, florais, etc.) de forma sutil
+8. Respostas devem ser concisas mas completas (máximo 3 parágrafos)"""
+
+async def generate_ai_response(message: str, pet_info: dict = None, session_id: str = "default"):
+    """Generate response using OpenAI GPT via emergentintegrations."""
+    from emergentintegrations.llm.chat import LlmChat, UserMessage
+
+    openai_key = os.environ.get("OPENAI_API_KEY")
+    if not openai_key:
+        return "Nossos especialistas estão temporariamente indisponíveis. Por favor, tente novamente em alguns minutos ou agende uma consulta diretamente."
+
+    # Build context with pet info
+    user_text = message
     if pet_info:
         species_name = {"cao": "cão", "gato": "gato"}.get(pet_info.get("species", ""), "pet")
-        response_parts.append(f"Considerando que seu {species_name}")
+        pet_context = f"\n[Dados do pet: {species_name}"
         if pet_info.get("breed"):
-            response_parts[-1] += f" da raça {pet_info['breed']}"
+            pet_context += f", raça {pet_info['breed']}"
         if pet_info.get("age_years"):
-            response_parts[-1] += f" com {pet_info['age_years']} ano(s)"
+            pet_context += f", {pet_info['age_years']} ano(s)"
         if pet_info.get("weight_kg"):
-            response_parts[-1] += f" e {pet_info['weight_kg']}kg"
+            pet_context += f", {pet_info['weight_kg']}kg"
         if pet_info.get("conditions"):
-            response_parts[-1] += f", com histórico de {', '.join(pet_info['conditions'])}"
-        response_parts[-1] += ":"
+            pet_context += f", condições: {', '.join(pet_info['conditions'])}"
+        pet_context += "]"
+        user_text = message + pet_context
 
-    # Match therapy keywords
-    matched_therapy = None
-    for key, knowledge in THERAPY_KNOWLEDGE.items():
-        if key in msg_lower or any(w in msg_lower for w in key.split()):
-            matched_therapy = key
-            response_parts.append(knowledge)
-            break
+    try:
+        chat = LlmChat(
+            api_key=openai_key,
+            session_id=session_id,
+            system_message=SYSTEM_PROMPT_VET
+        )
+        chat.with_model("openai", "gpt-4o-mini")
 
-    # General topic matching
-    if not matched_therapy:
-        if any(w in msg_lower for w in ["dor", "inflamação", "artrite", "artrose"]):
-            response_parts.append("Para dor e inflamação, as terapias mais indicadas são: acupuntura (alívio imediato), ozonioterapia (anti-inflamatório), CBD (manejo crônico) e fisioterapia (reabilitação). A combinação de terapias costuma trazer os melhores resultados.")
-        elif any(w in msg_lower for w in ["ansiedade", "medo", "estresse", "nervoso"]):
-            response_parts.append("Para questões emocionais e comportamentais, recomendamos: Florais de Bach (medos e ansiedade), Reiki (relaxamento energético), musicoterapia (redução de estresse) e CBD (ansiedade severa). A nutrição funcional também ajuda no equilíbrio emocional.")
-        elif any(w in msg_lower for w in ["alimentação", "dieta", "ração", "comida", "nutrição"]):
-            response_parts.append("Na nutrição integrativa veterinária, trabalhamos com alimentação natural (AN), dieta cetogênica e nutrição funcional. Cada plano é personalizado conforme espécie, porte, idade e condições de saúde. A suplementação com ômega 3, probióticos e vitaminas é essencial.")
-        elif any(w in msg_lower for w in ["pelo", "pelagem", "queda", "coceira", "pele"]):
-            response_parts.append("Para saúde da pelagem, recomendamos: óleos prensados a frio (gergelim, coco, linhaça), suplementação com ômega 3/6, biotina e zinco. A nutrição de dentro para fora é fundamental. A fitoterapia chinesa também oferece fórmulas específicas para pele e pelos.")
-        elif any(w in msg_lower for w in ["câncer", "tumor", "oncologia"]):
-            response_parts.append("No tratamento oncológico integrativo, utilizamos: dieta cetogênica (corta glicose do tumor), Viscum album/antroposofia (fortalece imunidade), ozonioterapia (complementar), acupuntura (manejo da dor) e fitoterapia (suporte hepático). Sempre em conjunto com o tratamento convencional.")
-        elif any(w in msg_lower for w in ["convulsão", "epilepsia", "neurológico"]):
-            response_parts.append("Para distúrbios neurológicos, as abordagens integrativas incluem: acupuntura (neuromodulação), CBD (epilepsia refratária), dieta cetogênica (neuroprotetora), homeopatia (constitucional) e fisioterapia (reabilitação neurológica).")
-        else:
-            response_parts.append("Obrigado pela sua pergunta! Na medicina veterinária integrativa, tratamos o animal como um ser completo — corpo, mente e espírito. Temos mais de 25 terapias disponíveis, desde acupuntura e homeopatia até nutrição funcional e terapia com CBD.")
-
-    # Add recommendation
-    if pet_info and pet_info.get("conditions"):
-        response_parts.append("\nCom base no histórico do seu pet, recomendo agendar uma consulta para uma avaliação personalizada.")
-    else:
-        response_parts.append("\nPara uma orientação mais precisa, recomendo cadastrar seu pet em 'Meus Pets' com os dados completos (raça, idade, peso e condições de saúde).")
-
-    response_parts.append("\n*Importante: Esta orientação é informativa e não substitui a consulta com um veterinário especialista.*")
-
-    return " ".join(response_parts)
+        user_message = UserMessage(text=user_text)
+        response = await chat.send_message(user_message)
+        return response
+    except Exception as e:
+        logger.error(f"AI chat error: {e}")
+        return "Desculpe, não consegui processar sua pergunta no momento. Por favor, tente novamente ou agende uma consulta com nossos especialistas."
 
 @api_router.post("/chat")
 async def chat_with_specialist(msg: ChatMessage, request: Request):
@@ -1303,7 +1323,8 @@ async def chat_with_specialist(msg: ChatMessage, request: Request):
         if pet_doc:
             pet_info = pet_doc
 
-    response_text = generate_specialist_response(msg.message, pet_info, msg.context)
+    session_id = f"user-{user['id']}" if user else f"anon-{msg.message[:10]}"
+    response_text = await generate_ai_response(msg.message, pet_info, session_id)
 
     # Save chat history if user logged in
     if user:
