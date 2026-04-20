@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Leaf, Phone, Mail, MapPin } from 'lucide-react';
+import { Leaf, Phone, Mail, MapPin, Instagram } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -57,6 +57,11 @@ export default function Footer() {
               </li>
               <li className="flex items-start gap-2 text-sm text-[#F9F6F0]/60">
                 <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5" /> São Paulo, SP - Brasil
+              </li>
+              <li>
+                <a href="https://www.instagram.com/medvet_integrativa10/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-[#F9F6F0]/60 hover:text-[#F9F6F0] transition-colors">
+                  <Instagram className="w-4 h-4 flex-shrink-0" /> @medvet_integrativa10
+                </a>
               </li>
             </ul>
           </div>
