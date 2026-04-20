@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { useLang } from '../contexts/LangContext';
 import { Leaf, FlaskConical, Droplets, Target, BookOpen, Star, ChevronRight, Shield, Truck, Clock, Headphones, Heart, Sparkles, Rainbow, Zap, Wind, Music, Brain, Waves, Hand, Bone, Syringe, Sun, Play } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
 
@@ -151,6 +152,7 @@ function TherapiesShowcase() {
 }
 
 export default function HomePage() {
+  const { t } = useLang();
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
@@ -188,13 +190,13 @@ export default function HomePage() {
             <div className="space-y-8 animate-fade-in-up">
               <div className="inline-flex items-center gap-2 bg-[#2C4C3B]/5 rounded-full px-4 py-2">
                 <Leaf className="w-4 h-4 text-[#2C4C3B]" />
-                <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#84978F]">Medicina Veterinária Integrativa</span>
+                <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#84978F]">{t('home.badge')}</span>
               </div>
               <h1 className="font-['Outfit'] text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-[#1A2E24] leading-[1.1]">
-                Cuidado natural e <span className="text-[#84978F]">integrado</span> para seu pet
+                {t('home.title1')} <span className="text-[#84978F]">{t('home.title2')}</span> {t('home.title3')}
               </h1>
               <p className="text-base sm:text-lg leading-relaxed text-[#4A6B5A] max-w-lg">
-                Tratamentos personalizados com homeopatia, acupuntura, CBD e medicina chinesa. Consultas online com especialistas veterinários.
+                {t('home.subtitle')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
@@ -202,21 +204,21 @@ export default function HomePage() {
                   data-testid="hero-cta-consultation"
                   className="bg-[#2C4C3B] text-[#F9F6F0] hover:bg-[#1A2E24] rounded-full px-8 py-3.5 font-medium transition-all text-center shadow-sm"
                 >
-                  Agendar Consulta
+                  {t('home.cta1')}
                 </Link>
                 <Link
                   to="/produtos"
                   data-testid="hero-cta-products"
                   className="bg-transparent border border-[#2C4C3B] text-[#2C4C3B] hover:bg-[#2C4C3B]/5 rounded-full px-8 py-3.5 font-medium transition-all text-center"
                 >
-                  Ver Produtos
+                  {t('home.cta2')}
                 </Link>
               </div>
             </div>
             <div className="relative animate-fade-in-up animation-delay-200">
               <div className="relative rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(44,76,59,0.12)]">
                 <img
-                  src="https://images.unsplash.com/photo-1763586756425-9cb57b53a437?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHwzfHxwZXQlMjB3ZWxsbmVzcyUyMGNhdCUyMGRvZyUyMG5hdHVyZXxlbnwwfHx8fDE3NzYxMjU4NTh8MA&ixlib=rb-4.1.0&q=85"
+                  src="https://images.unsplash.com/photo-1750967028438-acc4042504eb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MTN8MHwxfHNlYXJjaHwxfHxoYXBweSUyMGdvbGRlbiUyMHJldHJpZXZlciUyMHNtaWxpbmclMjBuYXR1cmUlMjBvdXRkb29ycyUyMGJlYXV0aWZ1bCUyMHBvcnRyYWl0fGVufDB8fHx8MTc3NjcwMjEwMnww&ixlib=rb-4.1.0&q=85"
                   alt="Pet wellness"
                   className="w-full h-[400px] sm:h-[480px] object-cover"
                 />
@@ -229,8 +231,8 @@ export default function HomePage() {
                     <Shield className="w-5 h-5 text-[#2C4C3B]" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-[#1A2E24]">100% Online</p>
-                    <p className="text-xs text-[#4A6B5A]">Atendimento seguro</p>
+                    <p className="text-sm font-semibold text-[#1A2E24]">{t('home.online')}</p>
+                    <p className="text-xs text-[#4A6B5A]">{t('home.secure')}</p>
                   </div>
                 </div>
               </div>

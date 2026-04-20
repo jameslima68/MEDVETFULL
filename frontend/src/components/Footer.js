@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { Leaf, Phone, Mail, MapPin, Instagram, Music2 } from 'lucide-react';
+import { useLang } from '../contexts/LangContext';
 
 export default function Footer() {
+  const { t } = useLang();
   return (
     <footer data-testid="main-footer" className="bg-[#2C4C3B] text-[#F9F6F0]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
@@ -74,7 +76,7 @@ export default function Footer() {
 
         <div className="mt-12 pt-8 border-t border-[#F9F6F0]/10 text-center">
           <p className="text-xs text-[#F9F6F0]/40">
-            2025 MEDVET Integrativa. Todos os direitos reservados.
+            2025 MEDVET Integrativa. {t('footer.rights')}
           </p>
         </div>
       </div>

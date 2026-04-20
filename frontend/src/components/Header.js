@@ -72,13 +72,13 @@ export default function Header() {
                 data-testid={`nav-${link.label.toLowerCase().replace(/\s/g, '-')}`}
                 className={`text-sm font-medium transition-colors ${isActive(link.href) ? 'text-[#2C4C3B]' : 'text-[#4A6B5A] hover:text-[#2C4C3B]'}`}
               >
-                {link.label}
+                {link.tKey ? t(link.tKey) : link.label}
               </Link>
             ))}
             {/* Terapias Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger data-testid="nav-terapias" className={`flex items-center gap-1 text-sm font-medium transition-colors outline-none ${['/terapias','/acupuntura-mtc','/guia-pelagem','/quiz-elemento'].includes(location.pathname) ? 'text-[#2C4C3B]' : 'text-[#4A6B5A] hover:text-[#2C4C3B]'}`}>
-                Terapias <ChevronDown className="w-3 h-3" />
+                {t('nav.therapies')} <ChevronDown className="w-3 h-3" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="center" className="bg-white border border-[#E0DDD5] rounded-xl w-52">
                 {THERAPY_LINKS.map(link => (
@@ -95,7 +95,7 @@ export default function Header() {
                 data-testid={`nav-${link.label.toLowerCase().replace(/\s/g, '-')}`}
                 className={`text-sm font-medium transition-colors ${isActive(link.href) ? 'text-[#2C4C3B]' : 'text-[#4A6B5A] hover:text-[#2C4C3B]'}`}
               >
-                {link.label}
+                {link.tKey ? t(link.tKey) : link.label}
               </Link>
             ))}
           </nav>
@@ -140,10 +140,10 @@ export default function Header() {
             ) : (
               <>
                 <Link to="/login" data-testid="login-link" className="text-sm font-medium text-[#4A6B5A] hover:text-[#2C4C3B] transition-colors">
-                  Entrar
+                  {t('nav.login')}
                 </Link>
                 <Link to="/consultas" data-testid="cta-schedule" className="bg-[#2C4C3B] text-[#F9F6F0] hover:bg-[#1A2E24] rounded-full px-6 py-2.5 text-sm font-medium transition-all">
-                  Agendar Consulta
+                  {t('nav.schedule')}
                 </Link>
               </>
             )}
