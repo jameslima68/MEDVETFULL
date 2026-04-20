@@ -1260,7 +1260,7 @@ COURSES = [
             {"num": 5, "title": "Protocolos Clínicos", "hours": 12, "topics": ["Dor musculoesquelética", "Doenças neurológicas", "Distúrbios gastrointestinais", "Problemas respiratórios", "Dermatologia integrativa"]},
             {"num": 6, "title": "Prática Clínica e Casos", "hours": 12, "topics": ["Atendimento supervisionado", "Discussão de casos clínicos", "Integração com medicina convencional", "Avaliação final"]},
         ],
-        "thumbnail": "https://images.unsplash.com/photo-1584738620467-51b852c2af2e?w=600&h=400&fit=crop",
+        "thumbnail": "https://static.prod-images.emergentagent.com/jobs/10aec1f8-3381-451e-883e-da9e1b489f6e/images/68a1b8cf9fd017bcbe17cba6ee1ccaf26ad0770b26596b80ffaf3a5114a01da3.png",
     },
     {
         "id": "curso-ozonioterapia",
@@ -1283,7 +1283,7 @@ COURSES = [
             {"num": 4, "title": "Protocolos Clínicos", "hours": 8, "topics": ["Feridas crônicas e infectadas", "Doenças articulares", "Dermatites", "Oncologia integrativa", "Doenças infecciosas"]},
             {"num": 5, "title": "Prática e Casos Clínicos", "hours": 6, "topics": ["Demonstrações práticas", "Estudos de caso", "Protocolos combinados", "Avaliação"]},
         ],
-        "thumbnail": "https://images.unsplash.com/photo-1579154204601-01588f351e67?w=600&h=400&fit=crop",
+        "thumbnail": "https://static.prod-images.emergentagent.com/jobs/10aec1f8-3381-451e-883e-da9e1b489f6e/images/30625b9c6e4a77141a37fa522b4de3fce64060f6862b3a431b61a02da21a4901.png",
     },
     {
         "id": "curso-cbd",
@@ -1306,7 +1306,7 @@ COURSES = [
             {"num": 4, "title": "Protocolos e Dosagem", "hours": 10, "topics": ["Titulação e dose-resposta", "Protocolos por espécie e porte", "Monitoramento clínico", "Ajustes e manutenção"]},
             {"num": 5, "title": "Casos Clínicos e Mentoria", "hours": 8, "topics": ["Casos reais documentados", "Discussão em grupo", "Mentoria individual", "Certificação"]},
         ],
-        "thumbnail": "https://images.unsplash.com/photo-1610243684348-dc537f6067ca?w=600&h=400&fit=crop",
+        "thumbnail": "https://static.prod-images.emergentagent.com/jobs/10aec1f8-3381-451e-883e-da9e1b489f6e/images/8d8cbfdac65213e6ddbb93ef09091eb53ef5637f3db20063737c244ee330f627.png",
     },
     {
         "id": "curso-quiropraxia",
@@ -1329,7 +1329,7 @@ COURSES = [
             {"num": 4, "title": "Protocolos Clínicos", "hours": 10, "topics": ["Hérnia de disco", "Displasia coxofemoral", "Claudicação", "Cães atletas", "Geriátricos"]},
             {"num": 5, "title": "Prática Clínica", "hours": 10, "topics": ["Atendimento supervisionado", "Integração com fisioterapia", "Casos clínicos", "Certificação"]},
         ],
-        "thumbnail": "https://images.unsplash.com/photo-1596058939740-516d0d71f3d4?w=600&h=400&fit=crop",
+        "thumbnail": "https://static.prod-images.emergentagent.com/jobs/10aec1f8-3381-451e-883e-da9e1b489f6e/images/e69dd964795b120110cc89e19b1ff8b55b32a866439dd02e8b3f9e0029ca3601.png",
     },
     {
         "id": "curso-fitoterapia",
@@ -1352,7 +1352,7 @@ COURSES = [
             {"num": 4, "title": "Protocolos Clínicos", "hours": 4, "topics": ["Sistema digestivo", "Sistema musculoesquelético", "Dermatologia", "Oncologia de suporte"]},
             {"num": 5, "title": "Casos e Certificação", "hours": 2, "topics": ["Casos clínicos documentados", "Discussão e avaliação", "Certificado de conclusão"]},
         ],
-        "thumbnail": "https://images.unsplash.com/photo-1545840716-c82e9eec6930?w=600&h=400&fit=crop",
+        "thumbnail": "https://static.prod-images.emergentagent.com/jobs/10aec1f8-3381-451e-883e-da9e1b489f6e/images/5366d2b01fc7978ff7fbffa2ca2f375bbdf91523dd7ccd5bb3168b0dbd5cc859.png",
     },
     # 20 CURSOS EM BREVE
     {"id": "curso-homeopatia", "title": "Homeopatia Veterinária", "subtitle": "Princípios e Prática Clínica", "price": 3500.00, "hours": 40, "status": "coming_soon", "category": "homeopatia", "thumbnail": "https://images.unsplash.com/photo-1564316911608-6b51e3a3cf3d?w=600&h=400&fit=crop"},
