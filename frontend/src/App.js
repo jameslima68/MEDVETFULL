@@ -1,6 +1,7 @@
 import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
+import { LangProvider } from "./contexts/LangContext";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import WhatsAppButton from "./components/WhatsAppButton";
@@ -29,11 +30,14 @@ import ProductSegmentsPage from "./pages/ProductSegmentsPage";
 import VideoPortalPage from "./pages/VideoPortalPage";
 import MyPetsPage from "./pages/MyPetsPage";
 import ChatWidget from "./components/ChatWidget";
+import VetPortalPage from "./pages/VetPortalPage";
+import { CoursesListPage, CourseDetailPage } from "./pages/CoursesPage";
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <LangProvider>
         <div className="min-h-screen flex flex-col bg-[#F9F6F0]">
           <Header />
           <main className="flex-1">
@@ -64,12 +68,16 @@ function App() {
               <Route path="/loja" element={<ProductSegmentsPage />} />
               <Route path="/videos" element={<VideoPortalPage />} />
               <Route path="/meus-pets" element={<MyPetsPage />} />
+              <Route path="/portal-vet" element={<VetPortalPage />} />
+              <Route path="/cursos" element={<CoursesListPage />} />
+              <Route path="/cursos/:id" element={<CourseDetailPage />} />
             </Routes>
           </main>
           <Footer />
           <WhatsAppButton />
           <ChatWidget />
         </div>
+        </LangProvider>
       </AuthProvider>
     </BrowserRouter>
   );

@@ -1170,6 +1170,256 @@ async def create_contact(req: ContactRequest):
     doc.pop("_id", None)
     return {"message": "Message sent successfully", "id": doc["id"]}
 
+# ===== PORTAL DO VETERINÁRIO =====
+class VetRegister(BaseModel):
+    name: str
+    email: str
+    password: str
+    crmv: str
+    crmv_state: str
+    specialties: List[str] = []
+    area: str = "integrativa"  # integrativa, tradicional, ambas
+    education: List[Dict] = []  # [{type: "graduacao/pos/mestrado/doutorado", institution: "", year: ""}]
+    bio: str = ""
+    phone: str = ""
+
+@api_router.post("/vet/register")
+async def register_vet(vet: VetRegister):
+    existing = await db.vets.find_one({"$or": [{"email": vet.email}, {"crmv": vet.crmv}]})
+    if existing:
+        raise HTTPException(status_code=400, detail="E-mail ou CRMV já cadastrado")
+    doc = vet.model_dump()
+    doc["id"] = str(ObjectId())
+    doc["password_hash"] = hash_password(doc.pop("password"))
+    doc["status"] = "approved"
+    doc["created_at"] = datetime.now(timezone.utc).isoformat()
+    doc["role"] = "vet"
+    await db.vets.insert_one(doc)
+    doc.pop("_id", None)
+    doc.pop("password_hash", None)
+    # Alert admin (mocked - logs)
+    logger.info(f"ADMIN ALERT: Novo veterinário cadastrado - {vet.name} (CRMV {vet.crmv}-{vet.crmv_state}) - Email: admin@medvetintegrativa.com")
+    token = create_access_token(doc["id"], doc["email"])
+    return {"token": token, "vet": doc}
+
+@api_router.post("/vet/login")
+async def login_vet(request: Request):
+    body = await request.json()
+    vet = await db.vets.find_one({"email": body["email"]}, {"_id": 0})
+    if not vet or not verify_password(body["password"], vet.get("password_hash", "")):
+        raise HTTPException(status_code=401, detail="Credenciais inválidas")
+    vet.pop("password_hash", None)
+    token = create_access_token(vet["id"], vet["email"])
+    return {"token": token, "vet": vet}
+
+@api_router.get("/vet/profile")
+async def get_vet_profile(request: Request):
+    token = request.headers.get("Authorization", "").replace("Bearer ", "")
+    if not token:
+        raise HTTPException(status_code=401, detail="Token required")
+    try:
+        payload = jwt.decode(token, get_jwt_secret(), algorithms=[JWT_ALGORITHM])
+        vet = await db.vets.find_one({"id": payload["sub"]}, {"_id": 0, "password_hash": 0})
+        if not vet:
+            raise HTTPException(status_code=404, detail="Vet not found")
+        return vet
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+@api_router.get("/admin/vets")
+async def get_all_vets(user=Depends(get_current_user)):
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin only")
+    vets = await db.vets.find({}, {"_id": 0, "password_hash": 0}).to_list(200)
+    return vets
+
+# ===== PLATAFORMA DE CURSOS =====
+COURSES = [
+    # 5 CURSOS ATIVOS
+    {
+        "id": "curso-acupuntura",
+        "title": "Acupuntura Veterinária Integrativa",
+        "subtitle": "Formação Completa em Acupuntura e Medicina Tradicional Chinesa para Animais",
+        "instructor": "Dra. Tabatha Novikov",
+        "instructor_crmv": "CRMV-SP 21194",
+        "price": 4500.00,
+        "original_price": 5500.00,
+        "hours": 60,
+        "status": "active",
+        "category": "acupuntura",
+        "level": "Intermediário a Avançado",
+        "description": "Curso completo de Acupuntura Veterinária com base na Medicina Tradicional Chinesa (MTC). Aprenda a diagnosticar e tratar doenças em pequenos e grandes animais utilizando pontos de acupuntura, moxabustão, eletroacupuntura e acupuntura a laser. Inclui teoria dos 5 Elementos, meridianos, diagnóstico pela língua e pulso adaptados à veterinária.",
+        "justification": "Valor compatível com cursos de pós-graduação lato sensu em acupuntura veterinária no Brasil. Carga horária de 60h inclui teoria, prática supervisionada e estudos de caso.",
+        "modules": [
+            {"num": 1, "title": "Fundamentos da MTC Veterinária", "hours": 8, "topics": ["História da MTC", "Teoria do Yin-Yang", "Os 5 Elementos na veterinária", "Qi, Sangue e Fluidos Corporais"]},
+            {"num": 2, "title": "Meridianos e Pontos de Acupuntura", "hours": 10, "topics": ["12 Meridianos principais", "8 Meridianos extraordinários", "Localização dos pontos em cães e gatos", "Atlas de pontos veterinários"]},
+            {"num": 3, "title": "Diagnóstico pela MTC", "hours": 8, "topics": ["Diagnóstico pela língua", "Palpação de pulso", "Os 8 Princípios Diagnósticos", "Síndromes Zang-Fu adaptadas"]},
+            {"num": 4, "title": "Técnicas de Agulhamento", "hours": 10, "topics": ["Seleção e manipulação de agulhas", "Profundidade e angulação", "Moxabustão", "Eletroacupuntura", "Acupuntura a laser"]},
+            {"num": 5, "title": "Protocolos Clínicos", "hours": 12, "topics": ["Dor musculoesquelética", "Doenças neurológicas", "Distúrbios gastrointestinais", "Problemas respiratórios", "Dermatologia integrativa"]},
+            {"num": 6, "title": "Prática Clínica e Casos", "hours": 12, "topics": ["Atendimento supervisionado", "Discussão de casos clínicos", "Integração com medicina convencional", "Avaliação final"]},
+        ],
+        "thumbnail": "https://images.unsplash.com/photo-1584738620467-51b852c2af2e?w=600&h=400&fit=crop",
+    },
+    {
+        "id": "curso-ozonioterapia",
+        "title": "Ozonioterapia Veterinária",
+        "subtitle": "Aplicação Clínica do Ozônio Medicinal em Medicina Veterinária",
+        "instructor": "Dr. Ricardo Mendes",
+        "instructor_crmv": "CRMV-SP 34567",
+        "price": 2800.00,
+        "original_price": 3500.00,
+        "hours": 30,
+        "status": "active",
+        "category": "ozonioterapia",
+        "level": "Básico a Intermediário",
+        "description": "Formação em Ozonioterapia Veterinária: fundamentos bioquímicos, mecanismos de ação, protocolos clínicos e aplicações práticas. Aprenda a utilizar o ozônio medicinal como ferramenta terapêutica no tratamento de feridas crônicas, infecções, doenças articulares e como coadjuvante em oncologia veterinária.",
+        "justification": "Curso de curta duração com foco prático. Preço acessível para formação complementar em terapia emergente na veterinária.",
+        "modules": [
+            {"num": 1, "title": "Fundamentos da Ozonioterapia", "hours": 6, "topics": ["O que é ozônio medicinal", "Mecanismos de ação bioquímicos", "Propriedades terapêuticas", "Legislação e regulamentação"]},
+            {"num": 2, "title": "Equipamentos e Segurança", "hours": 4, "topics": ["Geradores de ozônio", "Concentrações e dosagens", "Normas de segurança", "Manutenção de equipamentos"]},
+            {"num": 3, "title": "Vias de Administração", "hours": 6, "topics": ["Insuflação retal", "Aplicação tópica (bag)", "Autohemoterapia ozonizada", "Óleo e água ozonizados"]},
+            {"num": 4, "title": "Protocolos Clínicos", "hours": 8, "topics": ["Feridas crônicas e infectadas", "Doenças articulares", "Dermatites", "Oncologia integrativa", "Doenças infecciosas"]},
+            {"num": 5, "title": "Prática e Casos Clínicos", "hours": 6, "topics": ["Demonstrações práticas", "Estudos de caso", "Protocolos combinados", "Avaliação"]},
+        ],
+        "thumbnail": "https://images.unsplash.com/photo-1579154204601-01588f351e67?w=600&h=400&fit=crop",
+    },
+    {
+        "id": "curso-cbd",
+        "title": "Terapia Canábica Veterinária (CBD)",
+        "subtitle": "Cannabis Medicinal e Canabidiol na Prática Clínica Veterinária",
+        "instructor": "Dra. Fernanda Costa",
+        "instructor_crmv": "CRMV-RJ 23456",
+        "price": 3200.00,
+        "original_price": 4000.00,
+        "hours": 40,
+        "status": "active",
+        "category": "cbd",
+        "level": "Básico a Avançado",
+        "description": "Curso completo sobre o uso do Canabidiol (CBD) e outros fitocanabinoides na medicina veterinária. Aborda o sistema endocanabinoide, farmacologia, indicações clínicas, legislação ANVISA, prescrição e acompanhamento de pacientes. Inclui protocolos para dor crônica, epilepsia, ansiedade e oncologia.",
+        "justification": "Área em grande crescimento no Brasil. Valor inclui acesso a protocolos exclusivos e mentoria com especialista em canabinoides veterinários.",
+        "modules": [
+            {"num": 1, "title": "Sistema Endocanabinoide", "hours": 6, "topics": ["Receptores CB1 e CB2", "Endocanabinoides em mamíferos", "Fitocanabinoides: CBD, THC, CBG, CBN", "Efeito entourage"]},
+            {"num": 2, "title": "Farmacologia e Legislação", "hours": 6, "topics": ["Farmacocinética do CBD", "Interações medicamentosas", "Regulamentação ANVISA", "Prescrição e documentação"]},
+            {"num": 3, "title": "Indicações Clínicas", "hours": 10, "topics": ["Dor crônica e neuropática", "Epilepsia refratária", "Ansiedade e fobias", "Oncologia integrativa", "Doenças inflamatórias"]},
+            {"num": 4, "title": "Protocolos e Dosagem", "hours": 10, "topics": ["Titulação e dose-resposta", "Protocolos por espécie e porte", "Monitoramento clínico", "Ajustes e manutenção"]},
+            {"num": 5, "title": "Casos Clínicos e Mentoria", "hours": 8, "topics": ["Casos reais documentados", "Discussão em grupo", "Mentoria individual", "Certificação"]},
+        ],
+        "thumbnail": "https://images.unsplash.com/photo-1610243684348-dc537f6067ca?w=600&h=400&fit=crop",
+    },
+    {
+        "id": "curso-quiropraxia",
+        "title": "Quiropraxia Veterinária",
+        "subtitle": "Ajustes Vertebrais e Cuidado Neurológico para Animais",
+        "instructor": "Dr. Paulo Henrique Lima",
+        "instructor_crmv": "CRMV-MG 45678",
+        "price": 3800.00,
+        "original_price": 4800.00,
+        "hours": 50,
+        "status": "active",
+        "category": "quiropraxia",
+        "level": "Intermediário",
+        "description": "Formação em Quiropraxia Veterinária: biomecânica da coluna, diagnóstico de subluxações, técnicas de ajuste manual, e integração com fisioterapia e acupuntura. Curso focado em cães e cavalos, com prática supervisionada em animais reais.",
+        "justification": "Curso com forte componente prático presencial. Valor inclui materiais didáticos, atlas anatômico e acesso a práticas em clínica parceira.",
+        "modules": [
+            {"num": 1, "title": "Anatomia e Biomecânica", "hours": 10, "topics": ["Coluna vertebral de cães e gatos", "Biomecânica articular", "Neuroanatomia aplicada", "Sistema nervoso autônomo"]},
+            {"num": 2, "title": "Diagnóstico Quiroprático", "hours": 8, "topics": ["Exame físico e postural", "Palpação de motion", "Identificação de subluxações", "Diagnóstico diferencial"]},
+            {"num": 3, "title": "Técnicas de Ajuste", "hours": 12, "topics": ["Técnica diversificada", "Ajustes cervicais", "Ajustes torácicos e lombares", "Ajustes de pelve e sacro", "Extremidades"]},
+            {"num": 4, "title": "Protocolos Clínicos", "hours": 10, "topics": ["Hérnia de disco", "Displasia coxofemoral", "Claudicação", "Cães atletas", "Geriátricos"]},
+            {"num": 5, "title": "Prática Clínica", "hours": 10, "topics": ["Atendimento supervisionado", "Integração com fisioterapia", "Casos clínicos", "Certificação"]},
+        ],
+        "thumbnail": "https://images.unsplash.com/photo-1596058939740-516d0d71f3d4?w=600&h=400&fit=crop",
+    },
+    {
+        "id": "curso-fitoterapia",
+        "title": "Fitoterapia Veterinária e Medicina Chinesa",
+        "subtitle": "Plantas Medicinais e Fórmulas Chinesas na Prática Veterinária",
+        "instructor": "Dra. Tabatha Novikov",
+        "instructor_crmv": "CRMV-SP 21194",
+        "price": 2500.00,
+        "original_price": 3200.00,
+        "hours": 20,
+        "status": "active",
+        "category": "fitoterapia",
+        "level": "Básico a Intermediário",
+        "description": "Introdução à Fitoterapia Veterinária com ênfase na Medicina Tradicional Chinesa. Aprenda a prescrever fitoterápicos ocidentais e fórmulas chinesas clássicas adaptadas para animais. Inclui farmacognosia, interações medicamentosas, manipulação e protocolos por sistema orgânico.",
+        "justification": "Curso introdutório com excelente custo-benefício. Ideal para veterinários que querem iniciar na fitoterapia integrativa.",
+        "modules": [
+            {"num": 1, "title": "Fundamentos da Fitoterapia", "hours": 4, "topics": ["Princípios ativos vegetais", "Farmacognosia veterinária", "Formas farmacêuticas", "Segurança e toxicidade"]},
+            {"num": 2, "title": "Fitoterapia Ocidental", "hours": 4, "topics": ["Cúrcuma, camomila, valeriana", "Equinácea e própolis", "Silimarina (cardo-mariano)", "Protocolos por condição"]},
+            {"num": 3, "title": "Fórmulas da MTC", "hours": 6, "topics": ["Teoria das 8 regras", "Fórmulas clássicas adaptadas", "Combinações sinérgicas", "Fornecedores e manipulação"]},
+            {"num": 4, "title": "Protocolos Clínicos", "hours": 4, "topics": ["Sistema digestivo", "Sistema musculoesquelético", "Dermatologia", "Oncologia de suporte"]},
+            {"num": 5, "title": "Casos e Certificação", "hours": 2, "topics": ["Casos clínicos documentados", "Discussão e avaliação", "Certificado de conclusão"]},
+        ],
+        "thumbnail": "https://images.unsplash.com/photo-1545840716-c82e9eec6930?w=600&h=400&fit=crop",
+    },
+    # 20 CURSOS EM BREVE
+    {"id": "curso-homeopatia", "title": "Homeopatia Veterinária", "subtitle": "Princípios e Prática Clínica", "price": 3500.00, "hours": 40, "status": "coming_soon", "category": "homeopatia", "thumbnail": "https://images.unsplash.com/photo-1564316911608-6b51e3a3cf3d?w=600&h=400&fit=crop"},
+    {"id": "curso-reiki", "title": "Reiki para Animais", "subtitle": "Terapia Energética Veterinária", "price": 1800.00, "hours": 16, "status": "coming_soon", "category": "reiki", "thumbnail": "https://images.unsplash.com/photo-1618018353764-685cb47681d9?w=600&h=400&fit=crop"},
+    {"id": "curso-florais", "title": "Florais de Bach Veterinários", "subtitle": "Equilíbrio Emocional para Pets", "price": 2000.00, "hours": 20, "status": "coming_soon", "category": "florais", "thumbnail": "https://images.unsplash.com/photo-1585383234137-2367d3c5302d?w=600&h=400&fit=crop"},
+    {"id": "curso-nutricao", "title": "Nutrição Funcional Veterinária", "subtitle": "Alimentação como Medicina", "price": 3000.00, "hours": 30, "status": "coming_soon", "category": "nutricao", "thumbnail": "https://images.unsplash.com/photo-1745252798506-29500efc5b39?w=600&h=400&fit=crop"},
+    {"id": "curso-fisioterapia", "title": "Fisioterapia e Reabilitação Animal", "subtitle": "Hidroterapia, Eletroterapia e Cinesioterapia", "price": 4200.00, "hours": 50, "status": "coming_soon", "category": "fisioterapia", "thumbnail": "https://images.unsplash.com/photo-1612830565936-6388483d801b?w=600&h=400&fit=crop"},
+    {"id": "curso-hidroterapia", "title": "Hidroterapia Veterinária", "subtitle": "Reabilitação Aquática para Animais", "price": 2800.00, "hours": 24, "status": "coming_soon", "category": "hidroterapia", "thumbnail": "https://images.unsplash.com/photo-1603890227524-e6f9a790c263?w=600&h=400&fit=crop"},
+    {"id": "curso-cromoterapia", "title": "Cromoterapia e Musicoterapia Veterinária", "subtitle": "Terapia pelas Cores e Sons", "price": 1500.00, "hours": 12, "status": "coming_soon", "category": "cromoterapia", "thumbnail": "https://images.unsplash.com/photo-1618018353764-685cb47681d9?w=600&h=400&fit=crop"},
+    {"id": "curso-neural", "title": "Terapia Neural Veterinária", "subtitle": "Regulação do Sistema Nervoso Autônomo", "price": 3200.00, "hours": 30, "status": "coming_soon", "category": "neural", "thumbnail": "https://images.unsplash.com/photo-1579154204601-01588f351e67?w=600&h=400&fit=crop"},
+    {"id": "curso-hormonios", "title": "Hormônios Bioidênticos Veterinários", "subtitle": "Reposição Hormonal Natural", "price": 3500.00, "hours": 30, "status": "coming_soon", "category": "hormonios", "thumbnail": "https://images.unsplash.com/photo-1582719299074-be127353065f?w=600&h=400&fit=crop"},
+    {"id": "curso-osteopatia", "title": "Osteopatia Veterinária", "subtitle": "Manipulação e Equilíbrio Estrutural", "price": 4000.00, "hours": 50, "status": "coming_soon", "category": "osteopatia", "thumbnail": "https://images.unsplash.com/photo-1612830565936-6388483d801b?w=600&h=400&fit=crop"},
+    {"id": "curso-massoterapia", "title": "Massoterapia e Liberação Miofascial", "subtitle": "Técnicas Manuais para Animais", "price": 2200.00, "hours": 20, "status": "coming_soon", "category": "massoterapia", "thumbnail": "https://images.unsplash.com/photo-1596058939740-516d0d71f3d4?w=600&h=400&fit=crop"},
+    {"id": "curso-biorressonancia", "title": "Biorressonância Veterinária", "subtitle": "Diagnóstico e Terapia Bioenergética", "price": 3800.00, "hours": 30, "status": "coming_soon", "category": "biorressonancia", "thumbnail": "https://images.unsplash.com/photo-1579154204601-01588f351e67?w=600&h=400&fit=crop"},
+    {"id": "curso-geoterapia", "title": "Geoterapia e Argiloterapia", "subtitle": "Argilas Medicinais na Veterinária", "price": 1200.00, "hours": 8, "status": "coming_soon", "category": "geoterapia", "thumbnail": "https://images.unsplash.com/photo-1759141936083-d10203b4d4f6?w=600&h=400&fit=crop"},
+    {"id": "curso-apiterapia", "title": "Apiterapia Veterinária", "subtitle": "Produtos das Abelhas na Clínica", "price": 1500.00, "hours": 12, "status": "coming_soon", "category": "apiterapia", "thumbnail": "https://images.unsplash.com/photo-1564316911608-6b51e3a3cf3d?w=600&h=400&fit=crop"},
+    {"id": "curso-viscum", "title": "Viscum Album e Antroposofia", "subtitle": "Terapia Integrativa em Oncologia", "price": 2800.00, "hours": 20, "status": "coming_soon", "category": "viscum", "thumbnail": "https://images.unsplash.com/photo-1572005256772-af4c47972590?w=600&h=400&fit=crop"},
+    {"id": "curso-laser", "title": "Laserterapia e Magnetoterapia", "subtitle": "Terapias Físicas Avançadas", "price": 2500.00, "hours": 20, "status": "coming_soon", "category": "laser", "thumbnail": "https://images.unsplash.com/photo-1579154204601-01588f351e67?w=600&h=400&fit=crop"},
+    {"id": "curso-celulas", "title": "Células-Tronco Veterinárias", "subtitle": "Medicina Regenerativa Aplicada", "price": 6000.00, "hours": 40, "status": "coming_soon", "category": "celulas", "thumbnail": "https://images.unsplash.com/photo-1582719299074-be127353065f?w=600&h=400&fit=crop"},
+    {"id": "curso-prp", "title": "PRP Veterinário", "subtitle": "Plasma Rico em Plaquetas", "price": 3000.00, "hours": 20, "status": "coming_soon", "category": "prp", "thumbnail": "https://images.unsplash.com/photo-1579154204601-01588f351e67?w=600&h=400&fit=crop"},
+    {"id": "curso-constelacao", "title": "Constelação Familiar para Pets", "subtitle": "Abordagem Sistêmica Pet-Tutor", "price": 2000.00, "hours": 16, "status": "coming_soon", "category": "constelacao", "thumbnail": "https://images.unsplash.com/photo-1618018353764-685cb47681d9?w=600&h=400&fit=crop"},
+    {"id": "curso-termalismo", "title": "Termalismo e Crenoterapia", "subtitle": "Águas Termais Terapêuticas", "price": 1800.00, "hours": 12, "status": "coming_soon", "category": "termalismo", "thumbnail": "https://images.unsplash.com/photo-1603890227524-e6f9a790c263?w=600&h=400&fit=crop"},
+]
+
+@api_router.get("/courses")
+async def get_courses(status: str = None):
+    courses = COURSES.copy()
+    if status:
+        courses = [c for c in courses if c.get("status") == status]
+    result = []
+    for c in courses:
+        item = {k: v for k, v in c.items() if k not in ["justification"]}
+        result.append(item)
+    return result
+
+@api_router.get("/courses/{course_id}")
+async def get_course(course_id: str):
+    for c in COURSES:
+        if c["id"] == course_id:
+            return c
+    raise HTTPException(status_code=404, detail="Curso não encontrado")
+
+@api_router.post("/courses/{course_id}/enroll")
+async def enroll_course(course_id: str, request: Request):
+    token = request.headers.get("Authorization", "").replace("Bearer ", "")
+    if not token:
+        raise HTTPException(status_code=401, detail="Login required")
+    course = None
+    for c in COURSES:
+        if c["id"] == course_id:
+            course = c
+            break
+    if not course:
+        raise HTTPException(status_code=404, detail="Curso não encontrado")
+    if course["status"] != "active":
+        raise HTTPException(status_code=400, detail="Curso não disponível ainda")
+    # Simulate enrollment (Stripe would handle real payment)
+    enrollment = {
+        "id": str(ObjectId()),
+        "course_id": course_id,
+        "course_title": course["title"],
+        "price": course["price"],
+        "status": "pending_payment",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    return {"enrollment": enrollment, "message": "Redirecionando para pagamento..."}
+
 # ===== MEUS PETS =====
 class PetCreate(BaseModel):
     name: str

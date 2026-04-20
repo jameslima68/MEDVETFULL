@@ -9,11 +9,13 @@ import {
   DropdownMenuTrigger,
 } from '../components/ui/dropdown-menu';
 import SidebarMenu from './SidebarMenu';
+import LangSelector from './LangSelector';
+import { useLang } from '../contexts/LangContext';
 
 const NAV_LINKS = [
-  { label: 'Nossa Missão', href: '/missao' },
-  { label: 'Produtos', href: '/loja' },
-  { label: 'Vídeos', href: '/videos' },
+  { label: 'Nossa Missão', href: '/missao', tKey: 'nav.mission' },
+  { label: 'Produtos', href: '/loja', tKey: 'nav.products' },
+  { label: 'Vídeos', href: '/videos', tKey: 'nav.videos' },
 ];
 
 const THERAPY_LINKS = [
@@ -26,15 +28,16 @@ const THERAPY_LINKS = [
 ];
 
 const NAV_LINKS_2 = [
-  { label: 'Equipe', href: '/equipe' },
-  { label: 'Depoimentos', href: '/depoimentos' },
-  { label: 'Consultas', href: '/consultas' },
+  { label: 'Equipe', href: '/equipe', tKey: 'nav.team' },
+  { label: 'Depoimentos', href: '/depoimentos', tKey: 'nav.testimonials' },
+  { label: 'Consultas', href: '/consultas', tKey: 'nav.consultations' },
 ];
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, logout } = useAuth();
+  const { t } = useLang();
   const location = useLocation();
 
   const isActive = (path) => location.pathname === path;
@@ -99,6 +102,9 @@ export default function Header() {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-3">
+            <Link to="/cursos" className="text-sm font-medium text-[#4A6B5A] hover:text-[#2C4C3B] transition-colors">{t('nav.courses')}</Link>
+            <Link to="/portal-vet" className="text-sm font-medium text-[#C87A5D] hover:text-[#B3674C] transition-colors">{t('nav.vetPortal')}</Link>
+            <LangSelector />
             {user && user !== false ? (
               <DropdownMenu>
                 <DropdownMenuTrigger data-testid="user-menu-trigger" className="flex items-center gap-2 text-sm font-medium text-[#2C4C3B] hover:text-[#1A2E24] transition-colors outline-none">
