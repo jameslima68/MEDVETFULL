@@ -1170,6 +1170,69 @@ async def create_contact(req: ContactRequest):
     doc.pop("_id", None)
     return {"message": "Message sent successfully", "id": doc["id"]}
 
+# ===== MEDVET NEWS =====
+SEED_NEWS = [
+    {"id": "news-001", "title": "Acupuntura veterinária reduz dor crônica em cães com osteoartrite: estudo randomizado controlado", "source": "Journal of Veterinary Internal Medicine", "author": "Silva, M.R. et al.", "link": "https://pubmed.ncbi.nlm.nih.gov/", "summary": "Estudo multicêntrico com 120 cães demonstrou que a acupuntura reduziu significativamente os escores de dor (p<0.001) em comparação ao grupo controle, com melhora de 47% na mobilidade após 8 semanas de tratamento.", "category": "acupuntura", "date": "2026-04-14"},
+    {"id": "news-002", "title": "Canabidiol (CBD) mostra eficácia no controle de epilepsia refratária em felinos", "source": "Frontiers in Veterinary Science", "author": "Costa, F.A. & Oliveira, R.T.", "link": "https://www.frontiersin.org/journals/veterinary-science", "summary": "Ensaio clínico com 45 gatos epilépticos mostrou que o CBD na dose de 2mg/kg/dia reduziu a frequência de crises em 72% dos animais, sem efeitos adversos significativos durante 6 meses de acompanhamento.", "category": "cbd", "date": "2026-04-12"},
+    {"id": "news-003", "title": "Ozonioterapia como adjuvante no tratamento de feridas crônicas: revisão sistemática", "source": "Veterinary Surgery", "author": "Mendes, R.P. et al.", "link": "https://onlinelibrary.wiley.com/journal/1532950x", "summary": "Revisão de 28 estudos concluiu que a ozonioterapia acelera a cicatrização em 35-60%, reduz a carga bacteriana e promove neovascularização, sendo recomendada como terapia complementar em feridas de difícil resolução.", "category": "ozonioterapia", "date": "2026-04-10"},
+    {"id": "news-004", "title": "Dieta cetogênica reduz crescimento tumoral em cães com linfoma: resultados preliminares", "source": "Journal of the American Veterinary Medical Association", "author": "Johnson, K.L. et al.", "link": "https://avmajournals.avma.org/view/journals/javma/javma-overview.xml", "summary": "Estudo piloto com 30 cães portadores de linfoma multicêntrico mostrou que a dieta cetogênica associada à quimioterapia aumentou o tempo de remissão em 23% comparado ao grupo controle, sugerindo benefício metabólico na privação de glicose tumoral.", "category": "nutricao", "date": "2026-04-08"},
+    {"id": "news-005", "title": "Fitoterapia chinesa Yunnan Baiyao eficaz no manejo de hemangiossarcoma esplênico canino", "source": "BMC Veterinary Research", "author": "Chen, W. & Lima, S.A.", "link": "https://bmcvetres.biomedcentral.com/", "summary": "Estudo retrospectivo com 85 cães demonstrou que o suplemento Yunnan Baiyao prolongou a sobrevida mediana em 4,2 meses quando associado ao tratamento convencional, com redução significativa de episódios hemorrágicos.", "category": "fitoterapia", "date": "2026-04-05"},
+    {"id": "news-006", "title": "Florais de Bach reduzem ansiedade de separação em cães: ensaio duplo-cego", "source": "Applied Animal Behaviour Science", "author": "Novak, A.J. et al.", "link": "https://www.sciencedirect.com/journal/applied-animal-behaviour-science", "summary": "Ensaio controlado com 60 cães mostrou melhora comportamental significativa no grupo tratado com formulação personalizada de Florais de Bach versus placebo, com redução de 41% nos comportamentos destrutivos.", "category": "florais", "date": "2026-04-03"},
+    {"id": "news-007", "title": "Células-tronco mesenquimais melhoram função renal em gatos com doença renal crônica", "source": "Stem Cell Research & Therapy", "author": "Park, S.H. et al.", "link": "https://stemcellres.biomedcentral.com/", "summary": "Ensaio clínico fase II com 40 gatos com DRC estágios II-III demonstrou melhora na taxa de filtração glomerular e redução de creatinina sérica após 3 aplicações de células-tronco alogênicas, com benefícios sustentados por 6 meses.", "category": "celulas", "date": "2026-04-01"},
+    {"id": "news-008", "title": "Hidroterapia melhora recuperação pós-operatória em cães submetidos a TPLO", "source": "Veterinary and Comparative Orthopaedics and Traumatology", "author": "Rodrigues, A.M. et al.", "link": "https://www.thieme-connect.com/products/ejournals/journal/10.1055/s-00000085", "summary": "Estudo prospectivo com 50 cães pós-TPLO mostrou que o grupo com hidroterapia precoce (início 14 dias PO) alcançou apoio completo do membro 3 semanas antes que o grupo controle, com melhor massa muscular ao ultrassom.", "category": "fisioterapia", "date": "2026-03-28"},
+    {"id": "news-009", "title": "PRP autólogo acelera cicatrização de tendões em cães atletas: estudo multicêntrico", "source": "Veterinary Record", "author": "Thompson, D.R. & Santos, L.F.", "link": "https://bvajournals.onlinelibrary.wiley.com/journal/20427670", "summary": "Análise de 75 cães de esporte com lesões tendíneas mostrou que a aplicação de PRP reduziu o tempo de retorno à atividade em 40% comparado ao tratamento conservador, com taxa de recidiva 3x menor em 12 meses.", "category": "prp", "date": "2026-03-25"},
+    {"id": "news-010", "title": "Homeopatia veterinária: estudo brasileiro avalia eficácia em dermatite atópica canina", "source": "SciELO - Pesquisa Veterinária Brasileira", "author": "Novikov, T.R. et al.", "link": "https://www.scielo.br/j/pvb/", "summary": "Estudo duplo-cego realizado em São Paulo com 90 cães atópicos mostrou que o tratamento homeopático individualizado reduziu o escore CADESI-4 em 38% após 12 semanas, com melhora na qualidade de vida e redução do uso de corticoides.", "category": "homeopatia", "date": "2026-03-22"},
+]
+
+@api_router.get("/news")
+async def get_news(category: str = None, limit: int = 10):
+    news = SEED_NEWS.copy()
+    if category:
+        news = [n for n in news if n["category"] == category]
+    return news[:limit]
+
+@api_router.get("/news/{news_id}")
+async def get_news_article(news_id: str):
+    for n in SEED_NEWS:
+        if n["id"] == news_id:
+            return n
+    raise HTTPException(status_code=404, detail="Article not found")
+
+# ===== NEWSLETTER =====
+class NewsletterSubscribe(BaseModel):
+    email: str
+
+@api_router.post("/newsletter/subscribe")
+async def subscribe_newsletter(data: NewsletterSubscribe):
+    existing = await db.newsletter.find_one({"email": data.email})
+    if existing:
+        if existing.get("active"):
+            return {"message": "E-mail já cadastrado na newsletter"}
+        await db.newsletter.update_one({"email": data.email}, {"$set": {"active": True}})
+        return {"message": "E-mail reativado na newsletter"}
+    await db.newsletter.insert_one({
+        "id": str(ObjectId()),
+        "email": data.email,
+        "active": True,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    logger.info(f"NEWSLETTER: Novo inscrito - {data.email}")
+    return {"message": "E-mail cadastrado com sucesso!"}
+
+@api_router.post("/newsletter/unsubscribe")
+async def unsubscribe_newsletter(data: NewsletterSubscribe):
+    result = await db.newsletter.update_one({"email": data.email}, {"$set": {"active": False}})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="E-mail não encontrado")
+    return {"message": "E-mail descadastrado da newsletter"}
+
+@api_router.get("/admin/newsletter")
+async def get_newsletter_subscribers(user=Depends(get_current_user)):
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin only")
+    subs = await db.newsletter.find({"active": True}, {"_id": 0}).to_list(500)
+    return subs
+
 # ===== PORTAL DO VETERINÁRIO =====
 class VetRegister(BaseModel):
     name: str

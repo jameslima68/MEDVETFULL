@@ -32,6 +32,7 @@ import MyPetsPage from "./pages/MyPetsPage";
 import ChatWidget from "./components/ChatWidget";
 import VetPortalPage from "./pages/VetPortalPage";
 import { CoursesListPage, CourseDetailPage } from "./pages/CoursesPage";
+import NewsPage from "./pages/NewsPage";
 
 function App() {
   return (
@@ -71,6 +72,7 @@ function App() {
               <Route path="/portal-vet" element={<VetPortalPage />} />
               <Route path="/cursos" element={<CoursesListPage />} />
               <Route path="/cursos/:id" element={<CourseDetailPage />} />
+              <Route path="/noticias" element={<NewsPage />} />
             </Routes>
           </main>
           <Footer />
