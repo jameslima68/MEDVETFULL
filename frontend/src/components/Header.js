@@ -75,9 +75,6 @@ export default function Header() {
 
               {/* Right: Quick Actions */}
               <div className="flex items-center gap-2">
-                <Link to="/noticias" data-testid="nav-news" className="hidden sm:flex items-center gap-1.5 text-xs font-medium text-[#F9F6F0]/70 hover:text-[#F9F6F0] transition-colors">
-                  <Newspaper className="w-3.5 h-3.5" /> News
-                </Link>
                 <LangSelector />
                 {user && user !== false ? (
                   <DropdownMenu>
