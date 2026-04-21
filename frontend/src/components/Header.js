@@ -122,7 +122,7 @@ export default function Header() {
                       {t('nav.login')}
                     </Link>
                     <Link to="/consultas" data-testid="cta-schedule" className="bg-[#C87A5D] hover:bg-[#B3674C] text-[#F9F6F0] rounded-full px-4 py-1.5 text-xs font-medium transition-all flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5" /> <span className="hidden sm:inline">{t('nav.schedule')}</span><span className="sm:hidden">Agendar</span>
+                      <Calendar className="w-3.5 h-3.5" /> <span className="hidden sm:inline">{t('nav.schedule')}</span><span className="sm:hidden">{t('nav.schedule')}</span>
                     </Link>
                   </>
                 )}
